@@ -22,3 +22,9 @@ export interface SeriesHorariasTemperaturas {
   mediaMinima?: number;
   mediaMaxima?: number;
 }
+
+export interface ClimateDataResponse {
+  estaciones: MetadatosEstaciones[];
+  seriesTemperaturas: SeriesHorariasTemperaturas[];
+  indicesTermicos: IndicesTermicos[];
+}

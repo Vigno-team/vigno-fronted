@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import { ClimateDataResponse } from '../types/climate';
 
 import climateData from "../mock/climateData.json";
 
 export const useClimateData = () => {
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<ClimateDataResponse | null>(null);// Le indica a typescript que la variable arranca en null pero tendra un objeto con la forma de 'ClimateDataResponse'
 
   useEffect(() => {
     const temporizador = setTimeout(() => {
