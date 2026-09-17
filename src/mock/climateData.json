@@ -1,0 +1,70 @@
+{
+    "estaciones": [
+        {
+            "id": "cauquenes",
+            "fechaRegistro": "2021",
+            "huerto": "EL ARENAL, AGROPACAL",
+            "localidad": "CAUQUENES, REGION DEL MAULE",
+            "ubicacion": "35º31' S 71º28' O 206 m.s.n.m"
+        },
+        {
+            "id": "villavicencio",
+            "fechaRegistro": "2021",
+            "huerto": "VILLAVICENCIO",
+            "localidad": "REGION DEL MAULE",
+            "ubicacion": "35º35' S 71º40' O 180 m.s.n.m"
+        }
+    ],
+    "seriesTemperaturas": [
+        {
+            "estacionId": "cauquenes",
+            "fecha": "2021-08-01",
+            "mediaDiaria": 8.7,
+            "maxima": 22.0,
+            "minima": -0.9,
+            "mediaMinima": 1.2,
+            "mediaMaxima": 20.5
+        },
+        {
+            "estacionId": "cauquenes",
+            "fecha": "2021-08-02",
+            "mediaDiaria": 11.4,
+            "maxima": 23.9,
+            "minima": 0.0,
+            "mediaMinima": 2.1,
+            "mediaMaxima": 22.0
+        },
+        {
+            "estacionId": "villavicencio",
+            "fecha": "2021-08-01",
+            "mediaDiaria": 9.2,
+            "maxima": 21.5,
+            "minima": 0.5,
+            "mediaMinima": 1.8,
+            "mediaMaxima": 19.8
+        },
+        {
+            "estacionId": "villavicencio",
+            "fecha": "2021-08-02",
+            "mediaDiaria": 12.0,
+            "maxima": 24.1,
+            "minima": 1.2,
+            "mediaMinima": 2.5,
+            "mediaMaxima": 22.4
+        }
+    ],
+    "indicesTermicos": [
+        {
+            "estacionId": "cauquenes",
+            "winkler": 1820.5,
+            "huglin": 2410.2,
+            "amplitudTermica": 22.9
+        },
+        {
+            "estacionId": "villavicencio",
+            "winkler": 1750.0,
+            "huglin": 2320.8,
+            "amplitudTermica": 21.0
+        }
+    ]
+}
