@@ -9,11 +9,8 @@ import {
   FileText,
   Settings
 } from "lucide-react";
-
 import "./BarraLateral.css";
-
 function BarraLateral() {
-
   const [expandida, setExpandida] = useState(true);
   const [opcionActiva, setOpcionActiva] = useState("Clima en tiempo real");
 
@@ -47,10 +44,8 @@ function BarraLateral() {
       icono: Settings
     }
   ];
-
   return (
     <aside className={`barra-lateral ${expandida ? "expandida" : "contraida"}`}>
-
       {/* Botón menú */}
       <div className="encabezado-barra">
 
@@ -61,17 +56,12 @@ function BarraLateral() {
         >
           <Menu size={30} />
         </button>
-
       </div>
-
       {/* Opciones */}
       <nav className="menu-navegacion">
-
         {opciones.map((opcion) => {
-
           const Icono = opcion.icono;
           const activa = opcionActiva === opcion.nombre;
-
           return (
             <button
               key={opcion.nombre}
@@ -79,27 +69,21 @@ function BarraLateral() {
               onClick={() => setOpcionActiva(opcion.nombre)}
               title={!expandida ? opcion.nombre : ""}
             >
-
               <Icono
                 className="icono-opcion"
                 size={28}
                 strokeWidth={2}
               />
-
               {expandida && (
                 <span className="texto-opcion">
                   {opcion.nombre}
                 </span>
               )}
-
             </button>
           );
         })}
-
       </nav>
-
     </aside>
   );
 }
-
 export default BarraLateral;

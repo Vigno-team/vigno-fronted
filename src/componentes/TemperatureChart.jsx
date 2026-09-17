@@ -1,681 +1,566 @@
+import { useEffect, useMemo, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import "./TemperatureChart.css";
-
-function TemperatureChart({ seriesTemporales }) {
-  /*
-   * Colores de cada temporada
-   */
-  const colores = [
-    "#60a5fa", // 2024
-    "#84cc16", // 2025
-    "#c084fc", // 2026
-  ];
-
-  /*
-   * Convierte:
-   * 2024-09-01T08:00:00
-   *
-   * en:
-   * 09-01 08:00
-   *
-   * De esta forma podemos superponer diferentes años.
-   */
-  const obtenerMomento = (fecha) => {
-    const [, mes, resto] = fecha.split("-");
-    const [dia, horaCompleta] = resto.split("T");
-
-    return `${mes}-${dia} ${horaCompleta.substring(0, 5)}`;
-  };
-
-  /*
-   * Formato de fecha para el tooltip
-   */
-  const formatearFecha = (fecha) => {
-    if (!fecha) {
-      return "Sin fecha";
+function TemperatureChart({
+  estaciones = [],
+  datosTemperatura = [],
+}) {
+  const [estacionSeleccionada, setEstacionSeleccionada] =
+  useState(() => estaciones[0]?.id ?? "");
+  useEffect(() => {
+    if (!estacionSeleccionada && estaciones.length > 0) {
+      setEstacionSeleccionada(estaciones[0].id);
     }
-
-    const fechaObjeto = new Date(fecha);
-
-    return fechaObjeto.toLocaleString("es-CL", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  /*
-   * Creamos las categorías del eje X
-   */
-  const categorias = [
-    ...new Set(
-      seriesTemporales.flatMap((serie) =>
-        serie.datos.map((dato) =>
-          obtenerMomento(dato.fecha)
-        )
+  }, [estaciones, estacionSeleccionada]);
+  const datosEstacion = useMemo(() => {
+    return datosTemperatura
+      .filter(
+        (dato) =>
+          dato.estacionId === estacionSeleccionada
       )
-    ),
-  ].sort();
-
-  /*
-   * ==============================
-   * SERIES DE LAS TEMPORADAS
-   * ==============================
-   */
-  const seriesTemporadas = seriesTemporales.map(
-    (serie, indice) => {
-      const mapaDatos = {};
-
-      /*
-       * Asociamos cada momento con su lectura
-       */
-      serie.datos.forEach((dato) => {
-        mapaDatos[obtenerMomento(dato.fecha)] =
-          dato;
-      });
-
-      /*
-       * Construimos la serie respetando los null.
-       */
-      const datosGrafico = categorias.map(
-        (categoria) => {
-          const dato = mapaDatos[categoria];
-
-          /*
-           * Si esa temporada no tiene dato
-           * para esa posición.
-           */
-          if (!dato) {
-            return {
-              value: null,
-            };
-          }
-
-          /*
-           * Si el sensor entregó null,
-           * se conserva null.
-           *
-           * Esto genera el corte real
-           * en la línea.
-           */
-          return {
-            value: dato.temperatura,
-            fechaOriginal: dato.fecha,
-          };
-        }
+      .sort((a, b) =>
+        a.fecha.localeCompare(b.fecha)
       );
-
-      return {
-        name: serie.nombre,
-
-        type: "line",
-
-        data: datosGrafico,
-
-        /*
-         * Curva suave pero no exagerada.
-         */
-        smooth: 0.25,
-
-        /*
-         * MUY IMPORTANTE:
-         * no unir lecturas cuando existe null.
-         */
-        connectNulls: false,
-
-        /*
-         * Ocultamos puntos normales para
-         * mantener el gráfico limpio.
-         */
-        showSymbol: false,
-
-        symbol: "circle",
-
-        symbolSize: 7,
-
-        lineStyle: {
-          width: 3,
-          color:
-            colores[indice % colores.length],
-        },
-
-        itemStyle: {
-          color:
-            colores[indice % colores.length],
-        },
-
-        emphasis: {
-          focus: "series",
-
-          scale: true,
-
-          lineStyle: {
-            width: 4,
-          },
-        },
-
-        /*
-         * Al pasar el mouse por una serie
-         * aparecerá el punto correspondiente.
-         */
-        symbolKeepAspect: true,
-      };
-    }
+  }, [
+    datosTemperatura,
+    estacionSeleccionada
+  ]);
+  const informacionEstacion =
+    estaciones.find(
+      (estacion) =>
+        estacion.id === estacionSeleccionada
+    );
+  const mostrarEtiquetas =
+    datosEstacion.length <= 12;
+  const fechas = datosEstacion.map(
+    (dato) => dato.fecha
   );
-
-  /*
-   * ========================================
-   * SERIE INDEPENDIENTE PARA LOS UMBRALES
-   * ========================================
-   *
-   * Esta es la corrección importante.
-   *
-   * Antes los markLine estaban dentro
-   * de Temporada 2024.
-   *
-   * Ahora pertenecen a una serie
-   * independiente que no aparece
-   * en la leyenda.
-   *
-   * Por eso:
-   *
-   * 2024 oculta -> umbrales visibles
-   * 2025 oculta -> umbrales visibles
-   * 2026 oculta -> umbrales visibles
-   */
-  const serieUmbrales = {
-    name: "__umbrales__",
-
-    type: "line",
-
-    /*
-     * Necesitamos una serie técnicamente,
-     * pero no dibujaremos ninguna línea.
-     */
-    data: categorias.map(() => null),
-
-    showSymbol: false,
-
-    silent: true,
-
-    lineStyle: {
-      opacity: 0,
-    },
-
-    itemStyle: {
-      opacity: 0,
-    },
-
-    /*
-     * No debe aparecer en tooltip.
-     */
-    tooltip: {
-      show: false,
-    },
-
-    /*
-     * ==============================
-     * LÍNEAS DE UMBRAL
-     * ==============================
-     */
-    markLine: {
-      silent: true,
-
-      symbol: "none",
-
-      animation: false,
-
-      label: {
-        show: true,
-
-        color: "#dbe7ff",
-
-        fontSize: 11,
-
-        fontWeight: 600,
-
-        backgroundColor:
-          "rgba(15, 23, 42, 0.92)",
-
-        padding: [4, 7],
-
-        borderRadius: 5,
-
-        position: "end",
-      },
-
-      data: [
-        /*
-         * Alerta
-         */
-        {
-          yAxis: 30,
-
-          name: "Alerta térmica",
-
-          lineStyle: {
-            color: "#fb923c",
-            width: 2,
-            type: "dashed",
-          },
-
-          label: {
-            formatter: "30 °C",
-          },
-        },
-
-        /*
-         * Crítico
-         */
-        {
-          yAxis: 35,
-
-          name: "Nivel crítico",
-
-          lineStyle: {
-            color: "#ef4444",
-            width: 2,
-            type: "dashed",
-          },
-
-          label: {
-            formatter: "35 °C",
-          },
-        },
-      ],
-    },
-
-    /*
-     * ==============================
-     * ZONAS DE ALERTA
-     * ==============================
-     *
-     * Son muy suaves para no molestar
-     * visualmente.
-     */
-    markArea: {
-      silent: true,
-
-      animation: false,
-
-      label: {
-        show: false,
-      },
-
-      data: [
-        /*
-         * Zona 30 - 35 °C
-         */
-        [
-          {
-            yAxis: 30,
-
-            itemStyle: {
-              color:
-                "rgba(251, 146, 60, 0.035)",
-            },
-          },
-
-          {
-            yAxis: 35,
-          },
-        ],
-
-        /*
-         * Zona superior a 35 °C
-         */
-        [
-          {
-            yAxis: 35,
-
-            itemStyle: {
-              color:
-                "rgba(239, 68, 68, 0.045)",
-            },
-          },
-
-          {
-            yAxis: 40,
-          },
-        ],
-      ],
-    },
-
-    /*
-     * Dejamos esta serie detrás
-     * de las temporadas.
-     */
-    z: 0,
+  const temperaturasMaximas =
+    datosEstacion.map(
+      (dato) => dato.maxima
+    );
+  const temperaturasMedias =
+    datosEstacion.map(
+      (dato) => dato.mediaDiaria
+    );
+  const temperaturasMinimas =
+    datosEstacion.map(
+      (dato) => dato.minima
+    );
+  const todasTemperaturas =
+    datosEstacion.flatMap((dato) => [
+      dato.maxima,
+      dato.mediaDiaria,
+      dato.minima,
+    ]);
+  const minimoReal =
+    todasTemperaturas.length > 0
+      ? Math.min(...todasTemperaturas)
+      : 0;
+  const maximoReal =
+    todasTemperaturas.length > 0
+      ? Math.max(...todasTemperaturas)
+      : 40;
+  const minimoEje =
+    Math.floor((minimoReal - 3) / 5) * 5;
+  const maximoEje =
+    Math.max(
+      40,
+      Math.ceil((maximoReal + 3) / 5) * 5
+    );
+  const formatearFechaCorta = (fecha) => {
+    if (!fecha) return "";
+    const [, mes, dia] =
+      fecha.split("-");
+    const meses = [
+      "",
+      "ene",
+      "feb",
+      "mar",
+      "abr",
+      "may",
+      "jun",
+      "jul",
+      "ago",
+      "sep",
+      "oct",
+      "nov",
+      "dic",
+    ];
+    return `${dia} ${meses[Number(mes)]}`;
   };
-
-  /*
-   * Unimos temporadas + umbrales.
-   */
-  const series = [
-    ...seriesTemporadas,
-    serieUmbrales,
-  ];
-
-  /*
-   * ========================================
-   * CONFIGURACIÓN ECHARTS
-   * ========================================
-   */
+  const formatearFechaCompleta = (fecha) => {
+    if (!fecha) return "";
+    const [anio, mes, dia] =
+      fecha.split("-");
+    return `${dia}-${mes}-${anio}`;
+  };
   const opciones = {
     backgroundColor: "transparent",
-
-    animation: true,
-
     animationDuration: 500,
-
-    /*
-     * ==============================
-     * TOOLTIP
-     * ==============================
-     */
     tooltip: {
       trigger: "axis",
-
-      backgroundColor: "#0b1422",
-
-      borderColor: "#334155",
-
+      backgroundColor: "#081525",
+      borderColor: "#30435f",
       borderWidth: 1,
-
-      padding: 14,
-
+      padding: 15,
       textStyle: {
-        color: "#ffffff",
+        color: "#f8fafc",
         fontSize: 12,
       },
-
       axisPointer: {
         type: "line",
-
         lineStyle: {
           color: "#64748b",
-          width: 1,
           type: "dashed",
+          width: 1,
         },
       },
-
       formatter: (parametros) => {
-        /*
-         * Eliminamos cualquier posible
-         * referencia a la serie auxiliar.
-         */
-        const datosVisibles =
-          parametros.filter(
-            (parametro) =>
-              parametro.seriesName !==
-              "__umbrales__"
-          );
-
-        if (datosVisibles.length === 0) {
+        if (!parametros?.length) {
           return "";
         }
-
-        let contenido = `
-          <div style="min-width:230px;">
+        const indice =
+          parametros[0].dataIndex;
+        const lectura =
+          datosEstacion[indice];
+        if (!lectura) {
+          return "";
+        }
+        return `
+          <div style="
+            min-width:250px;
+          ">
+            <div style="
+              font-size:14px;
+              font-weight:700;
+              margin-bottom:4px;
+            ">
+              ${formatearFechaCompleta(
+                lectura.fecha
+              )}
+            </div>
             <div style="
               color:#94a3b8;
               font-size:11px;
-              margin-bottom:9px;
+              margin-bottom:12px;
             ">
-              ${datosVisibles[0].axisValue}
+              ${
+                informacionEstacion?.huerto ??
+                estacionSeleccionada
+              }
             </div>
-        `;
-        datosVisibles.forEach(
-          (parametro) => {
-            const dato = parametro.data;
-            /*Lecturas nulas*/
-            if (
-              dato?.value === null ||
-              dato?.value === undefined
-            ) {
-              contenido += `
-                <div
-                  style="
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              gap:30px;
+              padding:5px 0;
+            ">
+              <span style="color:#fb923c">
+                ● Máxima
+              </span>
+              <strong>
+                ${lectura.maxima} °C
+              </strong>
+            </div>
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              gap:30px;
+              padding:5px 0;
+            ">
+              <span style="color:#38bdf8">
+                ● Media
+              </span>
+              <strong>
+                ${lectura.mediaDiaria} °C
+              </strong>
+            </div>
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              gap:30px;
+              padding:5px 0;
+            ">
+              <span style="color:#818cf8">
+                ● Mínima
+              </span>
+              <strong>
+                ${lectura.minima} °C
+              </strong>
+            </div>
+            ${
+              lectura.mediaMaxima !== undefined
+                ? `
+                  <div style="
                     display:flex;
                     justify-content:space-between;
-                    gap:25px;
-                    margin-top:8px;
-                  "
-                >
-                  <span>
-                    ${parametro.marker}
-                    ${parametro.seriesName}
-                  </span>
-                  <strong
-                    style="color:#94a3b8;"
-                  >
-                    Sin lectura
-                  </strong>
-                </div>
-              `;
-              return;
+                    gap:30px;
+                    padding:5px 0;
+                    color:#94a3b8;
+                  ">
+                    <span>
+                      Media máxima
+                    </span>
+                    <span>
+                      ${lectura.mediaMaxima} °C
+                    </span>
+                  </div>
+                `
+                : ""
             }
-            /*Estado de temperatura*/
-            let estado = "Normal";
-            let colorEstado = "#4ade80";
-            if (dato.value > 35) {
-              estado = "Crítico";
-              colorEstado = "#ef4444";
-            } else if (dato.value > 30) {
-              estado = "Alerta";
-              colorEstado = "#fb923c";
+            ${
+              lectura.mediaMinima !== undefined
+                ? `
+                  <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    gap:30px;
+                    padding:5px 0;
+                    color:#94a3b8;
+                  ">
+                    <span>
+                      Media mínima
+                    </span>
+                    <span>
+                      ${lectura.mediaMinima} °C
+                    </span>
+                  </div>
+                `
+                : ""
             }
-            contenido += `
-              <div style="
-                margin-top:10px;
-                padding-top:8px;
-                border-top:1px solid rgba(148,163,184,0.12);
-              ">
-                <div style="
-                  display:flex;
-                  justify-content:space-between;
-                  gap:25px;
-                ">
-                  <span>
-                    ${parametro.marker}
-                    <strong>
-                      ${parametro.seriesName}
-                    </strong>
-                  </span>
-                  <strong>
-                    ${dato.value} °C
-                  </strong>
-                </div>
-                <div style="
-                  color:#94a3b8;
-                  font-size:11px;
-                  margin-top:4px;
-                ">
-                  ${formatearFecha(
-                    dato.fechaOriginal
-                  )}
-                </div>
-                <div style="
-                  color:${colorEstado};
-                  font-size:11px;
-                  font-weight:700;
-                  margin-top:4px;
-                ">
-                  ${estado}
-                </div>
-              </div>
-            `;
-          }
-        );
-        contenido += "</div>";
-        return contenido;
+          </div>
+        `;
       },
     },
     legend: {
-      top: 0,
+      top: 5,
       right: 10,
-      data: seriesTemporales.map(
-        (serie) => serie.nombre
-      ),
       icon: "circle",
-      itemWidth: 10,
-      itemHeight: 10,
-      itemGap: 20,
+      itemWidth: 9,
+      itemHeight: 9,
+      itemGap: 22,
       textStyle: {
-        color: "#d5dfed",
-        fontSize: 13,
+        color: "#cbd5e1",
+        fontSize: 12,
       },
-      /*Permite elegir temporadas.*/
-      selectedMode: true,
+      data: [
+        "Temperatura máxima",
+        "Temperatura media",
+        "Temperatura mínima",
+      ],
     },
-    /*ESPACIO DEL GRÁFICO*/
     grid: {
-      left: 65,
-      right: 55,
-      top: 65,
-      bottom: 85,
-      containLabel: false,
+      left: 75,
+      right: 60,
+      top: 70,
+      bottom: 90,
     },
-    /*lo que muestra el eje x*/
     xAxis: {
       type: "category",
-      data: categorias,
+      data: fechas,
       boundaryGap: false,
       axisLine: {
         lineStyle: {
-          color: "#42536d",
+          color: "#3d506b",
         },
       },
       axisTick: {
         show: false,
       },
       axisLabel: {
-        color: "#93a4bf",
-        margin: 14,
-        interval:
-          categorias.length > 14 ? 3 : 1,
-        formatter: (valor) => {
-          const [fecha, hora] =
-            valor.split(" ");
-          return `${fecha}\n${hora}`;
-        },
+        color: "#91a4c0",
+        margin: 15,
+        formatter: (fecha) =>
+          formatearFechaCorta(fecha),
       },
       splitLine: {
         show: false,
       },
     },
-    /* lo que muestra el eje y */
     yAxis: {
       type: "value",
-      min: 0,
-      max: 40,
-      interval: 10,
+      min: minimoEje,
+      max: maximoEje,
+      interval: 5,
       name: "Temperatura (°C)",
       nameLocation: "end",
-      nameGap: 28,
+      nameGap: 24,
       nameTextStyle: {
-        color: "#9bb0ce",
+        color: "#91a4c0",
         fontSize: 12,
-      },
-      axisLine: {
-        show: false,
       },
       axisTick: {
         show: false,
       },
+      axisLine: {
+        show: false,
+      },
       axisLabel: {
-        color: "#93a4bf",
-        formatter: "{value} °C",
+        color: "#91a4c0",
+        formatter:
+          "{value} °C",
       },
       splitLine: {
         lineStyle: {
           color:
-            "rgba(148, 163, 184, 0.12)",
+            "rgba(148,163,184,0.10)",
         },
       },
     },
     dataZoom: [
-      /* Zoom con el mouse*/
       {
         type: "inside",
         start: 0,
         end: 100,
-        zoomOnMouseWheel: true,
-        moveOnMouseMove: true,
       },
-
-      /*slide del zoom*/ 
       {
         type: "slider",
         start: 0,
         end: 100,
         bottom: 15,
-        height: 20,
-        borderColor: "#34445d",
-        backgroundColor: "#111827",
+        height: 18,
+        borderColor: "#334155",
+        backgroundColor: "#101827",
         fillerColor:
-          "rgba(99, 102, 241, 0.24)",
-        dataBackground: {
-          lineStyle: {
-            color: "#7384c5",
-          },
-          areaStyle: {
-            color:
-              "rgba(115, 132, 197, 0.30)",
-          },
-        },
-        selectedDataBackground: {
-          lineStyle: {
-            color: "#8b9ce0",
-          },
-          areaStyle: {
-            color:
-              "rgba(139, 156, 224, 0.35)",
-          },
-        },
+          "rgba(96,165,250,0.16)",
         handleStyle: {
-          color: "#e2e8f0",
-          borderColor: "#94a3b8",
-        },
-        moveHandleStyle: {
-          color: "#94a3b8",
+          color: "#cbd5e1",
+          borderColor: "#64748b",
         },
         textStyle: {
-          color: "#94a3b8",
+          color: "#8192aa",
         },
       },
     ],
-    series,
+    series: [
+      {
+        name: "Temperatura máxima",
+        type: "line",
+        data: temperaturasMaximas,
+        smooth: 0.2,
+        connectNulls: false,
+        symbol: "circle",
+        symbolSize: 9,
+        showSymbol: true,
+        lineStyle: {
+          width: 3,
+          color: "#fb923c",
+        },
+        itemStyle: {
+          color: "#fb923c",
+          borderColor: "#081827",
+          borderWidth: 2,
+        },
+        label: {
+          show: mostrarEtiquetas,
+          position: "top",
+          distance: 8,
+          color: "#fdba74",
+          fontSize: 11,
+          fontWeight: 700,
+          formatter: ({ value }) =>
+            `${value}°`,
+        },
+        emphasis: {
+          focus: "series",
+          scale: 1.4,
+          itemStyle: {
+            borderColor: "#ffffff",
+            borderWidth: 2,
+          },
+        },
+        markLine: {
+          silent: true,
+          symbol: "none",
+          label: {
+            color: "#e2e8f0",
+            fontSize: 11,
+            fontWeight: 700,
+            backgroundColor:
+              "rgba(15,23,42,0.92)",
+            padding: [4, 7],
+            borderRadius: 5,
+            position: "end",
+          },
+          data: [
+            {
+              yAxis: 30,
+              lineStyle: {
+                color: "#fb923c",
+                type: "dashed",
+                width: 1.5,
+              },
+              label: {
+                formatter:
+                  "Alerta · 30 °C",
+              },
+            },
+            {
+              yAxis: 35,
+              lineStyle: {
+                color: "#ef4444",
+                type: "dashed",
+                width: 1.5,
+              },
+              label: {
+                formatter:
+                  "Crítico · 35 °C",
+              },
+            },
+          ],
+        },
+        markArea: {
+          silent: true,
+          label: {
+            show: false,
+          },
+          data: [
+            [
+              {
+                yAxis: 30,
+                itemStyle: {
+                  color:
+                    "rgba(251,146,60,0.035)",
+                },
+              },
+              {
+                yAxis: 35,
+              },
+            ],
+            [
+              {
+                yAxis: 35,
+                itemStyle: {
+                  color:
+                    "rgba(239,68,68,0.045)",
+                },
+              },
+              {
+                yAxis: maximoEje,
+              },
+            ],
+          ],
+        },
+      },
+      {
+        name: "Temperatura media",
+        type: "line",
+        data: temperaturasMedias,
+        smooth: 0.2,
+        connectNulls: false,
+        symbol: "circle",
+        symbolSize: 8,
+        showSymbol: true,
+        lineStyle: {
+          width: 2.5,
+          color: "#38bdf8",
+        },
+        itemStyle: {
+          color: "#38bdf8",
+          borderColor: "#081827",
+          borderWidth: 2,
+        },
+        label: {
+          show: mostrarEtiquetas,
+          position: "right",
+          distance: 8,
+          color: "#7dd3fc",
+          fontSize: 10,
+          formatter: ({ value }) =>
+            `${value}°`,
+        },
+        emphasis: {
+          focus: "series",
+          scale: 1.4,
+        },
+      },
+      {
+        name: "Temperatura mínima",
+        type: "line",
+        data: temperaturasMinimas,
+        smooth: 0.2,
+        connectNulls: false,
+        symbol: "circle",
+        symbolSize: 8,
+        showSymbol: true,
+        lineStyle: {
+          width: 2.5,
+          color: "#818cf8",
+        },
+        itemStyle: {
+          color: "#818cf8",
+          borderColor: "#081827",
+          borderWidth: 2,
+        },
+        label: {
+          show: mostrarEtiquetas,
+          position: "bottom",
+          distance: 8,
+          color: "#a5b4fc",
+          fontSize: 10,
+          formatter: ({ value }) =>
+            `${value}°`,
+        },
+        emphasis: {
+          focus: "series",
+          scale: 1.4,
+        },
+      },
+    ],
   };
   return (
-    <section className="contenedor-grafico-temperatura">
-      <div className="encabezado-grafico">
-        <div className="bloque-titulos-grafico">
-          <span className="etiqueta-grafico">
-            ANÁLISIS HISTÓRICO
+    <section className="panel-temperatura">
+      <header className="cabecera-temperatura">
+        <div>
+          <span className="sobre-titulo">
+            ESTACIÓN METEOROLÓGICA
           </span>
           <h2>
-            Temperatura por temporada
+            Comportamiento térmico
           </h2>
           <p>
-            Comparación multianual de las
-            lecturas registradas por la estación.
+            Temperaturas máximas, medias y mínimas
+            registradas por la estación.
           </p>
         </div>
-        <div className="leyenda-umbrales">
-          <span className="badge-umbral normal">
-            Normal
+        <div className="selector-estacion">
+          <label htmlFor="estacion">
+            Estación
+          </label>
+          <select
+            id="estacion"
+            value={estacionSeleccionada}
+            onChange={(evento) =>
+              setEstacionSeleccionada(
+                evento.target.value
+              )
+            }
+          >
+            {estaciones.map((estacion) => (
+              <option
+                key={estacion.id}
+                value={estacion.id}
+              >
+                {estacion.huerto}
+              </option>
+            ))}
+          </select>
+        </div>
+      </header>
+      {informacionEstacion && (
+        <div className="informacion-estacion">
+          <span>
+            {informacionEstacion.localidad}
           </span>
-          <span className="badge-umbral alerta">
-            30 – 35 °C
+          <span className="separador-info">
+            •
           </span>
-          <span className="badge-umbral critico">
-            &gt; 35 °C
+          <span>
+            {informacionEstacion.ubicacion}
           </span>
         </div>
-      </div>
+      )}
       <div className="area-grafico">
         <ReactECharts
           option={opciones}
