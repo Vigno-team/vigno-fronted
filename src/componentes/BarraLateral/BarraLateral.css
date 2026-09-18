@@ -1,0 +1,217 @@
+.barra-lateral {
+  height: 100vh;
+  background-color: #000000;
+  color: white;
+
+  display: flex;
+  flex-direction: column;
+
+  transition: width 0.3s ease;
+
+  position: fixed;
+  left: 0;
+  top: 0;
+
+  z-index: 1000;
+
+  overflow: hidden;
+}
+
+
+/* =========================
+   TAMAÑOS
+========================= */
+
+.barra-lateral.expandida {
+  width: 280px;
+}
+
+.barra-lateral.contraida {
+  width: 80px;
+}
+
+
+/* =========================
+   ENCABEZADO
+========================= */
+
+.encabezado-barra {
+  height: 80px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 20px;
+}
+
+
+/* =========================
+   BOTÓN MENÚ
+========================= */
+
+.boton-menu {
+  width: 40px;
+  height: 40px;
+
+  border: none;
+  background: transparent;
+
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  border-radius: 8px;
+
+  transition: background-color 0.2s ease;
+}
+
+.boton-menu:hover {
+  background-color: #1f1f1f;
+}
+
+
+/* =========================
+   MENÚ
+========================= */
+
+.menu-navegacion {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  padding: 20px 12px;
+}
+
+
+/* =========================
+   OPCIONES
+========================= */
+
+.opcion-menu {
+  width: 100%;
+  min-height: 60px;
+
+  border: none;
+  background: transparent;
+
+  color: white;
+
+  display: flex;
+  align-items: center;
+
+  cursor: pointer;
+
+  border-radius: 12px;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+/* Barra expandida */
+
+.expandida .opcion-menu {
+  justify-content: flex-start;
+  padding: 0 20px;
+  gap: 22px;
+}
+
+
+/* Barra contraída */
+
+.contraida .opcion-menu {
+  justify-content: center;
+  padding: 0;
+}
+
+
+/* =========================
+   ICONOS
+========================= */
+
+.icono-opcion {
+  flex-shrink: 0;
+}
+
+
+/* =========================
+   TEXTO
+========================= */
+
+.texto-opcion {
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 17px;
+
+  white-space: nowrap;
+}
+
+
+/* =========================
+   OPCIÓN ACTIVA
+========================= */
+
+.opcion-menu.activa {
+  background-color: #54218a;
+}
+
+.opcion-menu.activa:hover {
+  background-color: #642aa2;
+}
+
+
+/* =========================
+   HOVER
+========================= */
+
+.opcion-menu:not(.activa):hover {
+  background-color: #1b1b1b;
+}
+
+
+/* =========================
+   TRANSICIONES
+========================= */
+
+.texto-opcion {
+  animation: aparecerTexto 0.2s ease;
+}
+
+@keyframes aparecerTexto {
+  from {
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+
+  .barra-lateral.expandida {
+    width: 250px;
+  }
+
+  .barra-lateral.contraida {
+    width: 70px;
+  }
+
+  .texto-opcion {
+    font-size: 15px;
+  }
+
+}

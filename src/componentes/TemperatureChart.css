@@ -1,0 +1,168 @@
+.panel-temperatura {
+  width: 100%;
+  background:
+    linear-gradient(
+      180deg,
+      #0b1d31 0%,
+      #081725 100%
+    );
+  border:1px solid rgba(77, 108, 156, 0.28);
+  border-radius: 20px;
+  padding: 24px 26px 18px;
+  box-shadow:0 18px 42px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+.cabecera-temperatura {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 8px;
+  min-height: 110px;
+}
+.cabecera-temperatura > div:first-child {
+  width: 100%;
+  max-width: 720px;
+  text-align: center;
+  margin: 0 auto;
+}
+.sobre-titulo {
+  display: block;
+  margin-bottom: 8px;
+  color: #6686af;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-align: center;
+}
+.cabecera-temperatura h2 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 30px;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  text-align: center;
+}
+.cabecera-temperatura p {
+  margin: 8px auto 0;
+  max-width: 650px;
+  color: #8fa5c4;
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: center;
+}
+.selector-estacion {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+}
+.selector-estacion label {
+  color: #7f94b3;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: right;
+}
+.selector-estacion select {
+  width: 100%;
+  padding: 10px 36px 10px 12px;
+  color: #e2e8f0;
+  background-color: #101e30;
+  border:1px solid rgba(100, 126, 166, 0.35);
+  border-radius: 9px;
+  outline: none;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+.selector-estacion select:hover {
+  background-color: #14263d;
+}
+.selector-estacion select:focus {
+  border-color: #60a5fa;
+}
+.informacion-estacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 10px 12px;
+  color: #7f94b3;
+  background: rgba(15, 29, 48, 0.6);
+  border-radius: 8px;
+  font-size: 11px;
+  text-align: center;
+}
+.separador-info {
+  color: #475569;
+}
+.area-grafico {
+  width: 100%;
+  height: 560px;
+  margin-top: 4px;
+  min-width: 0;
+}
+@media (max-width: 1000px) {
+  .cabecera-temperatura {
+    min-height: auto;
+    padding-top: 0;
+    flex-direction: column;
+    align-items: center;
+  }
+  .selector-estacion {
+    position: static;
+    width: 100%;
+    max-width: 320px;
+    margin-top: 12px;
+  }
+  .selector-estacion label {
+    text-align: left;
+  }
+  .area-grafico {
+    height: 500px;
+  }
+}
+@media (max-width: 700px) {
+  .panel-temperatura {
+    padding: 18px 16px;
+  }
+  .cabecera-temperatura h2 {
+    font-size: 24px;
+  }
+  .cabecera-temperatura p {
+    font-size: 14px;
+  }
+  .area-grafico {
+    height: 440px;
+  }
+
+}
+@media (max-width: 500px) {
+  .panel-temperatura {
+    padding: 15px 12px;
+  }
+  .cabecera-temperatura h2 {
+    font-size: 21px;
+  }
+  .sobre-titulo {
+    font-size: 9px;
+  }
+  .cabecera-temperatura p {
+    font-size: 13px;
+  }
+  .informacion-estacion {
+    font-size: 10px;
+  }
+  .area-grafico {
+    height: 390px;
+  }
+}
