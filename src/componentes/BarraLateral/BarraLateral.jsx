@@ -10,8 +10,7 @@ import {
   Settings
 } from "lucide-react";
 import "./BarraLateral.css";
-function BarraLateral() {
-  const [expandida, setExpandida] = useState(true);
+function BarraLateral({ expandida, cambiarEstado }) {
   const [opcionActiva, setOpcionActiva] = useState("Clima en tiempo real");
 
   const opciones = [
@@ -51,7 +50,7 @@ function BarraLateral() {
 
         <button
           className="boton-menu"
-          onClick={() => setExpandida(!expandida)}
+          onClick={() => cambiarEstado(!expandida)}
           aria-label="Abrir o cerrar menú"
         >
           <Menu size={30} />
