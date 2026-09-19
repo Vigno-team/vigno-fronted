@@ -1,0 +1,101 @@
+.vigno-card {
+  width: 100%;
+  max-width: 500px;
+  background-color: #0b132b;
+  color: white;
+  border: 1px solid #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-sizing: border-box;
+  font-family: "Ubuntu", "Liberation Sans", "DejaVu Sans", sans-serif;
+  margin-top: 30px; 
+}
+
+.vigno-tiempo-estimado {
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.vigno-barra {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background-color: #1c2541;
+  border: 1px solid #ffffff;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.vigno-barra-avance {
+  height: 100%;
+  background-color: #D6981D;
+  border-radius: 20px;
+  transition: width 0.3s ease;
+}
+
+.vigno-circulo {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #0b132b;
+  border: 2px solid white;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  transition: left 0.3s ease;
+}
+
+.vigno-panel-estado {
+  margin-top: 20px;
+  border-radius: 10px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid white;
+}
+
+.vigno-panel-estado.normal {
+  background-color: #14532D;
+}
+
+.vigno-panel-estado.alerta {
+  background-color: #8C1D18;
+}
+
+.vigno-texto-estado {
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.vigno-lista-temperaturas {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 10px;
+}
+
+.vigno-temp {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #592400;
+  border: 1px solid white;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}

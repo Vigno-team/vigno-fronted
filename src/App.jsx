@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import BarraLateral from "./componentes/BarraLateral/BarraLateral";
+import HarvestProgressBar from "./componentes/HarvestProgressBar/HarvestProgressBar";
 import TemperatureChart from "./componentes/TemperatureChart";
 import { useClimateData } from "./hooks/useClimateData";
 
@@ -74,6 +75,11 @@ function App() {
         <TemperatureChart
           estaciones={data.estaciones}
           datosTemperatura={data.seriesTemperaturas}
+        />
+        <HarvestProgressBar
+          avance={58}
+          diasEstimados={12}
+          temperaturas={[38, 37, 37.5, 38, 41]}
         />
       </main>
     </div>
