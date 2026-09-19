@@ -20,13 +20,16 @@ export const HarvestProgressBar = ({
   
 
   //Seccion alerta
-  if (temperaturas[0]>=35 && temperaturas[1]>=35 && temperaturas[2]>=35 && temperaturas[3]>=35 && temperaturas[4]>=35) {
-    estado= "alerta";
-    mensajeEstado= "Registros mayores a 35 °C en últimos 5 días";
-  }else{
-    estado= "normal";
-    mensajeEstado= "Registros normales en últimos 5 días";
+  let alertaOlaCalor = temperaturas.length >= 5 && temperaturas.every(temp => temp > 35);
+
+  if (alertaOlaCalor) {
+    estado = "alerta";
+    mensajeEstado = "Registros mayores a 35 °C en últimos 5 días";
+  } else {
+    estado = "normal";
+    mensajeEstado = "Registros normales en últimos 5 días";
   }
+
   //Card devuelto
   return (
     <div className="vigno-card">
@@ -48,11 +51,11 @@ export const HarvestProgressBar = ({
         </div>
 
         <div className="vigno-lista-temperaturas">
-          <div className="vigno-temp">{temperaturas[0] ?? "--"}°</div>
-          <div className="vigno-temp">{temperaturas[1] ?? "--"}°</div>
-          <div className="vigno-temp">{temperaturas[2] ?? "--"}°</div>
-          <div className="vigno-temp">{temperaturas[3] ?? "--"}°</div>
-          <div className="vigno-temp">{temperaturas[4] ?? "--"}°</div>
+          {temperaturas.map((temp, index) => (
+            <div key={index} className="vigno-temp">
+              {temp}°
+            </div>
+          ))}
         </div>
       </div>
     </div>

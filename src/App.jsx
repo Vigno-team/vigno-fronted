@@ -76,11 +76,10 @@ function App() {
           estaciones={data.estaciones}
           datosTemperatura={data.seriesTemperaturas}
         />
-        //valores que se cambiaran segun bd
         <HarvestProgressBar
-          avance={78}
+          avance={58}
           diasEstimados={12}
-          temperaturas={[30, 37, 32.5, 35, 31]}
+          temperaturas={[38, 37, 37.5, 38, 41]}
         />
       </main>
     </div>

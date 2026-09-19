@@ -31,7 +31,7 @@
 
 .vigno-barra-avance {
   height: 100%;
-  background-color: #38bdf8;
+  background-color: #D6981D;
   border-radius: 20px;
   transition: width 0.3s ease;
 }
@@ -66,11 +66,11 @@
 }
 
 .vigno-panel-estado.normal {
-  background-color: #064e3b;
+  background-color: #14532D;
 }
 
 .vigno-panel-estado.alerta {
-  background-color: #7f1d1d;
+  background-color: #8C1D18;
 }
 
 .vigno-texto-estado {
@@ -90,7 +90,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background-color: #0b132b;
+  background-color: #592400;
   border: 1px solid white;
   color: white;
   display: flex;
