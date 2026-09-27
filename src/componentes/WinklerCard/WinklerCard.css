@@ -1,0 +1,86 @@
+.winkler-card {
+  background-color: #111a2e;
+  border: 1px solid #1f2d47;
+  border-radius: 12px;
+  padding: 1.25rem;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  max-width: 420px;   
+  width: 100%;           
+  margin-top: 1.5rem;     
+}
+
+.winkler-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.winkler-badge {
+  font-size: 0.75rem;
+  color: #38bdf8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.winkler-card-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.winkler-card-body {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.winkler-metric {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.winkler-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #f59e0b; 
+}
+
+.winkler-unit {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.winkler-classification {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.winkler-region {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.winkler-desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.winkler-card-footer {
+  border-top: 1px solid #1f2d47;
+  padding-top: 0.5rem;
+}
+
+.winkler-card-footer small {
+  color: #64748b;
+  font-size: 0.75rem;
+}

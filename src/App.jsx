@@ -3,6 +3,7 @@ import { useState } from "react";
 import BarraLateral from "./componentes/BarraLateral/BarraLateral";
 import HarvestProgressBar from "./componentes/HarvestProgressBar/HarvestProgressBar";
 import TemperatureChart from "./componentes/TemperatureChart";
+import { WinklerCard } from "./componentes/WinklerCard/WinklerCard";
 import { useClimateData } from "./hooks/useClimateData";
 
 import "./App.css";
@@ -27,9 +28,7 @@ function App() {
               : "contenido contenido-contraido"
           }
         >
-          <div className="estado-datos">
-            Cargando datos meteorológicos...
-          </div>
+          <div className="estado-datos">Cargando datos meteorológicos...</div>
         </main>
       </div>
     );
@@ -50,9 +49,7 @@ function App() {
               : "contenido contenido-contraido"
           }
         >
-          <div className="estado-datos">
-            No se pudieron cargar los datos.
-          </div>
+          <div className="estado-datos">No se pudieron cargar los datos.</div>
         </main>
       </div>
     );
@@ -81,6 +78,7 @@ function App() {
           diasEstimados={12}
           temperaturas={[38, 37, 37.5, 38, 41]}
         />
+        <WinklerCard seriesTemperaturas={data.seriesTemperaturas} />
       </main>
     </div>
   );
