@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-
 import { AxisBottom, AxisLeft } from "@visx/axis";
 import { GridRows } from "@visx/grid";
 import { ParentSize } from "@visx/responsive";
 import { scaleLinear, scalePoint } from "@visx/scale";
 import { LinePath } from "@visx/shape";
-
 import {
   ArrowLeftRight,
   CalendarDays,
@@ -17,13 +15,9 @@ import {
   Thermometer,
   ThermometerSun,
 } from "lucide-react";
-
 import "./TemperatureChart.css";
 
-
-// ======================================================
-// CONFIGURACIÓN GENERAL
-// ======================================================
+// Configuración general
 
 const MESES = [
   "",
@@ -72,69 +66,51 @@ const TEMAS_GRAFICO = {
   },
 };
 
-// Colores utilizados para los períodos comparados.
 const COLOR_A = "#38bdf8";
+
 const COLOR_B = "#34d399";
 
+// Funciones auxiliares
 
-// ======================================================
-// FUNCIONES AUXILIARES
-// ======================================================
-
-// Convierte un valor válido a número.
 const aNumero = (valor) => {
   if (valor === null || valor === undefined || valor === "") {
     return null;
   }
-
   const numero = Number(valor);
   return Number.isFinite(numero) ? numero : null;
 };
 
-// Calcula el promedio de una lista.
 const promedio = (valores) => {
   if (!valores.length) return null;
-
   return (
     valores.reduce((suma, valor) => suma + valor, 0) /
     valores.length
   );
 };
 
-// Formatea una temperatura.
 const formatoTemperatura = (valor) =>
   valor === null
     ? "—"
     : `${valor.toFixed(1).replace(".", ",")} °C`;
 
-// Convierte 2025-12-31 en 31 diciembre 2025.
 const fechaLegible = (fecha) => {
   if (!fecha) return "";
-
   const [anio, mes, dia] = fecha.split("-");
-
   return `${dia} ${MESES[Number(mes)].toLowerCase()} ${anio}`;
 };
 
-// Convierte 2025-12 en Diciembre 2025.
 const periodoMesLegible = (periodo) => {
   if (!periodo) return "";
-
   const [anio, mes] = periodo.split("-");
-
   return `${MESES[Number(mes)]} ${anio}`;
 };
 
-// Obtiene la cantidad de días de un mes.
 const diasDelPeriodo = (periodo) => {
   if (!periodo) return 0;
-
   const [anio, mes] = periodo.split("-").map(Number);
-
   return new Date(anio, mes, 0).getDate();
 };
 
-// Busca una opción secundaria distinta de la principal.
 const elegirAlternativa = (opciones, principal, actual) => {
   if (
     actual &&
@@ -143,24 +119,18 @@ const elegirAlternativa = (opciones, principal, actual) => {
   ) {
     return actual;
   }
-
   const indice = opciones.indexOf(principal);
-
   if (indice > 0) {
     return opciones[indice - 1];
   }
-
   return opciones.find((opcion) => opcion !== principal) ?? "";
 };
 
-// Guarda preferencias aunque se recargue la página.
 const usePreferencia = (clave, valorInicial) => {
   const [valor, setValor] = useState(() => {
     if (typeof window === "undefined") return valorInicial;
-
     try {
       const guardado = localStorage.getItem(clave);
-
       return guardado === null
         ? valorInicial
         : JSON.parse(guardado);
@@ -168,22 +138,16 @@ const usePreferencia = (clave, valorInicial) => {
       return valorInicial;
     }
   });
-
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem(clave, JSON.stringify(valor));
     }
   }, [clave, valor]);
-
   return [valor, setValor];
 };
 
+// Preparación de datos
 
-// ======================================================
-// PREPARACIÓN DE SERIES
-// ======================================================
-
-// Crea las 24 temperaturas horarias de un día.
 const crearDatosDia = (registros, fecha, categorias) => {
   const mapa = new Map(
     registros
@@ -193,11 +157,9 @@ const crearDatosDia = (registros, fecha, categorias) => {
         dato,
       ])
   );
-
   return categorias.map((etiqueta) => {
     const hora = etiqueta.substring(0, 2);
     const registro = mapa.get(hora);
-
     return {
       etiqueta,
       valor: aNumero(registro?.temperatura),
@@ -205,7 +167,6 @@ const crearDatosDia = (registros, fecha, categorias) => {
   });
 };
 
-// Crea la temperatura media diaria de un mes.
 const crearDatosMes = (registros, periodo, categorias) => {
   const mapa = new Map(
     registros
@@ -217,35 +178,28 @@ const crearDatosMes = (registros, periodo, categorias) => {
         dato,
       ])
   );
-
   return categorias.map((dia) => ({
     etiqueta: dia,
     valor: aNumero(mapa.get(dia)?.mediaDiaria),
   }));
 };
 
-// Calcula la temperatura media de cada mes de un año.
 const crearDatosAnio = (registros, anio) =>
   MESES_CORTOS.slice(1).map((etiqueta, indice) => {
     const mes = String(indice + 1).padStart(2, "0");
-
     const valores = registros
       .filter((dato) =>
         dato.fecha.startsWith(`${anio}-${mes}-`)
       )
       .map((dato) => aNumero(dato.mediaDiaria))
       .filter(Number.isFinite);
-
     return {
       etiqueta,
       valor: promedio(valores),
     };
   });
 
-
-// ======================================================
-// GRÁFICO VISX
-// ======================================================
+// Gráfico
 
 function GraficoLinea({
   series,
@@ -257,98 +211,73 @@ function GraficoLinea({
   formatoCategoria,
 }) {
   const [tooltip, setTooltip] = useState(null);
-
-  // Oculta el tooltip cuando cambian las series.
   useEffect(() => {
     setTooltip(null);
   }, [series]);
-
   return (
     <div className="grafico-visx">
       <ParentSize debounceTime={80}>
         {({ width, height }) => {
           if (width < 50 || height < 50) return null;
-
           const margen = {
             top: 25,
             right: 22,
             bottom: 42,
             left: 52,
           };
-
           const ancho =
             width - margen.left - margen.right;
-
           const alto =
             height - margen.top - margen.bottom;
-
           const escalaX = scalePoint({
             domain: categorias,
             range: [0, ancho],
             padding: 0.35,
           });
-
           const escalaY = scaleLinear({
             domain: [minimoY, maximoY],
             range: [alto, 0],
             nice: true,
           });
-
-          // Busca la posición del eje X más cercana.
           const buscarCategoria = (x) =>
             categorias.reduce((cercana, etiqueta) => {
               const posicion = escalaX(etiqueta);
-
               if (posicion === undefined) return cercana;
-
               const distancia = Math.abs(posicion - x);
-
               if (!cercana || distancia < cercana.distancia) {
                 return { etiqueta, distancia };
               }
-
               return cercana;
             }, null)?.etiqueta;
-
-          // Muestra valores de ambas líneas.
           const mostrarTooltip = (evento) => {
             const rect =
               evento.currentTarget.getBoundingClientRect();
-
             const x = evento.clientX - rect.left;
             const etiqueta = buscarCategoria(x);
-
             if (!etiqueta) return;
-
             const items = series
               .map((serie) => {
                 const dato = serie.datos.find(
                   (item) => item.etiqueta === etiqueta
                 );
-
                 return dato && Number.isFinite(dato.valor)
                   ? { serie, dato }
                   : null;
               })
               .filter(Boolean);
-
             if (!items.length) {
               setTooltip(null);
               return;
             }
-
             const posicionX = escalaX(etiqueta);
-
             const posicionY = Math.min(
               ...items.map(({ dato }) =>
                 escalaY(dato.valor)
               )
             );
-
             setTooltip({
               etiqueta,
               items,
-
               left: Math.min(
                 width - 100,
                 Math.max(
@@ -356,14 +285,12 @@ function GraficoLinea({
                   margen.left + posicionX
                 )
               ),
-
               top: Math.max(
                 20,
                 margen.top + posicionY
               ),
             });
           };
-
           return (
             <>
               <svg
@@ -375,15 +302,14 @@ function GraficoLinea({
                 <g
                   transform={`translate(${margen.left}, ${margen.top})`}
                 >
-                  {/* Líneas horizontales de referencia */}
+                  {/* Grilla */}
                   <GridRows
                     scale={escalaY}
                     width={ancho}
                     numTicks={5}
                     stroke={tema.grilla}
                   />
-
-                  {/* Líneas de los períodos */}
+                  {/* Series */}
                   {series.map((serie) => (
                     <LinePath
                       key={serie.nombre}
@@ -403,8 +329,7 @@ function GraficoLinea({
                       strokeLinejoin="round"
                     />
                   ))}
-
-                  {/* Puntos de cada serie */}
+                  {/* Puntos */}
                   {series.flatMap((serie) =>
                     serie.datos
                       .filter((dato) =>
@@ -422,7 +347,6 @@ function GraficoLinea({
                         />
                       ))
                   )}
-
                   {/* Eje vertical */}
                   <AxisLeft
                     scale={escalaY}
@@ -438,7 +362,6 @@ function GraficoLinea({
                       dy: "0.33em",
                     })}
                   />
-
                   {/* Eje horizontal */}
                   <AxisBottom
                     top={alto}
@@ -453,8 +376,7 @@ function GraficoLinea({
                       dy: 8,
                     })}
                   />
-
-                  {/* Área invisible para interacción */}
+                  {/* Área interactiva */}
                   <rect
                     width={ancho}
                     height={alto}
@@ -465,7 +387,6 @@ function GraficoLinea({
                   />
                 </g>
               </svg>
-
               {/* Tooltip */}
               {tooltip && (
                 <div
@@ -478,7 +399,6 @@ function GraficoLinea({
                   <strong className="tooltip-titulo">
                     {formatoCategoria(tooltip.etiqueta)}
                   </strong>
-
                   {tooltip.items.map(({ serie, dato }) => (
                     <div
                       className="tooltip-serie"
@@ -489,29 +409,23 @@ function GraficoLinea({
                           className="punto-tooltip"
                           style={{ background: serie.color }}
                         />
-
                         <span>{serie.nombre}</span>
                       </div>
-
                       <strong>
                         {formatoTemperatura(dato.valor)}
                       </strong>
                     </div>
                   ))}
-
                   {tooltip.items.length === 2 && (
                     <div className="tooltip-diferencia">
                       <span>Diferencia A − B</span>
-
                       <strong>
                         {(() => {
                           const diferencia =
                             tooltip.items[0].dato.valor -
                             tooltip.items[1].dato.valor;
-
                           const signo =
                             diferencia > 0 ? "+" : "";
-
                           return `${signo}${diferencia
                             .toFixed(1)
                             .replace(".", ",")} °C`;
@@ -529,10 +443,7 @@ function GraficoLinea({
   );
 }
 
-
-// ======================================================
-// COMPONENTE PRINCIPAL
-// ======================================================
+// Componente principal
 
 function TemperatureChart({
   estaciones = [],
@@ -540,73 +451,53 @@ function TemperatureChart({
   datosHorarios = [],
   temaOscuro = true,
 }) {
-  // Preferencias guardadas.
   const [vista, setVista] =
     usePreferencia("grafico-vista", "dia");
-
   const [comparar, setComparar] =
     usePreferencia("grafico-comparar", false);
-
-  // Estación actual.
   const [
     estacionSeleccionada,
     setEstacionSeleccionada,
   ] = useState("");
-
-  // Períodos principales.
   const [
     fechaSeleccionada,
     setFechaSeleccionada,
   ] = useState("");
-
   const [
     periodoMesSeleccionado,
     setPeriodoMesSeleccionado,
   ] = useState("");
-
   const [
     anioSeleccionado,
     setAnioSeleccionado,
   ] = useState("");
-
-  // Períodos de comparación.
   const [
     fechaComparacion,
     setFechaComparacion,
   ] = useState("");
-
   const [
     periodoMesComparacion,
     setPeriodoMesComparacion,
   ] = useState("");
-
   const [
     anioComparacion,
     setAnioComparacion,
   ] = useState("");
-
   const tema =
     TEMAS_GRAFICO[
       temaOscuro ? "oscuro" : "claro"
     ];
 
-
-  // ====================================================
-  // ESTACIÓN
-  // ====================================================
-
-  // Selecciona automáticamente una estación válida.
+// Datos de la estación
   useEffect(() => {
     const existe = estaciones.some(
       (estacion) =>
         estacion.id === estacionSeleccionada
     );
-
     if (!existe && estaciones.length) {
       setEstacionSeleccionada(estaciones[0].id);
     }
   }, [estaciones, estacionSeleccionada]);
-
   const estacion = useMemo(
     () =>
       estaciones.find(
@@ -615,8 +506,6 @@ function TemperatureChart({
       ) ?? null,
     [estaciones, estacionSeleccionada]
   );
-
-  // Datos diarios de la estación.
   const diariosEstacion = useMemo(
     () =>
       datosTemperatura
@@ -629,8 +518,6 @@ function TemperatureChart({
         ),
     [datosTemperatura, estacionSeleccionada]
   );
-
-  // Datos horarios de la estación.
   const horariosEstacion = useMemo(
     () =>
       datosHorarios
@@ -646,11 +533,7 @@ function TemperatureChart({
     [datosHorarios, estacionSeleccionada]
   );
 
-
-  // ====================================================
-  // PERÍODOS DISPONIBLES
-  // ====================================================
-
+// Períodos disponibles
   const fechasDisponibles = useMemo(
     () =>
       [
@@ -662,7 +545,6 @@ function TemperatureChart({
       ].sort(),
     [horariosEstacion]
   );
-
   const periodosMensuales = useMemo(
     () =>
       [
@@ -675,7 +557,6 @@ function TemperatureChart({
       ].sort(),
     [diariosEstacion]
   );
-
   const aniosDisponibles = useMemo(
     () =>
       [
@@ -689,17 +570,12 @@ function TemperatureChart({
     [diariosEstacion]
   );
 
-
-  // ====================================================
-  // SELECCIÓN AUTOMÁTICA
-  // ====================================================
-
+// Selección inicial
   useEffect(() => {
     if (!fechasDisponibles.length) {
       setFechaSeleccionada("");
       return;
     }
-
     if (!fechasDisponibles.includes(fechaSeleccionada)) {
       setFechaSeleccionada(
         fechasDisponibles[
@@ -708,13 +584,11 @@ function TemperatureChart({
       );
     }
   }, [fechasDisponibles, fechaSeleccionada]);
-
   useEffect(() => {
     if (!periodosMensuales.length) {
       setPeriodoMesSeleccionado("");
       return;
     }
-
     if (
       !periodosMensuales.includes(
         periodoMesSeleccionado
@@ -730,13 +604,11 @@ function TemperatureChart({
     periodosMensuales,
     periodoMesSeleccionado,
   ]);
-
   useEffect(() => {
     if (!aniosDisponibles.length) {
       setAnioSeleccionado("");
       return;
     }
-
     if (!aniosDisponibles.includes(anioSeleccionado)) {
       setAnioSeleccionado(
         aniosDisponibles[
@@ -746,14 +618,9 @@ function TemperatureChart({
     }
   }, [aniosDisponibles, anioSeleccionado]);
 
-
-  // ====================================================
-  // SEGUNDO PERÍODO
-  // ====================================================
-
+// Período de comparación
   useEffect(() => {
     if (!comparar || vista !== "dia") return;
-
     setFechaComparacion((actual) =>
       elegirAlternativa(
         fechasDisponibles,
@@ -767,10 +634,8 @@ function TemperatureChart({
     fechasDisponibles,
     fechaSeleccionada,
   ]);
-
   useEffect(() => {
     if (!comparar || vista !== "mes") return;
-
     setPeriodoMesComparacion((actual) =>
       elegirAlternativa(
         periodosMensuales,
@@ -784,10 +649,8 @@ function TemperatureChart({
     periodosMensuales,
     periodoMesSeleccionado,
   ]);
-
   useEffect(() => {
     if (!comparar || vista !== "anio") return;
-
     setAnioComparacion((actual) =>
       elegirAlternativa(
         aniosDisponibles,
@@ -802,43 +665,29 @@ function TemperatureChart({
     anioSeleccionado,
   ]);
 
-
-  // ====================================================
-  // ¿SE PUEDE COMPARAR?
-  // ====================================================
-
+// Validación de comparación
   const puedeComparar =
     vista === "dia"
       ? fechasDisponibles.length > 1
       : vista === "mes"
         ? periodosMensuales.length > 1
         : aniosDisponibles.length > 1;
-
-  // Si una vista no tiene dos períodos, desactiva comparación.
   useEffect(() => {
     if (comparar && !puedeComparar) {
       setComparar(false);
     }
   }, [comparar, puedeComparar, setComparar]);
 
-
-  // ====================================================
-  // CONFIGURACIÓN DEL GRÁFICO
-  // ====================================================
-
+// Datos del gráfico
   const configuracion = useMemo(() => {
 
-    // --------------------------------------------------
-    // DÍA
-    // --------------------------------------------------
-
+// Vista diaria
     if (vista === "dia") {
       const categorias = Array.from(
         { length: 24 },
         (_, hora) =>
           `${String(hora).padStart(2, "0")}:00`
       );
-
       const series = [
         {
           nombre: fechaLegible(fechaSeleccionada),
@@ -850,7 +699,6 @@ function TemperatureChart({
           ),
         },
       ];
-
       if (comparar && fechaComparacion) {
         series.push({
           nombre: fechaLegible(fechaComparacion),
@@ -862,27 +710,20 @@ function TemperatureChart({
           ),
         });
       }
-
       return {
         categorias,
         series,
-
         ticksX: categorias.filter(
           (_, indice) =>
             indice % 3 === 0 ||
             indice === 23
         ),
-
         formatoCategoria: (etiqueta) =>
           etiqueta,
       };
     }
 
-
-    // --------------------------------------------------
-    // MES
-    // --------------------------------------------------
-
+// Vista mensual
     if (vista === "mes") {
       const periodos = [
         periodoMesSeleccionado,
@@ -890,18 +731,15 @@ function TemperatureChart({
           ? [periodoMesComparacion]
           : []),
       ].filter(Boolean);
-
       const cantidadDias = Math.max(
         ...periodos.map(diasDelPeriodo),
         1
       );
-
       const categorias = Array.from(
         { length: cantidadDias },
         (_, indice) =>
           String(indice + 1).padStart(2, "0")
       );
-
       const series = [
         {
           nombre: periodoMesLegible(
@@ -915,7 +753,6 @@ function TemperatureChart({
           ),
         },
       ];
-
       if (
         comparar &&
         periodoMesComparacion
@@ -932,7 +769,6 @@ function TemperatureChart({
           ),
         });
       }
-
       const posiblesTicks = [
         "01",
         "05",
@@ -942,11 +778,9 @@ function TemperatureChart({
         "25",
         String(cantidadDias).padStart(2, "0"),
       ];
-
       return {
         categorias,
         series,
-
         ticksX: [
           ...new Set(
             posiblesTicks.filter((dia) =>
@@ -954,20 +788,14 @@ function TemperatureChart({
             )
           ),
         ],
-
         formatoCategoria: (etiqueta) =>
           `Día ${Number(etiqueta)}`,
       };
     }
 
-
-    // --------------------------------------------------
-    // AÑO
-    // --------------------------------------------------
-
+// Vista anual
     const categorias =
       MESES_CORTOS.slice(1);
-
     const series = [
       {
         nombre: anioSeleccionado,
@@ -978,7 +806,6 @@ function TemperatureChart({
         ),
       },
     ];
-
     if (comparar && anioComparacion) {
       series.push({
         nombre: anioComparacion,
@@ -989,7 +816,6 @@ function TemperatureChart({
         ),
       });
     }
-
     return {
       categorias,
       series,
@@ -997,7 +823,6 @@ function TemperatureChart({
       formatoCategoria: (etiqueta) =>
         etiqueta,
     };
-
   }, [
     vista,
     comparar,
@@ -1011,14 +836,8 @@ function TemperatureChart({
     anioComparacion,
   ]);
 
-
-  // ====================================================
-  // RESUMEN DEL PERÍODO PRINCIPAL
-  // ====================================================
-
+// Resumen del período
   const resumen = useMemo(() => {
-
-    // Día.
     if (vista === "dia") {
       const valores = horariosEstacion
         .filter(
@@ -1030,7 +849,6 @@ function TemperatureChart({
             aNumero(dato.temperatura)
         )
         .filter(Number.isFinite);
-
       if (!valores.length) {
         return {
           minima: null,
@@ -1038,15 +856,12 @@ function TemperatureChart({
           maxima: null,
         };
       }
-
       return {
         minima: Math.min(...valores),
         media: promedio(valores),
         maxima: Math.max(...valores),
       };
     }
-
-    // Mes o año.
     const registros = diariosEstacion.filter(
       (dato) =>
         vista === "mes"
@@ -1057,7 +872,6 @@ function TemperatureChart({
               `${anioSeleccionado}-`
             )
     );
-
     if (!registros.length) {
       return {
         minima: null,
@@ -1065,28 +879,22 @@ function TemperatureChart({
         maxima: null,
       };
     }
-
     const minimas = registros
       .map((dato) => aNumero(dato.minima))
       .filter(Number.isFinite);
-
     const medias = registros
       .map((dato) => aNumero(dato.mediaDiaria))
       .filter(Number.isFinite);
-
     const maximas = registros
       .map((dato) => aNumero(dato.maxima))
       .filter(Number.isFinite);
-
     return {
       minima:
         minimas.length
           ? Math.min(...minimas)
           : null,
-
       media:
         promedio(medias),
-
       maxima:
         maximas.length
           ? Math.max(...maximas)
@@ -1101,11 +909,7 @@ function TemperatureChart({
     anioSeleccionado,
   ]);
 
-
-  // ====================================================
-  // ESCALA VERTICAL
-  // ====================================================
-
+// Escala vertical
   const valores = useMemo(
     () =>
       configuracion.series.flatMap(
@@ -1116,14 +920,12 @@ function TemperatureChart({
       ),
     [configuracion]
   );
-
   const minimoY =
     valores.length
       ? Math.floor(
           (Math.min(...valores) - 3) / 5
         ) * 5
       : 0;
-
   const maximoY =
     valores.length
       ? Math.max(
@@ -1133,15 +935,10 @@ function TemperatureChart({
           ) * 5
         )
       : 40;
-
   const hayDatos =
     valores.length > 0;
 
-
-  // ====================================================
-  // INTERFAZ
-  // ====================================================
-
+// Interfaz
   return (
     <section
       className={`panel-temperatura ${
@@ -1150,18 +947,14 @@ function TemperatureChart({
           : "tema-claro"
       }`}
     >
-
       {/* Cabecera */}
       <header className="cabecera-temperatura">
-
         <div className="titulo-temperatura">
           <div className="icono-principal">
             <ChartLine size={20} />
           </div>
-
           <div>
             <h2>Evolución térmica</h2>
-
             {estacion && (
               <span className="ubicacion-temperatura">
                 <MapPin size={12} />
@@ -1170,14 +963,10 @@ function TemperatureChart({
             )}
           </div>
         </div>
-
-
         <div className="acciones-temperatura">
-
-          {/* Estación */}
+          {/* Selector de estación */}
           <div className="selector-estacion">
             <MapPin size={15} />
-
             <select
               value={estacionSeleccionada}
               onChange={(evento) =>
@@ -1199,14 +988,8 @@ function TemperatureChart({
           </div>
         </div>
       </header>
-
-
-      {/* =================================================
-          BARRA DE CONTROLES
-          ================================================= */}
-
+      {/* Controles */}
       <div className="barra-grafico">
-
         {/* Día / Mes / Año */}
         <nav
           className="selector-vista"
@@ -1238,9 +1021,7 @@ function TemperatureChart({
             )
           )}
         </nav>
-
-
-        {/* Activar comparación */}
+        {/* Comparación */}
         <button
           type="button"
           className={
@@ -1262,20 +1043,13 @@ function TemperatureChart({
           }
         >
           <ArrowLeftRight size={15} />
-
           <span>
             Comparar
           </span>
         </button>
-
-
-        {/* =================================================
-            FILTROS
-            ================================================= */}
-
+        {/* Filtros */}
         <div className="filtros-periodo">
-
-          {/* ------------------- DÍA ------------------- */}
+          {/* Vista diaria */}
           {vista === "dia" && (
             <>
               <label className="grupo-periodo">
@@ -1283,10 +1057,8 @@ function TemperatureChart({
                   {comparar && (
                     <span className="punto-serie serie-a" />
                   )}
-
                   {comparar ? "Día A" : "Fecha"}
                 </span>
-
                 <input
                   type="date"
                   value={fechaSeleccionada}
@@ -1303,15 +1075,12 @@ function TemperatureChart({
                   }
                 />
               </label>
-
-
               {comparar && (
   <label className="grupo-periodo">
     <span className="etiqueta-filtro">
       <span className="punto-serie serie-b" />
       Día B
     </span>
-
     <input
       type="date"
       value={fechaComparacion}
@@ -1323,8 +1092,6 @@ function TemperatureChart({
       }
       onChange={(evento) => {
         const nuevaFecha = evento.target.value;
-
-        // Evita comparar el mismo día.
         if (
           nuevaFecha !== fechaSeleccionada &&
           fechasDisponibles.includes(nuevaFecha)
@@ -1337,9 +1104,7 @@ function TemperatureChart({
 )}
             </>
           )}
-
-
-          {/* ------------------- MES ------------------- */}
+          {/* Vista mensual */}
           {vista === "mes" && (
             <>
               <label className="grupo-periodo">
@@ -1347,10 +1112,8 @@ function TemperatureChart({
                   {comparar && (
                     <span className="punto-serie serie-a" />
                   )}
-
                   {comparar ? "Mes A" : "Mes"}
                 </span>
-
                 <select
                   value={periodoMesSeleccionado}
                   onChange={(evento) =>
@@ -1371,15 +1134,12 @@ function TemperatureChart({
                   )}
                 </select>
               </label>
-
-
               {comparar && (
                 <label className="grupo-periodo">
                   <span className="etiqueta-filtro">
                     <span className="punto-serie serie-b" />
                     Mes B
                   </span>
-
                   <select
                     value={periodoMesComparacion}
                     onChange={(evento) =>
@@ -1407,9 +1167,7 @@ function TemperatureChart({
               )}
             </>
           )}
-
-
-          {/* ------------------- AÑO ------------------- */}
+          {/* Vista anual */}
           {vista === "anio" && (
             <>
               <label className="grupo-periodo">
@@ -1417,10 +1175,8 @@ function TemperatureChart({
                   {comparar && (
                     <span className="punto-serie serie-a" />
                   )}
-
                   {comparar ? "Año A" : "Año"}
                 </span>
-
                 <select
                   value={anioSeleccionado}
                   onChange={(evento) =>
@@ -1441,15 +1197,12 @@ function TemperatureChart({
                   )}
                 </select>
               </label>
-
-
               {comparar && (
                 <label className="grupo-periodo">
                   <span className="etiqueta-filtro">
                     <span className="punto-serie serie-b" />
                     Año B
                   </span>
-
                   <select
                     value={anioComparacion}
                     onChange={(evento) =>
@@ -1477,61 +1230,40 @@ function TemperatureChart({
               )}
             </>
           )}
-
         </div>
-
-
-        {/* =================================================
-            RESUMEN NORMAL
-            ================================================= */}
-
+        {/* Resumen */}
         {!comparar && (
           <div className="resumen-temperatura">
-
             <div>
               <Snowflake size={13} />
-
               <span>Mínima</span>
-
               <strong>
                 {formatoTemperatura(
                   resumen.minima
                 )}
               </strong>
             </div>
-
             <div>
               <Thermometer size={13} />
-
               <span>Media</span>
-
               <strong>
                 {formatoTemperatura(
                   resumen.media
                 )}
               </strong>
             </div>
-
             <div>
               <ThermometerSun size={13} />
-
               <span>Máxima</span>
-
               <strong>
                 {formatoTemperatura(
                   resumen.maxima
                 )}
               </strong>
             </div>
-
           </div>
         )}
-
-
-        {/* =================================================
-            LEYENDA CUANDO SE COMPARAN DOS PERÍODOS
-            ================================================= */}
-
+        {/* Leyenda de comparación */}
         {comparar && (
           <div className="leyenda-comparacion">
             {configuracion.series.map(
@@ -1547,7 +1279,6 @@ function TemperatureChart({
                         : "linea-leyenda serie-b"
                     }
                   />
-
                   <span>
                     {serie.nombre}
                   </span>
@@ -1556,14 +1287,8 @@ function TemperatureChart({
             )}
           </div>
         )}
-
       </div>
-
-
-      {/* =================================================
-          GRÁFICO
-          ================================================= */}
-
+      {/* GRÁFICO */}
       <div className="area-temperatura">
         {hayDatos ? (
           <GraficoLinea
@@ -1580,18 +1305,15 @@ function TemperatureChart({
         ) : (
           <div className="sin-datos">
             <Thermometer size={28} />
-
             <strong>
               Sin registros disponibles
             </strong>
-
             <span>
               No existen datos para el período seleccionado.
             </span>
           </div>
         )}
       </div>
-
     </section>
   );
 }

@@ -10,60 +10,42 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
-
 import "./BarraLateral.css";
-
-
-// ======================================================
 // OPCIONES DEL MENÚ
-// ======================================================
-
 const opciones = [
   {
     nombre: "Resumen",
     icono: Home,
   },
-
   {
     nombre: "Clima en tiempo real",
     icono: CloudSun,
   },
-
   {
     nombre: "Históricos",
     icono: Clock3,
   },
-
   {
     nombre: "Índices vitivinícolas",
     icono: Activity,
   },
-
   {
     nombre: "Alertas",
     icono: TriangleAlert,
   },
-
   {
     nombre: "Reportes",
     icono: FileText,
   },
-
   {
     nombre: "Configuración",
     icono: Settings,
   },
 ];
-
-
-// ======================================================
 // COMPONENTE
-// ======================================================
-
 function BarraLateral({
   expandida,
   cambiarEstado,
-
   opcionActiva,
   cambiarOpcion,
 
@@ -78,13 +60,8 @@ function BarraLateral({
           : "contraida"
       }`}
     >
-
-      {/* =================================================
-          ENCABEZADO
-          ================================================= */}
-
+      {/* ENCABEZADO */}
       <div className="encabezado-barra">
-
         <button
           type="button"
           className="boton-menu"
@@ -109,98 +86,72 @@ function BarraLateral({
             strokeWidth={2}
           />
         </button>
-
       </div>
-
-
-      {/* =================================================
-          OPCIONES
-          ================================================= */}
+      {/*OPCIONES*/}
 
       <nav className="menu-navegacion">
-
         {opciones.map(
           (opcion) => {
-
             const Icono =
               opcion.icono;
-
             const activa =
               opcionActiva ===
               opcion.nombre;
-
             return (
               <button
                 key={
                   opcion.nombre
                 }
                 type="button"
-
                 className={`opcion-menu ${
                   activa
                     ? "activa"
                     : ""
                 }`}
-
                 onClick={() =>
                   cambiarOpcion(
                     opcion.nombre
                   )
                 }
-
                 title={
                   !expandida
                     ? opcion.nombre
                     : ""
                 }
-
                 aria-current={
                   activa
                     ? "page"
                     : undefined
                 }
               >
-
                 <Icono
                   className="icono-opcion"
                   size={23}
                   strokeWidth={2}
                 />
-
                 {expandida && (
                   <span className="texto-opcion">
                     {opcion.nombre}
                   </span>
                 )}
-
               </button>
             );
           }
         )}
-
       </nav>
-
-
-      {/* =================================================
-          BOTÓN DE TEMA
-          ================================================= */}
-
+      {/* BOTÓN DE TEMA */}
       <div className="pie-barra">
-
         <button
           type="button"
           className="boton-tema"
-
           onClick={
             cambiarTema
           }
-
           aria-label={
             temaOscuro
               ? "Cambiar a tema claro"
               : "Cambiar a tema oscuro"
           }
-
           title={
             !expandida
               ? temaOscuro
@@ -209,9 +160,7 @@ function BarraLateral({
               : ""
           }
         >
-
           <div className="info-tema">
-
             {temaOscuro ? (
               <Moon
                 size={21}
@@ -223,8 +172,6 @@ function BarraLateral({
                 strokeWidth={2}
               />
             )}
-
-
             {expandida && (
               <span className="texto-tema">
                 {temaOscuro
@@ -232,10 +179,7 @@ function BarraLateral({
                   : "Tema claro"}
               </span>
             )}
-
           </div>
-
-
           {expandida && (
             <span
               className={`switch-tema ${
