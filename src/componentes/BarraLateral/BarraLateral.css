@@ -1,26 +1,41 @@
 .barra-lateral {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  z-index: 1000;
+
   height: 100vh;
-  background-color: #000000;
-  color: white;
 
   display: flex;
   flex-direction: column;
 
-  transition: width 0.3s ease;
+  color: #ffffff;
 
-  position: fixed;
-  left: 0;
-  top: 0;
+  background:
+    linear-gradient(
+      180deg,
+      #050505 0%,
+      #09090b 100%
+    );
 
-  z-index: 1000;
+  border-right:
+    1px solid
+    rgba(255, 255, 255, 0.06);
+
+  box-shadow:
+    8px 0 28px
+    rgba(0, 0, 0, 0.18);
 
   overflow: hidden;
+
+  transition:
+    width 0.3s ease;
 }
 
 
-/* =========================
-   TAMAÑOS
-========================= */
+/* TAMAÑOS*/
 
 .barra-lateral.expandida {
   width: 280px;
@@ -31,174 +46,419 @@
 }
 
 
-/* =========================
-   ENCABEZADO
-========================= */
+/*ENCABEZADO*/
 
 .encabezado-barra {
   height: 80px;
+
+  flex-shrink: 0;
 
   display: flex;
   align-items: center;
 
   padding: 0 20px;
+
+  box-sizing: border-box;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.05);
 }
 
 
-/* =========================
-   BOTÓN MENÚ
-========================= */
+/* BOTÓN MENÚ */
 
 .boton-menu {
   width: 40px;
   height: 40px;
 
-  border: none;
-  background: transparent;
-
-  color: white;
+  flex-shrink: 0;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
+  padding: 0;
+
+  color: #e5e7eb;
+  background: transparent;
+
+  border:
+    1px solid transparent;
+
+  border-radius: 10px;
+
   cursor: pointer;
 
-  border-radius: 8px;
-
-  transition: background-color 0.2s ease;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
 }
 
 .boton-menu:hover {
-  background-color: #1f1f1f;
+  color: #ffffff;
+
+  background:
+    rgba(255, 255, 255, 0.08);
+}
+
+.boton-menu:active {
+  transform:
+    scale(0.95);
 }
 
 
-/* =========================
-   MENÚ
-========================= */
+/* NAVEGACIÓN*/
 
 .menu-navegacion {
+  flex: 1;
+
   display: flex;
   flex-direction: column;
 
-  gap: 8px;
+  gap: 6px;
 
-  padding: 20px 12px;
+  padding:
+    18px 12px;
+
+  box-sizing: border-box;
+
+  overflow-y: auto;
+
+  scrollbar-width: none;
+}
+
+.menu-navegacion::-webkit-scrollbar {
+  display: none;
 }
 
 
-/* =========================
-   OPCIONES
-========================= */
+/* OPCIONES DEL MENÚ */
 
 .opcion-menu {
+  position: relative;
+
   width: 100%;
-  min-height: 60px;
+  min-height: 54px;
 
-  border: none;
-  background: transparent;
-
-  color: white;
+  flex-shrink: 0;
 
   display: flex;
   align-items: center;
 
+  color: #aeb6c2;
+  background: transparent;
+
+  border:
+    1px solid transparent;
+
+  border-radius: 11px;
+
   cursor: pointer;
 
-  border-radius: 12px;
-
   transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease;
 }
 
 
-/* Barra expandida */
-
+/* Expandida */
 .expandida .opcion-menu {
-  justify-content: flex-start;
-  padding: 0 20px;
-  gap: 22px;
+  justify-content:
+    flex-start;
+
+  gap: 16px;
+
+  padding:
+    0 16px;
 }
 
 
-/* Barra contraída */
-
+/* Contraída */
 .contraida .opcion-menu {
-  justify-content: center;
+  justify-content:
+    center;
+
   padding: 0;
 }
 
 
-/* =========================
-   ICONOS
-========================= */
+/*ICONOS */
 
 .icono-opcion {
   flex-shrink: 0;
+
+  transition:
+    transform 0.18s ease;
+}
+
+.opcion-menu:hover
+.icono-opcion {
+  transform:
+    scale(1.06);
 }
 
 
-/* =========================
-   TEXTO
-========================= */
+/* TEXTO */
 
 .texto-opcion {
-  font-family: Georgia, "Times New Roman", serif;
+  overflow: hidden;
 
-  font-size: 17px;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  font-size: 14px;
+  font-weight: 500;
 
   white-space: nowrap;
+
+  animation:
+    aparecerTexto
+    0.2s ease;
 }
 
 
-/* =========================
-   OPCIÓN ACTIVA
-========================= */
+/* OPCIÓN ACTIVA*/
 
 .opcion-menu.activa {
-  background-color: #54218a;
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      135deg,
+      #54218a,
+      #6d28a8
+    );
+
+  border-color:
+    rgba(196, 137, 255, 0.16);
+
+  box-shadow:
+    0 5px 18px
+    rgba(84, 33, 138, 0.22);
+}
+
+
+/* Indicador lateral */
+.opcion-menu.activa::before {
+  content: "";
+
+  position: absolute;
+
+  left: -12px;
+
+  width: 3px;
+  height: 26px;
+
+  background: #b97aff;
+
+  border-radius:
+    0 999px 999px 0;
 }
 
 .opcion-menu.activa:hover {
-  background-color: #642aa2;
+  background:
+    linear-gradient(
+      135deg,
+      #60269b,
+      #7834b7
+    );
 }
 
 
-/* =========================
-   HOVER
-========================= */
+/*OPCIÓN NORMAL*/
 
 .opcion-menu:not(.activa):hover {
-  background-color: #1b1b1b;
+  color: #ffffff;
+
+  background:
+    rgba(255, 255, 255, 0.055);
+
+  border-color:
+    rgba(255, 255, 255, 0.045);
 }
 
 
-/* =========================
-   TRANSICIONES
-========================= */
+/*PARTE INFERIOR */
 
-.texto-opcion {
-  animation: aparecerTexto 0.2s ease;
+.pie-barra {
+  flex-shrink: 0;
+
+  padding: 12px;
+
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.06);
 }
+
+
+/*BOTÓN DE TEM */
+
+.boton-tema {
+  width: 100%;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+
+  color: #aeb6c2;
+  background: transparent;
+
+  border:
+    1px solid transparent;
+
+  border-radius: 11px;
+
+  cursor: pointer;
+
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+
+
+/* Expandida */
+.expandida .boton-tema {
+  justify-content:
+    space-between;
+
+  padding:
+    0 13px;
+}
+
+
+/* Contraída */
+.contraida .boton-tema {
+  justify-content:
+    center;
+
+  padding: 0;
+}
+
+
+.boton-tema:hover {
+  color: #ffffff;
+
+  background:
+    rgba(255, 255, 255, 0.055);
+
+  border-color:
+    rgba(255, 255, 255, 0.05);
+}
+
+
+/* INFORMACIÓN DEL TEMA */
+
+.info-tema {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  min-width: 0;
+}
+
+.texto-tema {
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  white-space: nowrap;
+
+  animation:
+    aparecerTexto
+    0.2s ease;
+}
+
+
+/*SWITCH VISUAL */
+
+.switch-tema {
+  position: relative;
+
+  width: 34px;
+  height: 18px;
+
+  flex-shrink: 0;
+
+  background: #3f3f46;
+
+  border-radius: 999px;
+
+  transition:
+    background 0.2s ease;
+}
+
+.switch-tema::after {
+  content: "";
+
+  position: absolute;
+
+  top: 2px;
+  left: 2px;
+
+  width: 14px;
+  height: 14px;
+
+  background: #ffffff;
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 1px 4px
+    rgba(0, 0, 0, 0.25);
+
+  transition:
+    transform 0.2s ease;
+}
+
+
+/* Tema claro seleccionado */
+.switch-tema.activo {
+  background: #6d28a8;
+}
+
+.switch-tema.activo::after {
+  transform:
+    translateX(16px);
+}
+
+
+/*ANIMACIÓN*/
 
 @keyframes aparecerTexto {
   from {
     opacity: 0;
-    transform: translateX(-5px);
+
+    transform:
+      translateX(-5px);
   }
 
   to {
     opacity: 1;
-    transform: translateX(0);
+
+    transform:
+      translateX(0);
   }
 }
 
 
-/* =========================
-   RESPONSIVE
-========================= */
+/*TABLET / TELÉFONO */
 
 @media (max-width: 768px) {
 
@@ -210,8 +470,29 @@
     width: 70px;
   }
 
-  .texto-opcion {
-    font-size: 15px;
+  .encabezado-barra {
+    height: 70px;
+
+    padding:
+      0 15px;
   }
 
+  .menu-navegacion {
+    padding:
+      14px 9px;
+  }
+  .opcion-menu {
+    min-height: 50px;
+  }
+  .expandida .opcion-menu {
+    gap: 14px;
+    padding:
+      0 14px;
+  }
+  .texto-opcion {
+    font-size: 13px;
+  }
+  .pie-barra {
+    padding: 9px;
+  }
 }
