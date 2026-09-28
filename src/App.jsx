@@ -7,58 +7,29 @@ import { useClimateData } from "./hooks/useClimateData";
 
 import "./App.css";
 
-
 function App() {
-  
-  const [
-    barraExpandida,
-    setBarraExpandida,
-  ] = useState(false);
+  const [barraExpandida, setBarraExpandida] = useState(false);
 
+  const [opcionActiva, setOpcionActiva] = useState("Históricos");
 
-  const [
-    opcionActiva,
-    setOpcionActiva,
-  ] = useState("Históricos");
-
-
-
-
-  const [
-    temaOscuro,
-    setTemaOscuro,
-  ] = useState(() => {
+  const [temaOscuro, setTemaOscuro] = useState(() => {
     try {
-      const guardado =
-        localStorage.getItem(
-          "tema-dashboard"
-        );
+      const guardado = localStorage.getItem("tema-dashboard");
 
-      return guardado === null
-        ? true
-        : JSON.parse(guardado);
+      return guardado === null ? true : JSON.parse(guardado);
     } catch {
       return true;
     }
   });
 
-
   // Guarda el tema seleccionado.
   useEffect(() => {
-    localStorage.setItem(
-      "tema-dashboard",
-      JSON.stringify(temaOscuro)
-    );
+    localStorage.setItem("tema-dashboard", JSON.stringify(temaOscuro));
   }, [temaOscuro]);
 
-  const {
-    data,
-    loading,
-  } = useClimateData();
-
+  const { data, loading } = useClimateData();
 
   const renderizarContenido = () => {
-
     // Cargando información.
     if (loading) {
       return (
@@ -67,7 +38,6 @@ function App() {
         </div>
       );
     }
-
 
     // Error.
     if (!data) {
@@ -78,124 +48,78 @@ function App() {
       );
     }
 
-
-  
-
     if (opcionActiva === "Históricos") {
       return (
         <TemperatureChart
-          estaciones={
-            data.estaciones
-          }
-          datosTemperatura={
-            data.seriesTemperaturas
-          }
-          datosHorarios={
-            data.seriesHorarias ?? []
-          }
-          temaOscuro={
-            temaOscuro
-          }
+          estaciones={data.estaciones}
+          datosTemperatura={data.seriesTemperaturas}
+          datosHorarios={data.seriesHorarias ?? []}
+          temaOscuro={temaOscuro}
         />
       );
     }
 
-
-
-
-    if (
-      opcionActiva ===
-      "Clima en tiempo real"
-    ) {
+    if (opcionActiva === "Clima en tiempo real") {
       return (
         <div className="pantalla-provisional">
-          <h2>
-            Clima en tiempo real
-          </h2>
+          <h2>Clima en tiempo real</h2>
 
-          <p>
-            Panel meteorológico en tiempo real.
-          </p>
+          <p>Panel meteorológico en tiempo real.</p>
         </div>
       );
     }
 
-
     // RESUMEN
-    
+
     if (opcionActiva === "Resumen") {
       return (
         <div className="pantalla-provisional">
-          <h2>
-            Resumen meteorológico
-          </h2>
+          <h2>Resumen meteorológico</h2>
 
-          <p>
-            Vista general de las estaciones meteorológicas.
-          </p>
+          <p>Vista general de las estaciones meteorológicas.</p>
         </div>
       );
     }
 
+    if (opcionActiva === "Índices vitivinícolas") {
+      return (
+        <div>
+          <WinklerCard
+          seriesTemperaturas={data.seriesTemperaturas}
+          estaciones={data.estaciones}
+          />
+        </div>
+      );
+    }
 
-    
     // OTRAS PANTALLAS
-   
 
     return (
       <div className="pantalla-provisional">
-        <h2>
-          {opcionActiva}
-        </h2>
+        <h2>{opcionActiva}</h2>
 
-        <p>
-          Esta sección será implementada próximamente.
-        </p>
+        <p>Esta sección será implementada próximamente.</p>
       </div>
     );
   };
 
-
   // INTERFAZ
- 
+
   return (
     <div
       className={`aplicacion ${
-        temaOscuro
-          ? "tema-pagina-oscuro"
-          : "tema-pagina-claro"
+        temaOscuro ? "tema-pagina-oscuro" : "tema-pagina-claro"
       }`}
     >
-
       {/* Barra lateral siempre negra */}
       <BarraLateral
-        expandida={
-          barraExpandida
-        }
-
-        cambiarEstado={
-          setBarraExpandida
-        }
-
-        opcionActiva={
-          opcionActiva
-        }
-
-        cambiarOpcion={
-          setOpcionActiva
-        }
-
-        temaOscuro={
-          temaOscuro
-        }
-
-        cambiarTema={() =>
-          setTemaOscuro(
-            (actual) => !actual
-          )
-        }
+        expandida={barraExpandida}
+        cambiarEstado={setBarraExpandida}
+        opcionActiva={opcionActiva}
+        cambiarOpcion={setOpcionActiva}
+        temaOscuro={temaOscuro}
+        cambiarTema={() => setTemaOscuro((actual) => !actual)}
       />
-
 
       {/* Área que cambia entre claro / oscuro */}
       <main
@@ -203,20 +127,10 @@ function App() {
           barraExpandida
             ? "contenido contenido-expandido"
             : "contenido contenido-contraido"
-        }
+        }`}
       >
-        <TemperatureChart
-          estaciones={data.estaciones}
-          datosTemperatura={data.seriesTemperaturas}
-        />
-        <HarvestProgressBar
-          avance={58}
-          diasEstimados={12}
-          temperaturas={[38, 37, 37.5, 38, 41]}
-        />
-        <WinklerCard seriesTemperaturas={data.seriesTemperaturas} />
+        {renderizarContenido()}
       </main>
-
     </div>
   );
 }
