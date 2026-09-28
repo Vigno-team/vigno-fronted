@@ -1,55 +1,196 @@
-* {
-  box-sizing: border-box;
+/* =====================================================
+   TEMA OSCURO DEL ÁREA DE TRABAJO
+   ===================================================== */
+
+.tema-pagina-oscuro {
+  --fondo-pagina: #07111d;
+  --fondo-pagina-secundario: #091827;
+
+  --texto-pagina: #f8fafc;
+  --texto-secundario-pagina: #94a3b8;
+
+  --superficie-pagina: #0c1a29;
+
+  --borde-pagina:
+    rgba(148, 163, 184, 0.12);
+
+  --sombra-pagina:
+    rgba(0, 0, 0, 0.2);
 }
-html,
-body,
-#root {
-  margin: 0;
-  width: 100%;
-  min-height: 100%;
+
+
+/* =====================================================
+   TEMA CLARO DEL ÁREA DE TRABAJO
+   ===================================================== */
+
+.tema-pagina-claro {
+  --fondo-pagina: #ffffff;
+  --fondo-pagina-secundario: #f8fafc;
+
+  --texto-pagina: #0f172a;
+  --texto-secundario-pagina: #64748b;
+
+  --superficie-pagina: #ffffff;
+
+  --borde-pagina: #e2e8f0;
+
+  --sombra-pagina:
+    rgba(15, 23, 42, 0.06);
 }
-body {
-  background-color: #15171d;
-  color: white;
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
-}
+
+
+/* =====================================================
+   APLICACIÓN
+   ===================================================== */
+
 .aplicacion {
   width: 100%;
   min-height: 100vh;
-  background-color: #15171d;
+
+  margin: 0;
+  padding: 0;
+
+  box-sizing: border-box;
 }
+
+
+/* =====================================================
+   ÁREA PRINCIPAL
+   ===================================================== */
+
 .contenido {
   min-height: 100vh;
-  padding: 20px 24px;
+
+  box-sizing: border-box;
+
+  padding: 24px;
+
+  color: var(--texto-pagina);
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--fondo-pagina) 0%,
+      var(--fondo-pagina-secundario) 100%
+    );
+
   transition:
-    margin-left 0.3s ease;
+    margin-left 0.3s ease,
+    background 0.25s ease,
+    color 0.25s ease;
 }
-.contenido-expandido {
-  margin-left: 280px;
-}
+
+
+/* Barra lateral contraída */
 .contenido-contraido {
   margin-left: 80px;
 }
+
+
+/* Barra lateral expandida */
+.contenido-expandido {
+  margin-left: 280px;
+}
+
+
+/* =====================================================
+   CARGA / ERROR
+   ===================================================== */
+
 .estado-datos {
-  width: 100%;
-  min-height: 500px;
+  min-height:
+    calc(100vh - 48px);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #94a3b8;
-  font-size: 15px;
+
+  color:
+    var(--texto-secundario-pagina);
+
+  font-size: 14px;
 }
+
+
+/* =====================================================
+   PANTALLAS TEMPORALES
+   ===================================================== */
+
+.pantalla-provisional {
+  width: 100%;
+
+  min-height:
+    calc(100vh - 48px);
+
+  box-sizing: border-box;
+
+  padding: 30px;
+
+  color:
+    var(--texto-pagina);
+
+  background:
+    var(--superficie-pagina);
+
+  border:
+    1px solid
+    var(--borde-pagina);
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 14px 36px
+    var(--sombra-pagina);
+
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.pantalla-provisional h2 {
+  margin:
+    0 0 8px;
+
+  color:
+    var(--texto-pagina);
+}
+
+.pantalla-provisional p {
+  margin: 0;
+
+  color:
+    var(--texto-secundario-pagina);
+}
+
+
+/* =====================================================
+   TABLETS
+   ===================================================== */
+
 @media (max-width: 768px) {
-  .contenido-expandido {
-    margin-left: 250px;
-  }
+
   .contenido-contraido {
     margin-left: 70px;
   }
+
+  .contenido-expandido {
+    margin-left: 250px;
+  }
+
   .contenido {
     padding: 16px;
+  }
+}
+
+
+/* =====================================================
+   TELÉFONOS
+   ===================================================== */
+
+@media (max-width: 550px) {
+
+  .contenido {
+    padding: 10px;
   }
 }
