@@ -1,0 +1,158 @@
+/* Configuración base (Modo Oscuro por defecto) */
+.winkler-card {
+  background-color: #111a2e;
+  border: 1px solid #1f2d47;
+  border-radius: 12px;
+  padding: 1.25rem;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  max-width: 460px;
+  width: 100%;
+  margin-top: 1.5rem;
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+.winkler-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.winkler-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.winkler-selectores {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.winkler-select {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.winkler-select:hover {
+  border-color: #38bdf8;
+}
+
+.winkler-badge {
+  font-size: 0.75rem;
+  color: #38bdf8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.winkler-card-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.winkler-card-body {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.winkler-metric {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.winkler-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+.winkler-unit {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.winkler-classification {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.winkler-region {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.winkler-desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.winkler-card-footer {
+  border-top: 1px solid #1f2d47;
+  padding-top: 0.5rem;
+}
+
+.winkler-card-footer small {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+/* Adaptación dinámica a Modo Claro */
+.tema-pagina-claro .winkler-card {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.tema-pagina-claro .winkler-select {
+  background-color: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.tema-pagina-claro .winkler-select:hover {
+  border-color: #0284c7;
+}
+
+.tema-pagina-claro .winkler-card-header h4 {
+  color: #0f172a;
+}
+
+.tema-pagina-claro .winkler-badge {
+  color: #0284c7;
+}
+
+.tema-pagina-claro .winkler-region {
+  color: #0284c7;
+}
+
+.tema-pagina-claro .winkler-card-footer {
+  border-top-color: #e2e8f0;
+}
+
+.tema-pagina-claro .winkler-card-footer small,
+.tema-pagina-claro .winkler-unit,
+.tema-pagina-claro .winkler-desc {
+  color: #64748b;
+}
