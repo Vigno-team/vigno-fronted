@@ -1,56 +1,58 @@
-// Información general de cada estación meteorológica.
 export interface MetadatosEstaciones {
   id: string;
-  fechaRegistro: string;
+  nombre: string;
   huerto: string;
+  subzona: string;
   localidad: string;
-  ubicacion: string;
+
+  fechaInicio: string | null;
+  fechaFin: string | null;
+
+  completitud: number | null;
+  confiable: boolean;
 }
 
-// Índices térmicos utilizados para análisis vitícola.
-export interface IndicesTermicos {
+export interface TemporadaClimatica {
   estacionId: string;
+  anio: number;
 
-  // Suma térmica de temperaturas medias sobre el umbral de 10 °C.
-  winkler: number;
+  fechaInicio: string | null;
+  fechaFin: string | null;
 
-  // Evalúa las condiciones heliotérmicas usando temperatura media y máxima.
-  huglin: number;
-
-  // Diferencia entre temperatura máxima y mínima.
-  amplitudTermica?: number;
+  completitud: number | null;
+  confiable: boolean;
 }
 
-// Resumen de temperatura correspondiente a cada día.
+export interface CompletitudVariable {
+  estacionId: string;
+  anio: number;
+
+  variable:
+    | "maxima"
+    | "minima"
+    | "mediaDiaria"
+    | "amplitudTermica"
+    | "precipitacionMm";
+
+  completitud: number | null;
+  confiable: boolean;
+}
+
 export interface SeriesDiariasTemperaturas {
   estacionId: string;
   fecha: string;
+  temporada: number;
 
-  mediaDiaria: number;
-  maxima: number;
-  minima: number;
-
-  mediaMinima?: number;
-  mediaMaxima?: number;
+  maxima: number | null;
+  minima: number | null;
+  mediaDiaria: number | null;
+  amplitudTermica: number | null;
+  precipitacionMm: number | null;
 }
 
-// Lectura individual tomada por la estación cada hora.
-export interface SeriesHorariasTemperaturas {
-  estacionId: string;
-  fecha: string;
-  hora: string;
-  temperatura: number;
-}
-
-// Estructura completa de los datos climáticos.
 export interface ClimateDataResponse {
   estaciones: MetadatosEstaciones[];
-
-  // Resúmenes diarios utilizados en las vistas mensual y anual.
+  temporadas: TemporadaClimatica[];
+  completitudVariables: CompletitudVariable[];
   seriesTemperaturas: SeriesDiariasTemperaturas[];
-
-  // Mediciones horarias utilizadas en la vista diaria.
-  seriesHorarias: SeriesHorariasTemperaturas[];
-
-  indicesTermicos: IndicesTermicos[];
 }
