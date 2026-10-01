@@ -1,13 +1,13 @@
 import {
-  Menu,
-  Home,
-  CloudSun,
-  Clock3,
   Activity,
-  TriangleAlert,
+  Clock3,
+  CloudSun,
+  Home,
+  Menu,
+  Moon,
   Settings,
   Sun,
-  Moon,
+  TriangleAlert,
 } from "lucide-react";
 
 import "./BarraLateral.css";
@@ -55,128 +55,122 @@ function BarraLateral({
           : "contraida"
       }`}
     >
-      <div className="encabezado-barra">
+      <div className="bl-cabecera">
         <button
           type="button"
-          className="boton-menu"
+          className="bl-menu"
           onClick={() =>
-            cambiarEstado(!expandida)
+            cambiarEstado(
+              (actual) => !actual
+            )
           }
-          aria-label={
+          title={
             expandida
               ? "Contraer menú"
               : "Expandir menú"
           }
-          title={
-            !expandida
-              ? "Abrir menú"
-              : ""
-          }
+          aria-label="Cambiar tamaño del menú"
         >
-          <Menu
-            size={26}
-            strokeWidth={2}
-          />
+          <Menu size={23} />
         </button>
+
+        {expandida && (
+          <div className="bl-marca">
+            <strong>
+              VIGNO
+            </strong>
+
+            <span>
+              Dashboard meteorológico
+            </span>
+          </div>
+        )}
       </div>
 
-      <nav className="menu-navegacion">
-        {opciones.map((opcion) => {
-          const Icono = opcion.icono;
+      <nav className="bl-navegacion">
+        {opciones.map(
+          ({
+            nombre,
+            icono: Icono,
+          }) => {
+            const activa =
+              opcionActiva ===
+              nombre;
 
-          const activa =
-            opcionActiva ===
-            opcion.nombre;
-
-          return (
-            <button
-              key={opcion.nombre}
-              type="button"
-              className={`opcion-menu ${
-                activa
-                  ? "activa"
-                  : ""
-              }`}
-              onClick={() =>
-                cambiarOpcion(
-                  opcion.nombre
-                )
-              }
-              title={
-                !expandida
-                  ? opcion.nombre
-                  : ""
-              }
-              aria-current={
-                activa
-                  ? "page"
-                  : undefined
-              }
-            >
-              <Icono
-                className="icono-opcion"
-                size={23}
-                strokeWidth={2}
-              />
-
-              {expandida && (
-                <span className="texto-opcion">
-                  {opcion.nombre}
+            return (
+              <button
+                key={nombre}
+                type="button"
+                className={`bl-opcion ${
+                  activa
+                    ? "activa"
+                    : ""
+                }`}
+                onClick={() =>
+                  cambiarOpcion(
+                    nombre
+                  )
+                }
+                title={
+                  expandida
+                    ? undefined
+                    : nombre
+                }
+                aria-current={
+                  activa
+                    ? "page"
+                    : undefined
+                }
+              >
+                <span className="bl-opcion-icono">
+                  <Icono
+                    size={20}
+                    strokeWidth={1.9}
+                  />
                 </span>
-              )}
-            </button>
-          );
-        })}
+
+                {expandida && (
+                  <span className="bl-opcion-texto">
+                    {nombre}
+                  </span>
+                )}
+              </button>
+            );
+          }
+        )}
       </nav>
 
-      <div className="pie-barra">
+      <div className="bl-pie">
         <button
           type="button"
-          className="boton-tema"
-          onClick={cambiarTema}
-          aria-label={
+          className="bl-tema"
+          onClick={
+            cambiarTema
+          }
+          title={
             temaOscuro
               ? "Cambiar a tema claro"
               : "Cambiar a tema oscuro"
           }
-          title={
-            !expandida
-              ? temaOscuro
-                ? "Cambiar a tema claro"
-                : "Cambiar a tema oscuro"
-              : ""
-          }
         >
-          <div className="info-tema">
-            {temaOscuro ? (
-              <Moon
-                size={21}
-                strokeWidth={2}
-              />
-            ) : (
-              <Sun
-                size={21}
-                strokeWidth={2}
-              />
-            )}
-
-            {expandida && (
-              <span className="texto-tema">
-                {temaOscuro
-                  ? "Tema oscuro"
-                  : "Tema claro"}
-              </span>
-            )}
-          </div>
+          {temaOscuro ? (
+            <Sun
+              size={19}
+              strokeWidth={1.9}
+            />
+          ) : (
+            <Moon
+              size={19}
+              strokeWidth={1.9}
+            />
+          )}
 
           {expandida && (
-            <span
-              className={`switch-tema ${
-                !temaOscuro
-                  ? "activo"
-                  : ""
-              }`}
-            />
+            <span>
+              {temaOscuro
+                ? "Tema claro"
+                : "Tema oscuro"}
+            </span>
           )}
         </button>
       </div>

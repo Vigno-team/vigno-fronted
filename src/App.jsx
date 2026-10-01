@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import BarraLateral from "./componentes/BarraLateral/BarraLateral";
-import TemperatureChart from "./componentes/TemperatureChart";
+import TemperatureChart from "./componentes/Historicos/TemperatureChart";
 import ResumenMeteorologico from "./componentes/ResumenMeteorologico/ResumenMeteorologico";
 import AlertasReportes from "./componentes/AlertasReportes/AlertasReportes";
 import { WinklerCard } from "./componentes/WinklerCard/WinklerCard";
@@ -73,124 +73,103 @@ function App() {
         );
       }
 
-      if (
-        opcionActiva ===
-        "Resumen"
-      ) {
-        return (
-          <ResumenMeteorologico
-            estaciones={
-              data.estaciones
-            }
-            datosTemperatura={
-              data.seriesTemperaturas
-            }
-            temaOscuro={
-              temaOscuro
-            }
-          />
-        );
+      switch (opcionActiva) {
+        case "Resumen":
+          return (
+            <ResumenMeteorologico
+              estaciones={
+                data.estaciones
+              }
+              datosTemperatura={
+                data.seriesTemperaturas
+              }
+              temaOscuro={
+                temaOscuro
+              }
+            />
+          );
+
+        case "Clima en tiempo real":
+          return (
+            <div className="pantalla-provisional">
+              <h2>
+                Clima en tiempo real
+              </h2>
+
+              <p>
+                Panel meteorológico en tiempo real.
+              </p>
+            </div>
+          );
+
+        case "Históricos":
+          return (
+            <TemperatureChart
+              estaciones={
+                data.estaciones
+              }
+              datosTemperatura={
+                data.seriesTemperaturas
+              }
+              temaOscuro={
+                temaOscuro
+              }
+            />
+          );
+
+        case "Índices vitivinícolas":
+          return (
+            <WinklerCard
+              seriesTemperaturas={
+                data.seriesTemperaturas
+              }
+              estaciones={
+                data.estaciones
+              }
+            />
+          );
+
+        case "Alertas y reportes":
+          return (
+            <AlertasReportes
+              estaciones={
+                data.estaciones
+              }
+              datosTemperatura={
+                data.seriesTemperaturas
+              }
+              temaOscuro={
+                temaOscuro
+              }
+            />
+          );
+
+        case "Configuración":
+          return (
+            <div className="pantalla-provisional">
+              <h2>
+                Configuración
+              </h2>
+
+              <p>
+                Configuración general del sistema.
+              </p>
+            </div>
+          );
+
+        default:
+          return (
+            <div className="pantalla-provisional">
+              <h2>
+                {opcionActiva}
+              </h2>
+
+              <p>
+                Esta sección será implementada próximamente.
+              </p>
+            </div>
+          );
       }
-
-      if (
-        opcionActiva ===
-        "Clima en tiempo real"
-      ) {
-        return (
-          <div className="pantalla-provisional">
-            <h2>
-              Clima en tiempo real
-            </h2>
-
-            <p>
-              Panel meteorológico en tiempo real.
-            </p>
-          </div>
-        );
-      }
-
-      if (
-        opcionActiva ===
-        "Históricos"
-      ) {
-        return (
-          <TemperatureChart
-            estaciones={
-              data.estaciones
-            }
-            datosTemperatura={
-              data.seriesTemperaturas
-            }
-            temaOscuro={
-              temaOscuro
-            }
-          />
-        );
-      }
-
-      if (
-        opcionActiva ===
-        "Índices vitivinícolas"
-      ) {
-        return (
-          <WinklerCard
-            seriesTemperaturas={
-              data.seriesTemperaturas
-            }
-            estaciones={
-              data.estaciones
-            }
-          />
-        );
-      }
-
-      if (
-        opcionActiva ===
-        "Alertas y reportes"
-      ) {
-        return (
-          <AlertasReportes
-            estaciones={
-              data.estaciones
-            }
-            datosTemperatura={
-              data.seriesTemperaturas
-            }
-            temaOscuro={
-              temaOscuro
-            }
-          />
-        );
-      }
-
-      if (
-        opcionActiva ===
-        "Configuración"
-      ) {
-        return (
-          <div className="pantalla-provisional">
-            <h2>
-              Configuración
-            </h2>
-
-            <p>
-              Configuración general del sistema.
-            </p>
-          </div>
-        );
-      }
-
-      return (
-        <div className="pantalla-provisional">
-          <h2>
-            {opcionActiva}
-          </h2>
-
-          <p>
-            Esta sección será implementada próximamente.
-          </p>
-        </div>
-      );
     };
 
   return (
