@@ -4,6 +4,7 @@ import BarraLateral from "./componentes/BarraLateral/BarraLateral";
 import TemperatureChart from "./componentes/TemperatureChart";
 import ResumenMeteorologico from "./componentes/ResumenMeteorologico/ResumenMeteorologico";
 import { WinklerCard } from "./componentes/WinklerCard/WinklerCard";
+import LoginView from "./componentes/LoginView/LoginView";
 
 import { useClimateData } from "./hooks/useClimateData";
 
@@ -119,6 +120,9 @@ function App() {
           <p>
             Configuración general del sistema.
           </p>
+          <div style={{ paddingBottom: "50px" }}>
+            <LoginView />
+          </div>
         </div>
       );
     }
@@ -159,7 +163,7 @@ function App() {
             : "contenido-contraido"
         }`}
       >
-        {renderizarContenido()}
+        {renderizarContenido()}       
       </main>
     </div>
   );
