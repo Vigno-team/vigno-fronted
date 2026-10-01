@@ -2,35 +2,41 @@ import { useEffect, useState } from "react";
 
 import BarraLateral from "./componentes/BarraLateral/BarraLateral";
 import TemperatureChart from "./componentes/TemperatureChart";
+import ResumenMeteorologico from "./componentes/ResumenMeteorologico/ResumenMeteorologico";
 import { WinklerCard } from "./componentes/WinklerCard/WinklerCard";
+
 import { useClimateData } from "./hooks/useClimateData";
 
 import "./App.css";
 
 function App() {
   const [barraExpandida, setBarraExpandida] = useState(false);
-
-  const [opcionActiva, setOpcionActiva] = useState("Históricos");
+  const [opcionActiva, setOpcionActiva] = useState("Resumen");
 
   const [temaOscuro, setTemaOscuro] = useState(() => {
     try {
       const guardado = localStorage.getItem("tema-dashboard");
 
-      return guardado === null ? true : JSON.parse(guardado);
+      return guardado === null
+        ? true
+        : JSON.parse(guardado);
     } catch {
       return true;
     }
   });
 
-  // Guarda el tema seleccionado.
+  // Guarda el tema seleccionado
   useEffect(() => {
-    localStorage.setItem("tema-dashboard", JSON.stringify(temaOscuro));
+    localStorage.setItem(
+      "tema-dashboard",
+      JSON.stringify(temaOscuro)
+    );
   }, [temaOscuro]);
 
   const { data, loading } = useClimateData();
 
   const renderizarContenido = () => {
-    // Cargando información.
+    // Cargando datos
     if (loading) {
       return (
         <div className="estado-datos">
@@ -39,7 +45,7 @@ function App() {
       );
     }
 
-    // Error.
+    // Error al cargar
     if (!data) {
       return (
         <div className="estado-datos">
@@ -48,6 +54,30 @@ function App() {
       );
     }
 
+    // Resumen
+    if (opcionActiva === "Resumen") {
+      return (
+        <ResumenMeteorologico
+          estaciones={data.estaciones}
+          datosTemperatura={data.seriesTemperaturas}
+          temaOscuro={temaOscuro}
+        />
+      );
+    }
+
+    // Clima en tiempo real
+    if (opcionActiva === "Clima en tiempo real") {
+      return (
+        <div className="pantalla-provisional">
+          <h2>Clima en tiempo real</h2>
+          <p>
+            Panel meteorológico en tiempo real.
+          </p>
+        </div>
+      );
+    }
+
+    // Históricos
     if (opcionActiva === "Históricos") {
       return (
         <TemperatureChart
@@ -59,74 +89,74 @@ function App() {
       );
     }
 
-    if (opcionActiva === "Clima en tiempo real") {
-      return (
-        <div className="pantalla-provisional">
-          <h2>Clima en tiempo real</h2>
-
-          <p>Panel meteorológico en tiempo real.</p>
-        </div>
-      );
-    }
-
-    // RESUMEN
-
-    if (opcionActiva === "Resumen") {
-      return (
-        <div className="pantalla-provisional">
-          <h2>Resumen meteorológico</h2>
-
-          <p>Vista general de las estaciones meteorológicas.</p>
-        </div>
-      );
-    }
-
+    // Índices vitivinícolas
     if (opcionActiva === "Índices vitivinícolas") {
       return (
-        <div>
-          <WinklerCard
+        <WinklerCard
           seriesTemperaturas={data.seriesTemperaturas}
           estaciones={data.estaciones}
-          />
+        />
+      );
+    }
+
+    // Alertas y reportes
+    if (opcionActiva === "Alertas y reportes") {
+      return (
+        <div className="pantalla-provisional">
+          <h2>Alertas y reportes</h2>
+          <p>
+            Gestión de alertas meteorológicas y reportes.
+          </p>
         </div>
       );
     }
 
-    // OTRAS PANTALLAS
+    // Configuración
+    if (opcionActiva === "Configuración") {
+      return (
+        <div className="pantalla-provisional">
+          <h2>Configuración</h2>
+          <p>
+            Configuración general del sistema.
+          </p>
+        </div>
+      );
+    }
 
     return (
       <div className="pantalla-provisional">
         <h2>{opcionActiva}</h2>
-
-        <p>Esta sección será implementada próximamente.</p>
+        <p>
+          Esta sección será implementada próximamente.
+        </p>
       </div>
     );
   };
 
-  // INTERFAZ
-
   return (
     <div
       className={`aplicacion ${
-        temaOscuro ? "tema-pagina-oscuro" : "tema-pagina-claro"
+        temaOscuro
+          ? "tema-pagina-oscuro"
+          : "tema-pagina-claro"
       }`}
     >
-      {/* Barra lateral siempre negra */}
       <BarraLateral
         expandida={barraExpandida}
         cambiarEstado={setBarraExpandida}
         opcionActiva={opcionActiva}
         cambiarOpcion={setOpcionActiva}
         temaOscuro={temaOscuro}
-        cambiarTema={() => setTemaOscuro((actual) => !actual)}
+        cambiarTema={() =>
+          setTemaOscuro((actual) => !actual)
+        }
       />
 
-      {/* Área que cambia entre claro / oscuro */}
       <main
         className={`contenido ${
           barraExpandida
-            ? "contenido contenido-expandido"
-            : "contenido contenido-contraido"
+            ? "contenido-expandido"
+            : "contenido-contraido"
         }`}
       >
         {renderizarContenido()}
