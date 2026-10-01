@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import BarraLateral from "./componentes/BarraLateral/BarraLateral";
 import TemperatureChart from "./componentes/TemperatureChart";
 import ResumenMeteorologico from "./componentes/ResumenMeteorologico/ResumenMeteorologico";
+import { WinklerCard } from "./componentes/WinklerCard/WinklerCard";
 
 import { useClimateData } from "./hooks/useClimateData";
 
@@ -64,18 +65,6 @@ function App() {
       );
     }
 
-    // Históricos
-    if (opcionActiva === "Históricos") {
-      return (
-        <TemperatureChart
-          estaciones={data.estaciones}
-          datosTemperatura={data.seriesTemperaturas}
-          datosHorarios={data.seriesHorarias ?? []}
-          temaOscuro={temaOscuro}
-        />
-      );
-    }
-
     // Clima en tiempo real
     if (opcionActiva === "Clima en tiempo real") {
       return (
@@ -88,15 +77,25 @@ function App() {
       );
     }
 
+    // Históricos
+    if (opcionActiva === "Históricos") {
+      return (
+        <TemperatureChart
+          estaciones={data.estaciones}
+          datosTemperatura={data.seriesTemperaturas}
+          datosHorarios={data.seriesHorarias ?? []}
+          temaOscuro={temaOscuro}
+        />
+      );
+    }
+
     // Índices vitivinícolas
     if (opcionActiva === "Índices vitivinícolas") {
       return (
-        <div className="pantalla-provisional">
-          <h2>Índices vitivinícolas</h2>
-          <p>
-            Visualización de índices térmicos y vitivinícolas.
-          </p>
-        </div>
+        <WinklerCard
+          seriesTemperaturas={data.seriesTemperaturas}
+          estaciones={data.estaciones}
+        />
       );
     }
 
