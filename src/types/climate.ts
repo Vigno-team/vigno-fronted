@@ -1,6 +1,5 @@
-// ==========================================
-// 1. CONTRATO OFICIAL v0.1 (Backend)
-// ==========================================
+
+// CONTRATO OFICIAL v0.1 (Backend)
 
 // Información de calidad y completitud de datos de la estación.
 export interface CalidadDato {
@@ -81,9 +80,9 @@ export interface Consolidacion {
   };
 }
 
-// ==========================================
-// 2. RETROCOMPATIBILIDAD (Para WinklerCard y componentes en migración)
-// ==========================================
+
+// RETROCOMPATIBILIDAD para WinklerCard y componentes en migración
+
 
 export interface MetadatosEstaciones {
   id: string;
@@ -111,9 +110,8 @@ export interface SeriesHorariasTemperaturas {
   temperatura: number;
 }
 
-// ==========================================
-// 3. CONTRATO PRINCIPAL INTEGRADO
-// ==========================================
+
+// CONTRATO PRINCIPAL INTEGRADO
 
 export interface ClimateDataResponse {
   _nota?: string;
