@@ -1,0 +1,158 @@
+/* Configuración base (Modo Oscuro por defecto) */
+.huglin-card {
+  background-color: #111a2e;
+  border: 1px solid #1f2d47;
+  border-radius: 12px;
+  padding: 1.25rem;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  max-width: 460px;
+  width: 100%;
+  margin-top: 1.5rem;
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+.huglin-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.huglin-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.huglin-selectores {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.huglin-select {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.huglin-select:hover {
+  border-color: #38bdf8;
+}
+
+.huglin-badge {
+  font-size: 0.75rem;
+  color: #38bdf8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.huglin-card-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.huglin-card-body {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.huglin-metric {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.huglin-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+.huglin-unit {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.huglin-classification {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.huglin-region {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.huglin-desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.huglin-card-footer {
+  border-top: 1px solid #1f2d47;
+  padding-top: 0.5rem;
+}
+
+.huglin-card-footer small {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+/* Adaptación dinámica a Modo Claro */
+.tema-pagina-claro .huglin-card {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.tema-pagina-claro .huglin-select {
+  background-color: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.tema-pagina-claro .huglin-select:hover {
+  border-color: #0284c7;
+}
+
+.tema-pagina-claro .huglin-card-header h4 {
+  color: #0f172a;
+}
+
+.tema-pagina-claro .huglin-badge {
+  color: #0284c7;
+}
+
+.tema-pagina-claro .huglin-region {
+  color: #0284c7;
+}
+
+.tema-pagina-claro .huglin-card-footer {
+  border-top-color: #e2e8f0;
+}
+
+.tema-pagina-claro .huglin-card-footer small,
+.tema-pagina-claro .huglin-unit,
+.tema-pagina-claro .huglin-desc {
+  color: #64748b;
+}
