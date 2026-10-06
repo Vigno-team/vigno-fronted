@@ -5,6 +5,7 @@ import TemperatureChart from "./componentes/Historicos/TemperatureChart";
 import ResumenMeteorologico from "./componentes/ResumenMeteorologico/ResumenMeteorologico";
 import AlertasReportes from "./componentes/AlertasReportes/AlertasReportes";
 import { WinklerCard } from "./componentes/WinklerCard/WinklerCard";
+import { HuglinCard } from "./componentes/HuglinCard/HuglinCard";
 
 import { useClimateData } from "./hooks/useClimateData";
 
@@ -119,14 +120,16 @@ function App() {
 
         case "Índices vitivinícolas":
           return (
-            <WinklerCard
-              seriesTemperaturas={
-                data.seriesTemperaturas
-              }
-              estaciones={
-                data.estaciones
-              }
-            />
+            <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
+              <WinklerCard
+                seriesTemperaturas={data.seriesTemperaturas}
+                estaciones={data.estaciones}
+              />
+              <HuglinCard
+                seriesTemperaturas={data.seriesTemperaturas}
+                estaciones={data.estaciones}
+              />
+            </div>
           );
 
         case "Alertas y reportes":
