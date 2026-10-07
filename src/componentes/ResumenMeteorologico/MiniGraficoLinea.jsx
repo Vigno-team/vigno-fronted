@@ -4,24 +4,26 @@ import { ParentSize } from "@visx/responsive";
 import { scaleLinear } from "@visx/scale";
 import { Bar, LinePath } from "@visx/shape";
 
-// Configuración general del gráfico.
 const MARGEN = { top: 10, right: 14, bottom: 25, left: 36 };
 const esNumero = (valor) => Number.isFinite(valor);
 
-const formatearFecha = (fecha) => {
-  if (!fecha) return "";
-  return new Intl.DateTimeFormat("es-CL", { day: "2-digit", month: "short" })
-    .format(new Date(`${fecha}T12:00:00`))
-    .replace(".", "");
-};
+const formatearFecha = (fecha) =>
+  fecha
+    ? new Intl.DateTimeFormat("es-CL", {
+        day: "2-digit",
+        month: "short",
+      })
+        .format(new Date(`${fecha}T12:00:00`))
+        .replace(".", "")
+    : "";
 
-const obtenerTicks = (cantidad) => {
-  if (cantidad <= 1) return [0];
-  return [0, Math.floor((cantidad - 1) / 2), cantidad - 1]
-    .filter((valor, indice, arreglo) => arreglo.indexOf(valor) === indice);
-};
+const obtenerTicks = (cantidad) =>
+  cantidad <= 1
+    ? [0]
+    : [0, Math.floor((cantidad - 1) / 2), cantidad - 1].filter(
+        (valor, indice, arreglo) => arreglo.indexOf(valor) === indice
+      );
 
-// Mini gráfico reutilizable para líneas, barras y alertas térmicas.
 function MiniGraficoLinea({
   datos = [],
   series = [],
@@ -30,19 +32,12 @@ function MiniGraficoLinea({
   destacarRiesgo = false,
   campoRiesgo = "minima",
 }) {
-  // Reúne los valores visibles para calcular automáticamente la escala Y.
-  const valores = [];
-
-  datos.forEach((dato) => {
-    series.forEach((serie) => {
-      const valor = dato[serie.campo];
-      if (esNumero(valor)) valores.push(valor);
-    });
-  });
-
-  lineasReferencia.forEach((linea) => {
-    if (esNumero(linea.valor)) valores.push(linea.valor);
-  });
+  const valores = [
+    ...datos.flatMap((dato) =>
+      series.map((serie) => dato[serie.campo]).filter(esNumero)
+    ),
+    ...lineasReferencia.map((linea) => linea.valor).filter(esNumero),
+  ];
 
   if (!datos.length || !valores.length) {
     return <div className="rm-grafico-vacio">Sin datos disponibles</div>;
@@ -56,7 +51,6 @@ function MiniGraficoLinea({
         const anchoInterno = width - MARGEN.left - MARGEN.right;
         const altoInterno = height - MARGEN.top - MARGEN.bottom;
 
-        // Escalas horizontal y vertical.
         const xScale = scaleLinear({
           domain: [0, Math.max(datos.length - 1, 1)],
           range: [MARGEN.left, MARGEN.left + anchoInterno],
@@ -71,9 +65,9 @@ function MiniGraficoLinea({
         }
 
         if (tipo === "linea") {
-          const margenVertical = Math.max((maximo - minimo) * 0.12, 1);
-          minimo -= margenVertical;
-          maximo += margenVertical;
+          const margen = Math.max((maximo - minimo) * 0.12, 1);
+          minimo -= margen;
+          maximo += margen;
         } else {
           maximo = Math.max(maximo * 1.15, 1);
         }
@@ -84,7 +78,6 @@ function MiniGraficoLinea({
           nice: true,
         });
 
-        // Reduce las etiquetas del eje X para mantener el gráfico limpio.
         const ticksX = obtenerTicks(datos.length);
         const paso = anchoInterno / Math.max(datos.length, 1);
         const anchoBarra = Math.max(2, Math.min(12, paso * 0.62));
@@ -132,7 +125,6 @@ function MiniGraficoLinea({
               })}
             />
 
-            {/* Líneas horizontales para umbrales o referencias. */}
             {lineasReferencia.map((linea) => (
               <line
                 key={`${linea.valor}-${linea.color}`}
@@ -146,7 +138,6 @@ function MiniGraficoLinea({
               />
             ))}
 
-            {/* Series de línea. */}
             {tipo === "linea" &&
               series.map((serie) => (
                 <LinePath
@@ -162,14 +153,12 @@ function MiniGraficoLinea({
                 />
               ))}
 
-            {/* Barras, utilizadas principalmente para precipitación. */}
             {tipo === "barras" &&
               datos.map((dato, indice) => {
                 const serie = series[0];
-                if (!serie) return null;
+                const valor = serie ? dato[serie.campo] : null;
 
-                const valor = dato[serie.campo];
-                if (!esNumero(valor)) return null;
+                if (!serie || !esNumero(valor)) return null;
 
                 const x = xScale(indice) - anchoBarra / 2;
                 const y = yScale(valor);
@@ -193,17 +182,16 @@ function MiniGraficoLinea({
                 );
               })}
 
-            {/* Puntos destacados para riesgo térmico y registros individuales. */}
             {tipo === "linea" &&
-              series.map((serie) =>
+              series.flatMap((serie) =>
                 datos.map((dato, indice) => {
                   const valor = dato[serie.campo];
                   if (!esNumero(valor)) return null;
 
-                  const esCampoRiesgo =
+                  const riesgo =
                     destacarRiesgo && serie.campo === campoRiesgo;
-                  const esRiesgo = esCampoRiesgo && valor <= 2;
-                  const esCritico = esCampoRiesgo && valor <= 0;
+                  const esRiesgo = riesgo && valor <= 2;
+                  const esCritico = riesgo && valor <= 0;
                   const mostrar = esRiesgo || esCritico || datos.length === 1;
 
                   return (

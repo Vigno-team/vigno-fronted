@@ -1,10 +1,5 @@
-import {
-  ChevronDown,
-} from "lucide-react";
-
-import {
-  TIPOS,
-} from "./alertasConfig";
+import { ChevronDown } from "lucide-react";
+import { TIPOS } from "./alertasConfig";
 
 function ReporteAcordeon({
   reporte,
@@ -12,11 +7,8 @@ function ReporteAcordeon({
   abierto,
   onCambiar,
 }) {
-  const config =
-    TIPOS[reporte.tipo];
-
-  const Icono =
-    config.Icono;
+  const config = TIPOS[reporte.tipo];
+  const Icono = config.Icono;
 
   return (
     <article
@@ -37,62 +29,36 @@ function ReporteAcordeon({
 
           <div>
             <strong>
-              {String(
-                indice + 1
-              ).padStart(2, "0")}
-              {" · "}
-              {reporte.titulo}
+              {String(indice + 1).padStart(2, "0")} · {reporte.titulo}
             </strong>
-
-            <small>
-              {reporte.resumen}
-            </small>
+            <small>{reporte.resumen}</small>
           </div>
         </div>
 
         <div className="ar-reporte-acciones">
-          <span
-            className={`ar-badge ${reporte.tipo}`}
-          >
+          <span className={`ar-badge ${reporte.tipo}`}>
             {config.texto}
           </span>
 
           <ChevronDown
             size={18}
-            className={
-              abierto
-                ? "girado"
-                : ""
-            }
+            className={abierto ? "girado" : ""}
           />
         </div>
       </button>
 
       <div
         className={`ar-reporte-contenido ${
-          abierto
-            ? "visible"
-            : ""
+          abierto ? "visible" : ""
         }`}
       >
         <div className="ar-reporte-datos">
-          {reporte.detalles.map(
-            (detalle) => (
-              <div
-                key={
-                  detalle.etiqueta
-                }
-              >
-                <span>
-                  {detalle.etiqueta}
-                </span>
-
-                <strong>
-                  {detalle.valor}
-                </strong>
-              </div>
-            )
-          )}
+          {reporte.detalles.map((detalle) => (
+            <div key={detalle.etiqueta}>
+              <span>{detalle.etiqueta}</span>
+              <strong>{detalle.valor}</strong>
+            </div>
+          ))}
         </div>
       </div>
     </article>
