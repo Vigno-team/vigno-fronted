@@ -1,129 +1,71 @@
-:root {
-  font-family:
-    "Inter",
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-
-  /* Tipografías */
-  --fuente-interfaz:
-    "Inter",
-    system-ui,
-    sans-serif;
-
-  --fuente-vigno:
-    "Barlow Condensed",
-    "Arial Narrow",
-    sans-serif;
-
-  /* Marca Vigno */
-  --vigno-terracota: #9d4a1e;
-  --vigno-terracota-hover: #b25527;
-
-  --vigno-terracota-suave:
-    rgba(157, 74, 30, 0.12);
-
-  --vigno-terracota-borde:
-    rgba(157, 74, 30, 0.38);
-
-  --vigno-negro: #080808;
-  --vigno-blanco: #ffffff;
-
-  /* Estados meteorológicos */
-  --estado-rojo: #ef4444;
-  --estado-amarillo: #f59e0b;
-  --estado-azul: #3b82f6;
-  --estado-celeste: #38a5ff;
-  --estado-verde: #22c55e;
-  --estado-gris: #64748b;
+:root{
+  --fuente-interfaz:"Inter",system-ui,sans-serif;
+  --fuente-vigno:"Barlow Condensed","Arial Narrow",sans-serif;
+  --vigno-terracota:#9d4a1e;
+  --vigno-terracota-hover:#b25527;
+  --vigno-terracota-suave:rgba(157,74,30,.12);
+  --vigno-terracota-borde:rgba(157,74,30,.38);
+  --vigno-negro:#080808;
+  --vigno-blanco:#fff;
+  --estado-rojo:#ef4444;
+  --estado-amarillo:#f59e0b;
+  --estado-azul:#3b82f6;
+  --estado-celeste:#38a5ff;
+  --estado-verde:#22c55e;
+  --estado-gris:#64748b;
+  font-family:var(--fuente-interfaz);
 }
 
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+
+html,body,#root{
+  width:100%;
+  min-width:0;
+  min-height:100%;
+  margin:0;
+  padding:0;
 }
 
-html,
-body,
-#root {
-  width: 100%;
-  min-width: 100%;
-  min-height: 100%;
+html{height:100%}
 
-  margin: 0;
-  padding: 0;
+body{
+  min-width:320px;
+  height:100dvh;
+  overflow:hidden;
+  font-family:var(--fuente-interfaz);
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
 }
 
-html {
-  height: 100%;
+#root{
+  height:100dvh;
+  overflow:hidden;
 }
 
-body {
-  min-width: 320px;
-  height: 100vh;
-
-  margin: 0;
-
-  font-family:
-    var(--fuente-interfaz);
-
-  overflow: hidden;
-
-  text-rendering:
-    optimizeLegibility;
-
-  -webkit-font-smoothing:
-    antialiased;
+button,input,select,textarea{
+  min-width:0;
+  font:inherit;
 }
 
-#root {
-  width: 100%;
-  height: 100vh;
+button,select{-webkit-tap-highlight-color:transparent}
+img,svg,canvas{max-width:100%}
 
-  overflow: hidden;
-}
-
-button,
-input,
-select,
-textarea {
-  font-family:
-    var(--fuente-interfaz);
-
-  font: inherit;
-}
-
-button {
-  font-family:
-    var(--fuente-interfaz);
-}
-
-/* Solo teléfono permite scroll */
-
-@media (max-width: 700px) {
-  html,
-  body,
-  #root {
-    height: auto;
-    min-height: 100%;
+@media(max-width:1180px){
+  html,body,#root{
+    height:auto;
+    min-height:100%;
   }
 
-  body {
-    min-height: 100dvh;
-
-    overflow-x: hidden;
-    overflow-y: auto;
-
-    touch-action: pan-y;
-
-    -webkit-overflow-scrolling:
-      touch;
+  body{
+    min-height:100dvh;
+    overflow-x:hidden;
+    overflow-y:auto;
+    overscroll-behavior-y:contain;
+    -webkit-overflow-scrolling:touch;
   }
 
-  #root {
-    min-height: 100dvh;
-
-    overflow: visible;
+  #root{
+    min-height:100dvh;
+    overflow:visible;
   }
 }

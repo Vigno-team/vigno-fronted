@@ -1,8 +1,14 @@
-import {
-  CloudRain,
-} from "lucide-react";
-
+import { CloudRain } from "lucide-react";
 import MiniGraficoLinea from "./MiniGraficoLinea";
+
+const SERIE_PRECIPITACION = [
+  {
+    campo: "precipitacionMm",
+    nombre: "Precipitación",
+    unidad: " mm",
+    color: "#38a5ff",
+  },
+];
 
 function TarjetaPrecipitacion({
   datos,
@@ -18,18 +24,12 @@ function TarjetaPrecipitacion({
       <div className="rm-card-top">
         <div className="rm-card-titulo">
           <div className="rm-icono rm-icono-lluvia">
-            <CloudRain
-              size={18}
-            />
+            <CloudRain size={18} />
           </div>
 
           <div>
-            <h2>
-              Precipitación
-            </h2>
-            <p>
-              Lluvia observada durante el período
-            </p>
+            <h2>Precipitación</h2>
+            <p>Lluvia observada durante el período</p>
           </div>
         </div>
       </div>
@@ -37,47 +37,22 @@ function TarjetaPrecipitacion({
       <div className="rm-metricas rm-metricas-3">
         <div>
           <strong className="rm-lluvia">
-            {formatearNumero(
-              total
-            )}{" "}
-            mm
+            {formatearNumero(total)} mm
           </strong>
+          <span>{esTemporada ? "Total temporada" : "Total del período"}</span>
+        </div>
 
-          <span>
-            {esTemporada
-              ? "Total temporada"
-              : "Total del período"}
-          </span>
+        <div>
+          <strong className="rm-lluvia">{diasConLluvia}</strong>
+          <span>Días con lluvia</span>
         </div>
 
         <div>
           <strong className="rm-lluvia">
-            {diasConLluvia}
+            {formatearNumero(maxima?.precipitacionMm)} mm
           </strong>
-
-          <span>
-            Días con lluvia
-          </span>
-        </div>
-
-        <div>
-          <strong className="rm-lluvia">
-            {formatearNumero(
-              maxima
-                ?.precipitacionMm
-            )}{" "}
-            mm
-          </strong>
-
-          <span>
-            Máxima diaria
-          </span>
-
-          <small>
-            {formatearFecha(
-              maxima?.fecha
-            )}
-          </small>
+          <span>Máxima diaria</span>
+          <small>{formatearFecha(maxima?.fecha)}</small>
         </div>
       </div>
 
@@ -85,16 +60,7 @@ function TarjetaPrecipitacion({
         <MiniGraficoLinea
           datos={datos}
           tipo="barras"
-          series={[
-            {
-              campo:
-                "precipitacionMm",
-              nombre:
-                "Precipitación",
-              unidad: " mm",
-              color: "#38a5ff",
-            },
-          ]}
+          series={SERIE_PRECIPITACION}
         />
       </div>
     </article>
