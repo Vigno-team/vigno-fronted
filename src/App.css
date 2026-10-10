@@ -1,182 +1,156 @@
-.tema-pagina-oscuro {
-  --fondo-pagina: #07111d;
-  --fondo-pagina-secundario: #091827;
-
-  --texto-pagina: #f8fafc;
-  --texto-secundario-pagina: #94a3b8;
-
-  --superficie-pagina: #0c1a29;
-
-  --borde-pagina:
-    rgba(148, 163, 184, 0.12);
-
-  --sombra-pagina:
-    rgba(0, 0, 0, 0.2);
+.aplicacion{
+  width:100%;
+  min-width:0;
+  min-height:100dvh;
+  color:var(--app-texto);
+  background:var(--app-fondo);
+  transition:background .2s ease,color .2s ease;
 }
 
-
-/* TEMA CLARO DEL ÁREA DE TRABAJO*/
-
-.tema-pagina-claro {
-  --fondo-pagina: #ffffff;
-  --fondo-pagina-secundario: #f8fafc;
-
-  --texto-pagina: #0f172a;
-  --texto-secundario-pagina: #64748b;
-
-  --superficie-pagina: #ffffff;
-
-  --borde-pagina: #e2e8f0;
-
-  --sombra-pagina:
-    rgba(15, 23, 42, 0.06);
+.tema-pagina-oscuro{
+  --app-fondo:#07131e;
+  --app-panel:#0b1928;
+  --app-control:#0d2030;
+  --app-texto:#f8fafc;
+  --app-secundario:#94a3b8;
+  --app-borde:rgba(255,255,255,.1);
 }
 
-
-/* APLICACIÓN */
-
-.aplicacion {
-  width: 100%;
-  min-height: 100vh;
-
-  margin: 0;
-  padding: 0;
-
-  box-sizing: border-box;
+.tema-pagina-claro{
+  --app-fondo:#f7f5f2;
+  --app-panel:#fff;
+  --app-control:#f2efeb;
+  --app-texto:#171717;
+  --app-secundario:#6b7280;
+  --app-borde:#e5e2de;
 }
 
-
-/* ÁREA PRINCIPAL*/
-
-.contenido {
-  min-height: 100vh;
-
-  box-sizing: border-box;
-
-  padding: 24px;
-
-  color: var(--texto-pagina);
-
-  background:
-    linear-gradient(
-      135deg,
-      var(--fondo-pagina) 0%,
-      var(--fondo-pagina-secundario) 100%
-    );
-
-  transition:
-    margin-left 0.3s ease,
-    background 0.25s ease,
-    color 0.25s ease;
+.contenido{
+  width:calc(100% - 80px);
+  height:100dvh;
+  min-width:0;
+  margin-left:80px;
+  padding:16px 18px;
+  overflow:hidden;
+  transition:margin-left .3s ease,width .3s ease;
 }
 
-
-/* Barra lateral contraída */
-.contenido-contraido {
-  margin-left: 80px;
+.contenido-expandido{
+  width:calc(100% - 280px);
+  margin-left:280px;
 }
 
-
-/* Barra lateral expandida */
-.contenido-expandido {
-  margin-left: 280px;
+.contenido-contraido{
+  width:calc(100% - 80px);
+  margin-left:80px;
 }
 
-
-/* CARGA / ERROR */
-
-.estado-datos {
-  min-height:
-    calc(100vh - 48px);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  color:
-    var(--texto-secundario-pagina);
-
-  font-size: 14px;
+.estado-datos,.pantalla-provisional{
+  width:100%;
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  color:var(--app-secundario);
+  background:var(--app-panel);
+  border:1px solid var(--app-borde);
+  border-radius:14px;
+  text-align:center;
 }
 
+.estado-datos{font-size:13px}
 
-/*PANTALLAS TEMPORALES */
-
-.pantalla-provisional {
-  width: 100%;
-
-  min-height:
-    calc(100vh - 48px);
-
-  box-sizing: border-box;
-
-  padding: 30px;
-
-  color:
-    var(--texto-pagina);
-
-  background:
-    var(--superficie-pagina);
-
-  border:
-    1px solid
-    var(--borde-pagina);
-
-  border-radius: 18px;
-
-  box-shadow:
-    0 14px 36px
-    var(--sombra-pagina);
-
-  transition:
-    background 0.25s ease,
-    color 0.25s ease,
-    border-color 0.25s ease;
+.pantalla-provisional h2{
+  margin:0;
+  color:var(--app-texto);
+  font-family:var(--fuente-vigno);
+  font-size:29px;
+  font-weight:600;
 }
 
-.pantalla-provisional h2 {
-  margin:
-    0 0 8px;
-
-  color:
-    var(--texto-pagina);
+.pantalla-provisional p{
+  margin:0;
+  color:var(--app-secundario);
+  font-size:11px;
 }
 
-.pantalla-provisional p {
-  margin: 0;
+.sidebar-overlay{display:none}
 
-  color:
-    var(--texto-secundario-pagina);
-}
-
-
-/* =====================================================
-   TABLETS
-   ===================================================== */
-
-@media (max-width: 768px) {
-
-  .contenido-contraido {
-    margin-left: 70px;
-  }
-
-  .contenido-expandido {
-    margin-left: 250px;
-  }
-
-  .contenido {
-    padding: 16px;
+@media(max-width:1180px){
+  .contenido,.contenido-expandido,.contenido-contraido{
+    height:auto;
+    min-height:100dvh;
+    overflow:visible;
   }
 }
 
+@media(max-width:820px){
+  .aplicacion{
+    min-height:100dvh;
+    overflow:visible;
+  }
 
-/* =====================================================
-   TELÉFONOS
-   ===================================================== */
+  .contenido,.contenido-expandido,.contenido-contraido{
+    width:calc(100% - 56px);
+    height:auto;
+    min-height:100dvh;
+    margin-left:56px;
+    padding:10px;
+    overflow:visible;
+  }
 
-@media (max-width: 550px) {
+  .sidebar-overlay{
+    position:fixed;
+    inset:0;
+    z-index:900;
+    display:block;
+    pointer-events:none;
+    opacity:0;
+    background:rgba(0,0,0,.48);
+    border:0;
+    transition:opacity .25s ease;
+  }
 
-  .contenido {
-    padding: 10px;
+  .sidebar-overlay.visible{
+    pointer-events:auto;
+    opacity:1;
+  }
+
+  .pantalla-provisional{
+    min-height:calc(100dvh - 20px);
+    padding:20px;
+  }
+}
+
+@media(max-width:380px){
+  .contenido,.contenido-expandido,.contenido-contraido{padding:8px 6px}
+}
+
+@media(orientation:landscape) and (max-height:520px){
+  .contenido,.contenido-expandido,.contenido-contraido{
+    width:calc(100% - 56px);
+    height:auto;
+    min-height:100dvh;
+    margin-left:56px;
+    padding:8px 10px;
+    overflow:visible;
+  }
+
+  .sidebar-overlay{
+    position:fixed;
+    inset:0;
+    z-index:900;
+    display:block;
+    pointer-events:none;
+    opacity:0;
+    background:rgba(0,0,0,.48);
+    border:0;
+  }
+
+  .sidebar-overlay.visible{
+    pointer-events:auto;
+    opacity:1;
   }
 }
