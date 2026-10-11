@@ -9,10 +9,22 @@ import {
   ThermometerSun,
   TriangleAlert,
 } from "lucide-react";
+<<<<<<< Updated upstream
 import MiniGraficoLinea from "./MiniGraficoLinea";
 import "./ResumenMeteorologico.css";
 
 // Opciones disponibles en el selector de período.
+=======
+
+import TarjetaTemperatura from "./TarjetaTemperatura";
+import TarjetaAmplitud from "./TarjetaAmplitud";
+import TarjetaPrecipitacion from "./TarjetaPrecipitacion";
+import TarjetaRiesgo from "./TarjetaRiesgo";
+import BadgeCompletitud from "../BadgeCompletitud/BadgeCompletitud";
+import "./ResumenMeteorologico.css";
+
+
+>>>>>>> Stashed changes
 const PERIODOS = [
   { valor: "ultimo", texto: "Último día" },
   { valor: "7", texto: "7 días" },
@@ -285,6 +297,7 @@ function ResumenMeteorologico({ estaciones = [], datosTemperatura = [], temaOscu
       {/* Estado general y calidad de los datos */}
       <div className="rm-resumen-barra">
         <span>
+<<<<<<< Updated upstream
           <strong>Datos</strong> {formatearFecha(rangoInicio)} — {formatearFecha(rangoFin)}
         </span>
 
@@ -298,6 +311,17 @@ function ResumenMeteorologico({ estaciones = [], datosTemperatura = [], temaOscu
           <span className="rm-chip-warn"><TriangleAlert size={12} />Calidad limitada</span>
         )}
 
+=======
+          <strong>Datos</strong>{" "}
+          {formatearFecha(rangoInicio)} — {formatearFecha(rangoFin)}
+        </span> 
+        {/*completitud y confiable arreglar por datos backend */}       
+        <BadgeCompletitud 
+          completitud={93.8} 
+          confiable={true} 
+        />
+        
+>>>>>>> Stashed changes
         {diasSinDatos > 0 && (
           <span>
             <strong>{diasSinDatos}</strong> {diasSinDatos === 1 ? "día sin datos" : "días sin datos"}
