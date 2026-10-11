@@ -5,7 +5,7 @@ import {
   MapPin,
   TriangleAlert,
 } from "lucide-react";
-
+import BadgeCompletitud from "../BadgeCompletitud/BadgeCompletitud";
 import TarjetaTemperatura from "./TarjetaTemperatura";
 import TarjetaAmplitud from "./TarjetaAmplitud";
 import TarjetaPrecipitacion from "./TarjetaPrecipitacion";
@@ -280,23 +280,10 @@ function ResumenMeteorologico({
           {formatearFecha(rangoInicio)} — {formatearFecha(rangoFin)}
         </span>
 
-        {esNumero(completitud) && (
-          <span>
-            <strong>{completitud} %</strong> completos
-          </span>
-        )}
-
-        {confiable ? (
-          <span className="rm-chip-ok">
-            <CheckCircle2 size={12} />
-            Confiable
-          </span>
-        ) : (
-          <span className="rm-chip-warn">
-            <TriangleAlert size={12} />
-            Calidad limitada
-          </span>
-        )}
+        <BadgeCompletitud 
+          completitud={93.7} 
+          confiable={true} 
+        />
 
         {diasSinDatos > 0 && (
           <span>

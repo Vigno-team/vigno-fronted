@@ -5,8 +5,8 @@ import TemperatureChart from "./componentes/Historicos/TemperatureChart";
 import ResumenMeteorologico from "./componentes/ResumenMeteorologico/ResumenMeteorologico";
 import AlertasReportes from "./componentes/AlertasReportes/AlertasReportes";
 import { WinklerCard } from "./componentes/WinklerCard/WinklerCard";
+import LoginView from "./componentes/LoginView/LoginView";
 import { HuglinCard } from "./componentes/HuglinCard/HuglinCard";
-
 import { useClimateData } from "./hooks/useClimateData";
 import { adaptarClimateData } from "./services/adaptarClimateData";
 
@@ -43,7 +43,6 @@ function App(){
       setBarraExpandida(false);
     }
   };
-
   const renderizarContenido=()=>{
     if(loading)
       return <div className="estado-datos">Cargando datos meteorológicos...</div>;
@@ -105,6 +104,9 @@ function App(){
           <div className="pantalla-provisional">
             <h2>Configuración</h2>
             <p>Configuración general del sistema.</p>
+            <div style={{ paddingBottom: "50px" }}>
+              <LoginView />
+            </div>
           </div>
         );
 
