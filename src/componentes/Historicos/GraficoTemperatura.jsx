@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { AxisBottom, AxisLeft } from "@visx/axis";
+import { useEffect,useState } from "react";
+import { AxisBottom,AxisLeft } from "@visx/axis";
 import { GridRows } from "@visx/grid";
 import { ParentSize } from "@visx/responsive";
-import { scaleLinear, scalePoint } from "@visx/scale";
+import { scaleLinear,scalePoint } from "@visx/scale";
 import { LinePath } from "@visx/shape";
 
 const formatearTemperatura=(valor)=>
@@ -12,14 +12,20 @@ const formatearTemperatura=(valor)=>
 
 const formatearDiferencia=(items)=>{
   const diferencia=items[0].dato.valor-items[1].dato.valor;
-  return `${diferencia>0?"+":""}${diferencia.toFixed(1).replace(".",",")} °C`;
+
+  return `${diferencia>0?"+":""}${diferencia
+    .toFixed(1)
+    .replace(".",",")} °C`;
 };
 
 const obtenerMargen=(width)=>{
-  if(width<300) return {top:18,right:6,bottom:32,left:30};
-  if(width<430) return {top:20,right:10,bottom:36,left:38};
-  if(width<600) return {top:22,right:14,bottom:38,left:42};
-  return {top:25,right:22,bottom:42,left:52};
+  if(width<360)
+    return {top:20,right:8,bottom:52,left:44};
+
+  if(width<500)
+    return {top:22,right:12,bottom:54,left:50};
+
+  return {top:25,right:22,bottom:56,left:60};
 };
 
 function GraficoTemperatura({
@@ -42,13 +48,21 @@ function GraficoTemperatura({
           if(width<50||height<50) return null;
 
           const margen=obtenerMargen(width);
-          const ancho=Math.max(width-margen.left-margen.right,10);
-          const alto=Math.max(height-margen.top-margen.bottom,10);
+
+          const ancho=Math.max(
+            width-margen.left-margen.right,
+            10
+          );
+
+          const alto=Math.max(
+            height-margen.top-margen.bottom,
+            10
+          );
 
           const escalaX=scalePoint({
             domain:categorias,
             range:[0,ancho],
-            padding:width<430?.2:.35,
+            padding:width<430?.25:.35,
           });
 
           const escalaY=scaleLinear({
@@ -63,6 +77,7 @@ function GraficoTemperatura({
               if(posicion===undefined) return cercana;
 
               const distancia=Math.abs(posicion-x);
+
               return !cercana||distancia<cercana.distancia
                 ?{etiqueta,distancia}
                 :cercana;
@@ -70,13 +85,21 @@ function GraficoTemperatura({
 
           const mostrarTooltip=(evento)=>{
             const rect=evento.currentTarget.getBoundingClientRect();
-            const etiqueta=buscarCategoria(evento.clientX-rect.left);
+            const etiqueta=buscarCategoria(
+              evento.clientX-rect.left
+            );
+
             if(!etiqueta) return;
 
             const items=series
               .map((serie)=>{
-                const dato=serie.datos.find(item=>item.etiqueta===etiqueta);
-                return dato&&Number.isFinite(dato.valor)?{serie,dato}:null;
+                const dato=serie.datos.find(
+                  item=>item.etiqueta===etiqueta
+                );
+
+                return dato&&Number.isFinite(dato.valor)
+                  ?{serie,dato}
+                  :null;
               })
               .filter(Boolean);
 
@@ -93,13 +116,16 @@ function GraficoTemperatura({
             setTooltip({
               etiqueta,
               items,
-              left:Math.min(width-90,Math.max(90,margen.left+posicionX)),
-              top:Math.max(20,margen.top+posicionY),
+              left:Math.min(
+                width-100,
+                Math.max(100,margen.left+posicionX)
+              ),
+              top:Math.max(
+                20,
+                margen.top+posicionY
+              ),
             });
           };
-
-          const fuenteEjes=width<430?8:10;
-          const radioPunto=width<430?2.8:3.4;
 
           return(
             <>
@@ -125,7 +151,7 @@ function GraficoTemperatura({
                       x={(dato)=>escalaX(dato.etiqueta)??0}
                       y={(dato)=>escalaY(dato.valor)}
                       stroke={serie.color}
-                      strokeWidth={width<430?2.2:2.7}
+                      strokeWidth={width<430?2.3:2.7}
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />
@@ -139,10 +165,10 @@ function GraficoTemperatura({
                           key={`${serie.nombre}-${dato.etiqueta}`}
                           cx={escalaX(dato.etiqueta)}
                           cy={escalaY(dato.valor)}
-                          r={radioPunto}
+                          r={width<430?3:3.5}
                           fill={serie.color}
                           stroke={tema.punto}
-                          strokeWidth={1.8}
+                          strokeWidth={2}
                         />
                       ))
                   )}
@@ -155,9 +181,10 @@ function GraficoTemperatura({
                     tickFormat={(valor)=>`${valor}°`}
                     tickLabelProps={()=>({
                       fill:tema.secundario,
-                      fontSize:fuenteEjes,
+                      fontSize:11,
+                      fontWeight:600,
                       textAnchor:"end",
-                      dx:-5,
+                      dx:-7,
                       dy:"0.33em",
                     })}
                   />
@@ -170,9 +197,10 @@ function GraficoTemperatura({
                     hideTicks
                     tickLabelProps={()=>({
                       fill:tema.secundario,
-                      fontSize:fuenteEjes,
+                      fontSize:11,
+                      fontWeight:600,
                       textAnchor:"middle",
-                      dy:7,
+                      dy:12,
                     })}
                   />
 
@@ -190,14 +218,20 @@ function GraficoTemperatura({
               {tooltip&&(
                 <div
                   className="tooltip-temperatura"
-                  style={{left:tooltip.left,top:tooltip.top}}
+                  style={{
+                    left:tooltip.left,
+                    top:tooltip.top,
+                  }}
                 >
                   <strong className="tooltip-titulo">
                     {formatoCategoria(tooltip.etiqueta)}
                   </strong>
 
                   {tooltip.items.map(({serie,dato})=>(
-                    <div className="tooltip-serie" key={serie.nombre}>
+                    <div
+                      className="tooltip-serie"
+                      key={serie.nombre}
+                    >
                       <div>
                         <span
                           className="punto-tooltip"
@@ -206,14 +240,18 @@ function GraficoTemperatura({
                         <span>{serie.nombre}</span>
                       </div>
 
-                      <strong>{formatearTemperatura(dato.valor)}</strong>
+                      <strong>
+                        {formatearTemperatura(dato.valor)}
+                      </strong>
                     </div>
                   ))}
 
                   {tooltip.items.length===2&&(
                     <div className="tooltip-diferencia">
                       <span>Diferencia A − B</span>
-                      <strong>{formatearDiferencia(tooltip.items)}</strong>
+                      <strong>
+                        {formatearDiferencia(tooltip.items)}
+                      </strong>
                     </div>
                   )}
                 </div>

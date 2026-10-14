@@ -1,377 +1,124 @@
-import { useEffect, useMemo, useState } from "react";
-import { Thermometer } from "lucide-react";
+import{useEffect,useMemo,useState}from"react";
+import{Thermometer}from"lucide-react";
+import ControlesHistoricos from"./ControlesHistoricos";
+import GraficoTemperatura from"./GraficoTemperatura";
+import"./TemperatureChart.css";
 
-import ControlesHistoricos from "./ControlesHistoricos";
-import GraficoTemperatura from "./GraficoTemperatura";
-import "./TemperatureChart.css";
-
-const MESES = [
-  "",
-  "Enero",
-  "Febrero",
-  "Marzo",
-  "Abril",
-  "Mayo",
-  "Junio",
-  "Julio",
-  "Agosto",
-  "Septiembre",
-  "Octubre",
-  "Noviembre",
-  "Diciembre",
-];
-
-const MESES_CORTOS = [
-  "Ene",
-  "Feb",
-  "Mar",
-  "Abr",
-  "May",
-  "Jun",
-  "Jul",
-  "Ago",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dic",
-];
-
-const COLOR_A = "#38bdf8";
-const COLOR_B = "#34d399";
-
-const TEMAS = {
-  oscuro: {
-    secundario: "#8296b0",
-    grilla: "rgba(148,163,184,0.10)",
-    punto: "#081725",
-  },
-  claro: {
-    secundario: "#64748b",
-    grilla: "rgba(100,116,139,0.13)",
-    punto: "#ffffff",
-  },
+const MESES=["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const MESES_CORTOS=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+const COLOR_A="#C86D3B",COLOR_B="#3E8E58";
+const TEMAS={
+  oscuro:{secundario:"#9CA3AF",grilla:"rgba(156,163,175,.10)",punto:"#0F1115"},
+  claro:{secundario:"#6B7280",grilla:"rgba(107,114,128,.13)",punto:"#FFF"},
 };
 
-const aNumero = (valor) => {
-  if (valor === null || valor === undefined || valor === "") return null;
-  const numero = Number(valor);
-  return Number.isFinite(numero) ? numero : null;
+const aNumero=v=>{
+  if(v===null||v===undefined||v==="")return null;
+  const n=Number(v);return Number.isFinite(n)?n:null;
+};
+const promedio=a=>{const v=a.filter(Number.isFinite);return v.length?v.reduce((s,n)=>s+n,0)/v.length:null};
+const mesTexto=p=>{if(!p)return"";const[a,m]=p.split("-");return`${MESES[Number(m)]} ${a}`};
+const diasMes=p=>{if(!p)return 0;const[a,m]=p.split("-").map(Number);return new Date(a,m,0).getDate()};
+const alternativa=(lista,actual,b)=>{
+  if(b&&b!==actual&&lista.includes(b))return b;
+  return lista.filter(x=>x!==actual).at(-1)??"";
 };
 
-const promedio = (valores) => {
-  const validos = valores.filter(Number.isFinite);
-  return validos.length
-    ? validos.reduce((suma, valor) => suma + valor, 0) / validos.length
-    : null;
+const datosMes=(registros,p,categorias)=>{
+  const mapa=new Map(registros.filter(d=>d.fecha.startsWith(`${p}-`)).map(d=>[d.fecha.slice(8,10),d]));
+  return categorias.map(d=>({etiqueta:d,valor:aNumero(mapa.get(d)?.mediaDiaria)}));
 };
 
-const periodoMesLegible = (periodo) => {
-  if (!periodo) return "";
-  const [anio, mes] = periodo.split("-");
-  return `${MESES[Number(mes)]} ${anio}`;
-};
+const datosAnio=(registros,a)=>MESES_CORTOS.map((etiqueta,i)=>{
+  const m=String(i+1).padStart(2,"0");
+  const v=registros.filter(d=>d.fecha.startsWith(`${a}-${m}-`)).map(d=>aNumero(d.mediaDiaria)).filter(Number.isFinite);
+  return{etiqueta,valor:promedio(v)};
+});
 
-const diasDelPeriodo = (periodo) => {
-  if (!periodo) return 0;
-  const [anio, mes] = periodo.split("-").map(Number);
-  return new Date(anio, mes, 0).getDate();
-};
+function TemperatureChart({estaciones=[],datosTemperatura=[],temaOscuro=true}){
+  const[vista,setVista]=useState(()=>localStorage.getItem("grafico-vista")==="anio"?"anio":"mes");
+  const[comparar,setComparar]=useState(false);
+  const[estacionId,setEstacionId]=useState("");
+  const[periodoMes,setPeriodoMes]=useState("");
+  const[periodoMesComparacion,setPeriodoMesComparacion]=useState("");
+  const[anio,setAnio]=useState("");
+  const[anioComparacion,setAnioComparacion]=useState("");
 
-const elegirAlternativa = (opciones, principal, actual) => {
-  if (actual && actual !== principal && opciones.includes(actual)) return actual;
-  const alternativas = opciones.filter((item) => item !== principal);
-  return alternativas.at(-1) ?? "";
-};
+  useEffect(()=>localStorage.setItem("grafico-vista",vista),[vista]);
+  useEffect(()=>{
+    if(estaciones.length&&!estaciones.some(e=>e.id===estacionId))setEstacionId(estaciones[0].id);
+  },[estaciones,estacionId]);
 
-const crearDatosMes = (registros, periodo, categorias) => {
-  const mapa = new Map(
-    registros
-      .filter((dato) => dato.fecha.startsWith(`${periodo}-`))
-      .map((dato) => [dato.fecha.slice(8, 10), dato])
-  );
+  const estacion=useMemo(()=>estaciones.find(e=>e.id===estacionId)??null,[estaciones,estacionId]);
+  const registros=useMemo(()=>datosTemperatura.filter(d=>d.estacionId===estacionId).sort((a,b)=>a.fecha.localeCompare(b.fecha)),[datosTemperatura,estacionId]);
+  const meses=useMemo(()=>[...new Set(registros.map(d=>d.fecha.slice(0,7)))].sort(),[registros]);
+  const anios=useMemo(()=>[...new Set(registros.map(d=>d.fecha.slice(0,4)))].sort(),[registros]);
 
-  return categorias.map((dia) => ({
-    etiqueta: dia,
-    valor: aNumero(mapa.get(dia)?.mediaDiaria),
-  }));
-};
+  useEffect(()=>{if(meses.length&&!meses.includes(periodoMes))setPeriodoMes(meses.at(-1))},[meses,periodoMes]);
+  useEffect(()=>{if(anios.length&&!anios.includes(anio))setAnio(anios.at(-1))},[anios,anio]);
+  useEffect(()=>{if(comparar&&vista==="mes")setPeriodoMesComparacion(v=>alternativa(meses,periodoMes,v))},[comparar,vista,meses,periodoMes]);
+  useEffect(()=>{if(comparar&&vista==="anio")setAnioComparacion(v=>alternativa(anios,anio,v))},[comparar,vista,anios,anio]);
 
-const crearDatosAnio = (registros, anio) =>
-  MESES_CORTOS.map((etiqueta, indice) => {
-    const mes = String(indice + 1).padStart(2, "0");
+  const puedeComparar=vista==="mes"?meses.length>1:anios.length>1;
+  useEffect(()=>{if(comparar&&!puedeComparar)setComparar(false)},[comparar,puedeComparar]);
 
-    const valores = registros
-      .filter((dato) => dato.fecha.startsWith(`${anio}-${mes}-`))
-      .map((dato) => aNumero(dato.mediaDiaria))
-      .filter(Number.isFinite);
+  const configuracion=useMemo(()=>{
+    if(vista==="mes"){
+      const periodos=[periodoMes,...(comparar&&periodoMesComparacion?[periodoMesComparacion]:[])].filter(Boolean);
+      const cantidad=Math.max(...periodos.map(diasMes),1);
+      const categorias=Array.from({length:cantidad},(_,i)=>String(i+1).padStart(2,"0"));
+      const series=[{nombre:mesTexto(periodoMes),color:COLOR_A,datos:datosMes(registros,periodoMes,categorias)}];
 
-    return { etiqueta, valor: promedio(valores) };
-  });
+      if(comparar&&periodoMesComparacion)
+        series.push({nombre:mesTexto(periodoMesComparacion),color:COLOR_B,datos:datosMes(registros,periodoMesComparacion,categorias)});
 
-const obtenerValores = (registros, campo) =>
-  registros
-    .map((dato) => aNumero(dato[campo]))
-    .filter(Number.isFinite);
-
-function TemperatureChart({
-  estaciones = [],
-  datosTemperatura = [],
-  temaOscuro = true,
-}) {
-  const [vista, setVista] = useState(() =>
-    localStorage.getItem("grafico-vista") === "anio" ? "anio" : "mes"
-  );
-
-  const [comparar, setComparar] = useState(false);
-  const [estacionId, setEstacionId] = useState("");
-  const [periodoMes, setPeriodoMes] = useState("");
-  const [periodoMesComparacion, setPeriodoMesComparacion] = useState("");
-  const [anio, setAnio] = useState("");
-  const [anioComparacion, setAnioComparacion] = useState("");
-
-  useEffect(() => {
-    localStorage.setItem("grafico-vista", vista);
-  }, [vista]);
-
-  useEffect(() => {
-    if (
-      estaciones.length &&
-      !estaciones.some((item) => item.id === estacionId)
-    ) {
-      setEstacionId(estaciones[0].id);
-    }
-  }, [estaciones, estacionId]);
-
-  const estacion = useMemo(
-    () => estaciones.find((item) => item.id === estacionId) ?? null,
-    [estaciones, estacionId]
-  );
-
-  const datosEstacion = useMemo(
-    () =>
-      datosTemperatura
-        .filter((dato) => dato.estacionId === estacionId)
-        .sort((a, b) => a.fecha.localeCompare(b.fecha)),
-    [datosTemperatura, estacionId]
-  );
-
-  const periodosMensuales = useMemo(
-    () =>
-      [...new Set(datosEstacion.map((dato) => dato.fecha.slice(0, 7)))].sort(),
-    [datosEstacion]
-  );
-
-  const anios = useMemo(
-    () =>
-      [...new Set(datosEstacion.map((dato) => dato.fecha.slice(0, 4)))].sort(),
-    [datosEstacion]
-  );
-
-  useEffect(() => {
-    if (periodosMensuales.length && !periodosMensuales.includes(periodoMes)) {
-      setPeriodoMes(periodosMensuales.at(-1));
-    }
-  }, [periodosMensuales, periodoMes]);
-
-  useEffect(() => {
-    if (anios.length && !anios.includes(anio)) {
-      setAnio(anios.at(-1));
-    }
-  }, [anios, anio]);
-
-  useEffect(() => {
-    if (comparar && vista === "mes") {
-      setPeriodoMesComparacion((actual) =>
-        elegirAlternativa(periodosMensuales, periodoMes, actual)
-      );
-    }
-  }, [comparar, vista, periodosMensuales, periodoMes]);
-
-  useEffect(() => {
-    if (comparar && vista === "anio") {
-      setAnioComparacion((actual) =>
-        elegirAlternativa(anios, anio, actual)
-      );
-    }
-  }, [comparar, vista, anios, anio]);
-
-  const puedeComparar =
-    vista === "mes" ? periodosMensuales.length > 1 : anios.length > 1;
-
-  useEffect(() => {
-    if (comparar && !puedeComparar) setComparar(false);
-  }, [comparar, puedeComparar]);
-
-  const configuracion = useMemo(() => {
-    if (vista === "mes") {
-      const periodos = [
-        periodoMes,
-        ...(comparar && periodoMesComparacion
-          ? [periodoMesComparacion]
-          : []),
-      ].filter(Boolean);
-
-      const cantidadDias = Math.max(...periodos.map(diasDelPeriodo), 1);
-
-      const categorias = Array.from(
-        { length: cantidadDias },
-        (_, indice) => String(indice + 1).padStart(2, "0")
-      );
-
-      const series = [
-        {
-          nombre: periodoMesLegible(periodoMes),
-          color: COLOR_A,
-          datos: crearDatosMes(datosEstacion, periodoMes, categorias),
-        },
-      ];
-
-      if (comparar && periodoMesComparacion) {
-        series.push({
-          nombre: periodoMesLegible(periodoMesComparacion),
-          color: COLOR_B,
-          datos: crearDatosMes(
-            datosEstacion,
-            periodoMesComparacion,
-            categorias
-          ),
-        });
-      }
-
-      const ticks = [
-        "01",
-        "05",
-        "10",
-        "15",
-        "20",
-        "25",
-        String(cantidadDias).padStart(2, "0"),
-      ].filter((valor) => categorias.includes(valor));
-
-      return {
-        categorias,
-        series,
-        ticksX: [...new Set(ticks)],
-        formatoCategoria: (valor) => `Día ${Number(valor)}`,
-      };
+      const ticks=["01","05","10","15","20","25",String(cantidad).padStart(2,"0")].filter(x=>categorias.includes(x));
+      return{categorias,series,ticksX:[...new Set(ticks)],formatoCategoria:v=>`Día ${Number(v)}`};
     }
 
-    const series = [
-      {
-        nombre: anio,
-        color: COLOR_A,
-        datos: crearDatosAnio(datosEstacion, anio),
-      },
-    ];
+    const series=[{nombre:anio,color:COLOR_A,datos:datosAnio(registros,anio)}];
+    if(comparar&&anioComparacion)series.push({nombre:anioComparacion,color:COLOR_B,datos:datosAnio(registros,anioComparacion)});
+    return{categorias:MESES_CORTOS,series,ticksX:MESES_CORTOS,formatoCategoria:v=>v};
+  },[vista,comparar,registros,periodoMes,periodoMesComparacion,anio,anioComparacion]);
 
-    if (comparar && anioComparacion) {
-      series.push({
-        nombre: anioComparacion,
-        color: COLOR_B,
-        datos: crearDatosAnio(datosEstacion, anioComparacion),
-      });
-    }
+  const resumen=useMemo(()=>{
+    const r=registros.filter(d=>vista==="mes"?d.fecha.startsWith(`${periodoMes}-`):d.fecha.startsWith(`${anio}-`));
+    const min=r.map(d=>aNumero(d.minima)).filter(Number.isFinite);
+    const med=r.map(d=>aNumero(d.mediaDiaria)).filter(Number.isFinite);
+    const max=r.map(d=>aNumero(d.maxima)).filter(Number.isFinite);
+    return{minima:min.length?Math.min(...min):null,media:promedio(med),maxima:max.length?Math.max(...max):null};
+  },[registros,vista,periodoMes,anio]);
 
-    return {
-      categorias: MESES_CORTOS,
-      series,
-      ticksX: MESES_CORTOS,
-      formatoCategoria: (valor) => valor,
-    };
-  }, [
-    vista,
-    comparar,
-    datosEstacion,
-    periodoMes,
-    periodoMesComparacion,
-    anio,
-    anioComparacion,
-  ]);
+  const valores=configuracion.series.flatMap(s=>s.datos.map(d=>d.valor)).filter(Number.isFinite);
+  const minimoY=valores.length?Math.floor((Math.min(...valores)-3)/5)*5:0;
+  const maximoY=valores.length?Math.max(minimoY+10,Math.ceil((Math.max(...valores)+3)/5)*5):40;
+  const tema=TEMAS[temaOscuro?"oscuro":"claro"];
 
-  const resumen = useMemo(() => {
-    const registros = datosEstacion.filter((dato) =>
-      vista === "mes"
-        ? dato.fecha.startsWith(`${periodoMes}-`)
-        : dato.fecha.startsWith(`${anio}-`)
-    );
-
-    const minimas = obtenerValores(registros, "minima");
-    const medias = obtenerValores(registros, "mediaDiaria");
-    const maximas = obtenerValores(registros, "maxima");
-
-    return {
-      minima: minimas.length ? Math.min(...minimas) : null,
-      media: promedio(medias),
-      maxima: maximas.length ? Math.max(...maximas) : null,
-    };
-  }, [datosEstacion, vista, periodoMes, anio]);
-
-  const valores = configuracion.series
-    .flatMap((serie) => serie.datos.map((dato) => dato.valor))
-    .filter(Number.isFinite);
-
-  const minimoY = valores.length
-    ? Math.floor((Math.min(...valores) - 3) / 5) * 5
-    : 0;
-
-  const maximoY = valores.length
-    ? Math.max(
-        minimoY + 10,
-        Math.ceil((Math.max(...valores) + 3) / 5) * 5
-      )
-    : 40;
-
-  const tema = TEMAS[temaOscuro ? "oscuro" : "claro"];
-
-  return (
-    <section
-      className={`panel-temperatura ${
-        temaOscuro ? "tema-oscuro" : "tema-claro"
-      }`}
-    >
+  return(
+    <section className={`panel-temperatura ${temaOscuro?"tema-oscuro":"tema-claro"}`}>
       <ControlesHistoricos
-        estaciones={estaciones}
-        estacion={estacion}
-        estacionId={estacionId}
-        setEstacionId={setEstacionId}
-        vista={vista}
-        setVista={setVista}
-        comparar={comparar}
-        setComparar={setComparar}
-        puedeComparar={puedeComparar}
-        periodosMensuales={periodosMensuales}
-        periodoMes={periodoMes}
-        setPeriodoMes={setPeriodoMes}
-        periodoMesComparacion={periodoMesComparacion}
-        setPeriodoMesComparacion={setPeriodoMesComparacion}
-        anios={anios}
-        anio={anio}
-        setAnio={setAnio}
-        anioComparacion={anioComparacion}
-        setAnioComparacion={setAnioComparacion}
-        periodoMesLegible={periodoMesLegible}
-        resumen={resumen}
-        series={configuracion.series}
+        estaciones={estaciones} estacion={estacion} estacionId={estacionId} setEstacionId={setEstacionId}
+        vista={vista} setVista={setVista} comparar={comparar} setComparar={setComparar}
+        puedeComparar={puedeComparar} periodosMensuales={meses} periodoMes={periodoMes}
+        setPeriodoMes={setPeriodoMes} periodoMesComparacion={periodoMesComparacion}
+        setPeriodoMesComparacion={setPeriodoMesComparacion} anios={anios} anio={anio}
+        setAnio={setAnio} anioComparacion={anioComparacion} setAnioComparacion={setAnioComparacion}
+        periodoMesLegible={mesTexto} resumen={resumen} series={configuracion.series}
       />
 
       <div className="area-temperatura">
-        {valores.length ? (
+        {valores.length?
           <GraficoTemperatura
-            series={configuracion.series}
-            categorias={configuracion.categorias}
-            ticksX={configuracion.ticksX}
-            minimoY={minimoY}
-            maximoY={maximoY}
-            tema={tema}
-            formatoCategoria={configuracion.formatoCategoria}
-          />
-        ) : (
+            series={configuracion.series} categorias={configuracion.categorias}
+            ticksX={configuracion.ticksX} minimoY={minimoY} maximoY={maximoY}
+            tema={tema} formatoCategoria={configuracion.formatoCategoria}
+          />:
           <div className="sin-datos">
-            <Thermometer size={28} />
+            <Thermometer size={28}/>
             <strong>Sin registros disponibles</strong>
             <span>No existen datos para el período seleccionado.</span>
           </div>
-        )}
+        }
       </div>
     </section>
   );

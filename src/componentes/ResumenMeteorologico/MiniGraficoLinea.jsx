@@ -4,132 +4,173 @@ import { ParentSize } from "@visx/responsive";
 import { scaleLinear } from "@visx/scale";
 import { Bar, LinePath } from "@visx/shape";
 
-const MARGEN = { top: 10, right: 14, bottom: 25, left: 36 };
-const esNumero = (valor) => Number.isFinite(valor);
+const esNumero=(valor)=>Number.isFinite(valor);
 
-const formatearFecha = (fecha) =>
-  fecha
-    ? new Intl.DateTimeFormat("es-CL", {
-        day: "2-digit",
-        month: "short",
-      })
-        .format(new Date(`${fecha}T12:00:00`))
-        .replace(".", "")
-    : "";
+const formatearFecha=(fecha)=>{
+  if(!fecha) return "";
+  return new Intl.DateTimeFormat("es-CL",{
+    day:"2-digit",
+    month:"short",
+  })
+    .format(new Date(`${fecha}T12:00:00`))
+    .replace(".","");
+};
 
-const obtenerTicks = (cantidad) =>
-  cantidad <= 1
-    ? [0]
-    : [0, Math.floor((cantidad - 1) / 2), cantidad - 1].filter(
-        (valor, indice, arreglo) => arreglo.indexOf(valor) === indice
-      );
+const obtenerTicks=(cantidad)=>{
+  if(cantidad<=1) return [0];
+
+  return [
+    0,
+    Math.floor((cantidad-1)/2),
+    cantidad-1,
+  ].filter((valor,indice,arreglo)=>arreglo.indexOf(valor)===indice);
+};
+
+const obtenerMargen=(width)=>{
+  if(width<340)
+    return {top:12,right:10,bottom:40,left:40};
+
+  return {top:12,right:16,bottom:42,left:46};
+};
 
 function MiniGraficoLinea({
-  datos = [],
-  series = [],
-  tipo = "linea",
-  lineasReferencia = [],
-  destacarRiesgo = false,
-  campoRiesgo = "minima",
-}) {
-  const valores = [
-    ...datos.flatMap((dato) =>
-      series.map((serie) => dato[serie.campo]).filter(esNumero)
-    ),
-    ...lineasReferencia.map((linea) => linea.valor).filter(esNumero),
-  ];
+  datos=[],
+  series=[],
+  tipo="linea",
+  lineasReferencia=[],
+  destacarRiesgo=false,
+  campoRiesgo="minima",
+}){
+  const valores=[];
 
-  if (!datos.length || !valores.length) {
+  datos.forEach((dato)=>{
+    series.forEach((serie)=>{
+      const valor=dato[serie.campo];
+      if(esNumero(valor)) valores.push(valor);
+    });
+  });
+
+  lineasReferencia.forEach((linea)=>{
+    if(esNumero(linea.valor)) valores.push(linea.valor);
+  });
+
+  if(!datos.length||!valores.length)
     return <div className="rm-grafico-vacio">Sin datos disponibles</div>;
-  }
 
-  return (
-    <ParentSize>
-      {({ width, height }) => {
-        if (width <= 20 || height <= 20) return null;
+  return(
+    <ParentSize debounceTime={80}>
+      {({width,height})=>{
+        if(width<=60||height<=60) return null;
 
-        const anchoInterno = width - MARGEN.left - MARGEN.right;
-        const altoInterno = height - MARGEN.top - MARGEN.bottom;
+        const margen=obtenerMargen(width);
+        const anchoInterno=Math.max(
+          width-margen.left-margen.right,
+          20
+        );
 
-        const xScale = scaleLinear({
-          domain: [0, Math.max(datos.length - 1, 1)],
-          range: [MARGEN.left, MARGEN.left + anchoInterno],
+        const altoInterno=Math.max(
+          height-margen.top-margen.bottom,
+          20
+        );
+
+        const xScale=scaleLinear({
+          domain:[0,Math.max(datos.length-1,1)],
+          range:[
+            margen.left,
+            margen.left+anchoInterno,
+          ],
         });
 
-        let minimo = tipo === "barras" ? 0 : Math.min(...valores);
-        let maximo = Math.max(...valores);
+        let minimo=tipo==="barras"?0:Math.min(...valores);
+        let maximo=Math.max(...valores);
 
-        if (minimo === maximo) {
-          minimo -= 1;
-          maximo += 1;
+        if(minimo===maximo){
+          minimo-=1;
+          maximo+=1;
         }
 
-        if (tipo === "linea") {
-          const margen = Math.max((maximo - minimo) * 0.12, 1);
-          minimo -= margen;
-          maximo += margen;
-        } else {
-          maximo = Math.max(maximo * 1.15, 1);
+        if(tipo==="linea"){
+          const margenVertical=Math.max(
+            (maximo-minimo)*.12,
+            1
+          );
+
+          minimo-=margenVertical;
+          maximo+=margenVertical;
+        }else{
+          maximo=Math.max(maximo*1.15,1);
         }
 
-        const yScale = scaleLinear({
-          domain: [minimo, maximo],
-          range: [MARGEN.top + altoInterno, MARGEN.top],
-          nice: true,
+        const yScale=scaleLinear({
+          domain:[minimo,maximo],
+          range:[
+            margen.top+altoInterno,
+            margen.top,
+          ],
+          nice:true,
         });
 
-        const ticksX = obtenerTicks(datos.length);
-        const paso = anchoInterno / Math.max(datos.length, 1);
-        const anchoBarra = Math.max(2, Math.min(12, paso * 0.62));
+        const ticksX=obtenerTicks(datos.length);
+        const paso=anchoInterno/Math.max(datos.length,1);
+        const anchoBarra=Math.max(2,Math.min(12,paso*.62));
 
-        return (
-          <svg width={width} height={height} role="img">
+        return(
+          <svg
+            width={width}
+            height={height}
+            role="img"
+            aria-label="Gráfico meteorológico"
+          >
             <GridRows
               scale={yScale}
               width={anchoInterno}
-              left={MARGEN.left}
+              left={margen.left}
               stroke="var(--rm-grilla)"
               numTicks={4}
             />
 
             <AxisLeft
               scale={yScale}
-              left={MARGEN.left}
+              left={margen.left}
               hideAxisLine
               hideTicks
               numTicks={4}
-              tickFormat={(valor) => Number(valor).toFixed(0)}
-              tickLabelProps={() => ({
-                fill: "var(--rm-texto-secundario)",
-                fontSize: 8,
-                textAnchor: "end",
-                dx: -7,
-                dy: 3,
+              tickFormat={(valor)=>Number(valor).toFixed(0)}
+              tickLabelProps={()=>({
+                fill:"var(--rm-texto-secundario)",
+                fontSize:10,
+                fontWeight:600,
+                textAnchor:"end",
+                dx:-8,
+                dy:3,
               })}
             />
 
             <AxisBottom
               scale={xScale}
-              top={MARGEN.top + altoInterno}
+              top={margen.top+altoInterno}
               tickValues={ticksX}
-              tickFormat={(indice) =>
-                formatearFecha(datos[Math.round(indice)]?.fecha)
+              tickFormat={(indice)=>
+                formatearFecha(
+                  datos[Math.round(indice)]?.fecha
+                )
               }
               hideAxisLine
               hideTicks
-              tickLabelProps={() => ({
-                fill: "var(--rm-texto-secundario)",
-                fontSize: 8,
-                textAnchor: "middle",
-                dy: 8,
+              tickLabelProps={()=>({
+                fill:"var(--rm-texto-secundario)",
+                fontSize:10,
+                fontWeight:600,
+                textAnchor:"middle",
+                dy:12,
               })}
             />
 
-            {lineasReferencia.map((linea) => (
+            {lineasReferencia.map((linea)=>(
               <line
                 key={`${linea.valor}-${linea.color}`}
-                x1={MARGEN.left}
-                x2={MARGEN.left + anchoInterno}
+                x1={margen.left}
+                x2={margen.left+anchoInterno}
                 y1={yScale(linea.valor)}
                 y2={yScale(linea.valor)}
                 stroke={linea.color}
@@ -138,86 +179,92 @@ function MiniGraficoLinea({
               />
             ))}
 
-            {tipo === "linea" &&
-              series.map((serie) => (
+            {tipo==="linea"&&
+              series.map((serie)=>(
                 <LinePath
                   key={serie.campo}
                   data={datos}
-                  defined={(dato) => esNumero(dato[serie.campo])}
-                  x={(_, indice) => xScale(indice)}
-                  y={(dato) => yScale(dato[serie.campo])}
+                  defined={(dato)=>esNumero(dato[serie.campo])}
+                  x={(_,indice)=>xScale(indice)}
+                  y={(dato)=>yScale(dato[serie.campo])}
                   stroke={serie.color}
-                  strokeWidth={serie.grosor ?? 2.2}
+                  strokeWidth={serie.grosor??2.2}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-              ))}
+              ))
+            }
 
-            {tipo === "barras" &&
-              datos.map((dato, indice) => {
-                const serie = series[0];
-                const valor = serie ? dato[serie.campo] : null;
+            {tipo==="barras"&&
+              datos.map((dato,indice)=>{
+                const serie=series[0];
+                if(!serie) return null;
 
-                if (!serie || !esNumero(valor)) return null;
+                const valor=dato[serie.campo];
+                if(!esNumero(valor)) return null;
 
-                const x = xScale(indice) - anchoBarra / 2;
-                const y = yScale(valor);
-                const base = yScale(0);
+                const x=xScale(indice)-anchoBarra/2;
+                const y=yScale(valor);
+                const base=yScale(0);
 
-                return (
+                return(
                   <Bar
                     key={dato.fecha}
                     x={x}
                     y={y}
                     width={anchoBarra}
-                    height={Math.max(base - y, valor === 0 ? 0 : 1)}
+                    height={Math.max(base-y,valor===0?0:1)}
                     fill={serie.color}
                     rx={2}
                   >
                     <title>
                       {formatearFecha(dato.fecha)} · {valor}
-                      {serie.unidad ?? ""}
+                      {serie.unidad??""}
                     </title>
                   </Bar>
                 );
-              })}
+              })
+            }
 
-            {tipo === "linea" &&
-              series.flatMap((serie) =>
-                datos.map((dato, indice) => {
-                  const valor = dato[serie.campo];
-                  if (!esNumero(valor)) return null;
+            {tipo==="linea"&&
+              series.map((serie)=>
+                datos.map((dato,indice)=>{
+                  const valor=dato[serie.campo];
+                  if(!esNumero(valor)) return null;
 
-                  const riesgo =
-                    destacarRiesgo && serie.campo === campoRiesgo;
-                  const esRiesgo = riesgo && valor <= 2;
-                  const esCritico = riesgo && valor <= 0;
-                  const mostrar = esRiesgo || esCritico || datos.length === 1;
+                  const esCampoRiesgo=
+                    destacarRiesgo&&serie.campo===campoRiesgo;
 
-                  return (
+                  const esRiesgo=esCampoRiesgo&&valor<=2;
+                  const esCritico=esCampoRiesgo&&valor<=0;
+                  const mostrar=
+                    esRiesgo||esCritico||datos.length===1;
+
+                  return(
                     <circle
                       key={`${serie.campo}-${dato.fecha}`}
                       cx={xScale(indice)}
                       cy={yScale(valor)}
-                      r={mostrar ? (esCritico ? 4 : 3.5) : 6}
+                      r={mostrar?(esCritico?4:3.5):6}
                       fill={
                         mostrar
-                          ? esCritico
-                            ? "#ef4444"
-                            : esRiesgo
-                              ? "#f59e0b"
-                              : serie.color
-                          : "transparent"
+                          ?esCritico
+                            ?"#ef4444"
+                            :esRiesgo
+                              ?"#f59e0b"
+                              :serie.color
+                          :"transparent"
                       }
                     >
                       <title>
                         {serie.nombre} · {formatearFecha(dato.fecha)} · {valor}
-                        {serie.unidad ?? ""}
+                        {serie.unidad??""}
                       </title>
                     </circle>
                   );
                 })
-              )}
+              )
+            }
           </svg>
         );
       }}

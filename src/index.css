@@ -1,24 +1,10 @@
-:root{
-  --fuente-interfaz:"Inter",system-ui,sans-serif;
-  --fuente-vigno:"Barlow Condensed","Arial Narrow",sans-serif;
-  --vigno-terracota:#9d4a1e;
-  --vigno-terracota-hover:#b25527;
-  --vigno-terracota-suave:rgba(157,74,30,.12);
-  --vigno-terracota-borde:rgba(157,74,30,.38);
-  --vigno-negro:#080808;
-  --vigno-blanco:#fff;
-  --estado-rojo:#ef4444;
-  --estado-amarillo:#f59e0b;
-  --estado-azul:#3b82f6;
-  --estado-celeste:#38a5ff;
-  --estado-verde:#22c55e;
-  --estado-gris:#64748b;
-  font-family:var(--fuente-interfaz);
+*{
+  box-sizing:border-box;
 }
 
-*{box-sizing:border-box}
-
-html,body,#root{
+html,
+body,
+#root{
   width:100%;
   min-width:0;
   min-height:100%;
@@ -26,46 +12,55 @@ html,body,#root{
   padding:0;
 }
 
-html{height:100%}
+html{
+  min-height:100%;
+}
 
 body{
-  min-width:320px;
-  height:100dvh;
-  overflow:hidden;
-  font-family:var(--fuente-interfaz);
-  text-rendering:optimizeLegibility;
-  -webkit-font-smoothing:antialiased;
+  min-height:100dvh;
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--vigno-bg-dark);
+  transition:background-color .3s ease;
+}
+
+body.body-oscuro{
+  background:var(--vigno-bg-dark);
+}
+
+body.body-claro{
+  background:var(--vigno-bg-light);
 }
 
 #root{
-  height:100dvh;
-  overflow:hidden;
+  min-height:100dvh;
 }
 
-button,input,select,textarea{
-  min-width:0;
+button,
+input,
+select,
+textarea{
   font:inherit;
 }
 
-button,select{-webkit-tap-highlight-color:transparent}
-img,svg,canvas{max-width:100%}
+button,
+select{
+  -webkit-tap-highlight-color:transparent;
+}
 
-@media(max-width:1180px){
-  html,body,#root{
-    height:auto;
-    min-height:100%;
-  }
+button{
+  font-family:inherit;
+}
 
-  body{
-    min-height:100dvh;
-    overflow-x:hidden;
-    overflow-y:auto;
-    overscroll-behavior-y:contain;
-    -webkit-overflow-scrolling:touch;
-  }
+body,
+button,
+input,
+select,
+textarea{
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
 
-  #root{
-    min-height:100dvh;
-    overflow:visible;
-  }
+@media(prefers-reduced-motion:reduce){
+  body{transition:none}
 }
