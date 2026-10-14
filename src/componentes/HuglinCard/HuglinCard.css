@@ -1,158 +1,141 @@
-/* Configuración base (Modo Oscuro por defecto) */
-.huglin-card {
-  background-color: #111a2e;
-  border: 1px solid #1f2d47;
-  border-radius: 12px;
-  padding: 1.25rem;
-  color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  max-width: 460px;
-  width: 100%;
-  margin-top: 1.5rem;
-  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+.huglin-card{
+  width:100%;
+  max-width:none;
+  height:auto;
+  min-height:0;
+  margin:0;
+  padding:1rem;
+  display:flex;
+  flex-direction:column;
+  align-self:start;
+  gap:.7rem;
+  color:#fff;
+  background:var(--vigno-surface-dark);
+  border:1px solid var(--vigno-surface-border);
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,.18);
 }
 
-.huglin-card-header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.huglin-card-header{display:flex;flex-direction:column;gap:.4rem}
+.huglin-header-top{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
+.huglin-badge{color:var(--vigno-accent);font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.huglin-card-header h4{margin:0;color:#fff;font-size:1rem;font-weight:600}
+
+.huglin-selectores{display:flex;align-items:center;justify-content:flex-end;gap:.4rem;flex-wrap:wrap}
+.huglin-select{
+  min-width:150px;
+  max-width:210px;
+  height:32px;
+  padding:0 9px;
+  color:#fff;
+  background:var(--vigno-surface-dark-2);
+  border:1px solid var(--vigno-surface-border);
+  border-radius:6px;
+  outline:0;
+  font-size:.7rem;
+  font-weight:600;
+  cursor:pointer;
+  color-scheme:dark;
+}
+.huglin-select:hover,.huglin-select:focus{border-color:var(--vigno-accent)}
+.huglin-select option{color:#fff;background:var(--vigno-surface-dark)}
+
+.huglin-card-body{min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:.8rem}
+.huglin-metric{display:flex;align-items:baseline;gap:.3rem}
+.huglin-value{color:var(--vigno-accent);font-size:2rem;font-weight:700;line-height:1}
+.huglin-unit{color:var(--vigno-text-secondary);font-size:.8rem}
+
+.huglin-classification{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.huglin-region{color:var(--vigno-accent);font-size:.9rem;font-weight:700;text-transform:capitalize}
+.huglin-desc{color:var(--vigno-text-secondary);font-size:.7rem}
+
+.huglin-aviso{
+  padding:7px 9px;
+  color:var(--vigno-status-alerta);
+  background:rgba(217,155,38,.08);
+  border:1px solid rgba(217,155,38,.25);
+  border-radius:7px;
+  font-size:.65rem;
 }
 
-.huglin-header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+.huglin-datos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.huglin-datos>div{
+  min-height:44px;
+  padding:6px 9px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:2px;
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--vigno-surface-border);
+  border-radius:7px;
+}
+.huglin-datos span{color:var(--vigno-text-muted);font-size:.6rem}
+.huglin-datos strong{color:#fff;font-size:.7rem;font-weight:600}
+.huglin-ok{color:var(--vigno-status-confiable)!important}
+.huglin-warn{color:var(--vigno-status-alerta)!important}
+
+.huglin-card-footer{padding-top:.45rem;border-top:1px solid var(--vigno-surface-border)}
+.huglin-card-footer small{color:var(--vigno-text-muted);font-size:.65rem}
+
+/* TEMA CLARO */
+.tema-pagina-claro .huglin-card{
+  color:var(--vigno-text-dark);
+  background:var(--app-fondo)!important;
+  border-color:var(--vigno-border-light);
+  box-shadow:none;
 }
 
-.huglin-selectores {
-  display: flex;
-  gap: 0.5rem;
+.tema-pagina-claro .huglin-card-header h4,
+.tema-pagina-claro .huglin-datos strong{
+  color:var(--vigno-text-dark);
 }
 
-.huglin-select {
-  background-color: #1e293b;
-  color: #e2e8f0;
-  border: 1px solid #334155;
-  border-radius: 6px;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-
-.huglin-select:hover {
-  border-color: #38bdf8;
-}
-
-.huglin-badge {
-  font-size: 0.75rem;
-  color: #38bdf8;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
-}
-
-.huglin-card-header h4 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #e2e8f0;
-}
-
-.huglin-card-body {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-
-.huglin-metric {
-  display: flex;
-  align-items: baseline;
-  gap: 0.35rem;
-}
-
-.huglin-value {
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #f59e0b;
-}
-
-.huglin-unit {
-  font-size: 0.9rem;
-  color: #94a3b8;
-  font-weight: 500;
-}
-
-.huglin-classification {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.huglin-region {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #38bdf8;
-}
-
-.huglin-desc {
-  font-size: 0.8rem;
-  color: #94a3b8;
-}
-
-.huglin-card-footer {
-  border-top: 1px solid #1f2d47;
-  padding-top: 0.5rem;
-}
-
-.huglin-card-footer small {
-  color: #64748b;
-  font-size: 0.75rem;
-}
-
-/* Adaptación dinámica a Modo Claro */
-.tema-pagina-claro .huglin-card {
-  background-color: #ffffff;
-  border-color: #e2e8f0;
-  color: #0f172a;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.tema-pagina-claro .huglin-select {
-  background-color: #f8fafc;
-  color: #0f172a;
-  border-color: #cbd5e1;
-}
-
-.tema-pagina-claro .huglin-select:hover {
-  border-color: #0284c7;
-}
-
-.tema-pagina-claro .huglin-card-header h4 {
-  color: #0f172a;
-}
-
-.tema-pagina-claro .huglin-badge {
-  color: #0284c7;
-}
-
-.tema-pagina-claro .huglin-region {
-  color: #0284c7;
-}
-
-.tema-pagina-claro .huglin-card-footer {
-  border-top-color: #e2e8f0;
-}
-
-.tema-pagina-claro .huglin-card-footer small,
 .tema-pagina-claro .huglin-unit,
-.tema-pagina-claro .huglin-desc {
-  color: #64748b;
+.tema-pagina-claro .huglin-desc,
+.tema-pagina-claro .huglin-datos span,
+.tema-pagina-claro .huglin-card-footer small{
+  color:var(--vigno-text-muted);
+}
+
+.tema-pagina-claro .huglin-select{
+  color:var(--vigno-text-dark);
+  background:#fff;
+  border-color:var(--vigno-border-light);
+  color-scheme:light;
+}
+
+.tema-pagina-claro .huglin-select option{
+  color:var(--vigno-text-dark);
+  background:#fff;
+}
+
+.tema-pagina-claro .huglin-datos>div{
+  background:#fff;
+  border-color:var(--vigno-border-light);
+}
+
+.tema-pagina-claro .huglin-aviso{
+  color:#9A6700;
+  background:#FFF8E6;
+  border-color:rgba(217,155,38,.35);
+}
+
+.tema-pagina-claro .huglin-card-footer{
+  border-color:var(--vigno-border-light);
+}
+
+@media(max-width:900px){
+  .huglin-header-top{flex-direction:column;align-items:stretch}
+  .huglin-selectores{width:100%;justify-content:flex-start}
+  .huglin-select{flex:1;max-width:none}
+}
+
+@media(max-width:520px){
+  .huglin-card{padding:.85rem}
+  .huglin-selectores{flex-direction:column;align-items:stretch}
+  .huglin-select{width:100%;min-width:0;max-width:none;height:36px}
+  .huglin-card-body{flex-direction:column;align-items:flex-start}
+  .huglin-classification{align-items:flex-start;text-align:left}
+  .huglin-datos{grid-template-columns:1fr}
 }

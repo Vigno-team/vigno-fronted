@@ -1,177 +1,67 @@
-import {
+import{
   Activity,
   Clock3,
-  CloudSun,
   Home,
   Menu,
   Moon,
   Settings,
   Sun,
   TriangleAlert,
-} from "lucide-react";
+}from"lucide-react";
+import"./BarraLateral.css";
 
-import "./BarraLateral.css";
-
-const opciones = [
-  {
-    nombre: "Resumen",
-    icono: Home,
-  },
-  {
-    nombre: "Clima en tiempo real",
-    icono: CloudSun,
-  },
-  {
-    nombre: "Históricos",
-    icono: Clock3,
-  },
-  {
-    nombre: "Índices vitivinícolas",
-    icono: Activity,
-  },
-  {
-    nombre: "Alertas y reportes",
-    icono: TriangleAlert,
-  },
-  {
-    nombre: "Configuración",
-    icono: Settings,
-  },
+const opciones=[
+  {nombre:"Resumen",icono:Home},
+  {nombre:"Alertas y reportes",icono:TriangleAlert},
+  {nombre:"Índices vitivinícolas",icono:Activity},
+  {nombre:"Históricos",icono:Clock3},
+  {nombre:"Configuración",icono:Settings},
 ];
 
 function BarraLateral({
   expandida,
-  cambiarEstado,
+  setExpandida,
   opcionActiva,
-  cambiarOpcion,
+  setOpcionActiva,
   temaOscuro,
-  cambiarTema,
-}) {
-  return (
-    <aside
-      className={`barra-lateral ${
-        expandida
-          ? "expandida"
-          : "contraida"
-      }`}
-    >
-      <div className="bl-cabecera">
-        <button
-          type="button"
-          className="bl-menu"
-          onClick={() =>
-            cambiarEstado(
-              (actual) => !actual
-            )
-          }
-          title={
-            expandida
-              ? "Contraer menú"
-              : "Expandir menú"
-          }
-          aria-label="Cambiar tamaño del menú"
-        >
-          <Menu size={23} />
-        </button>
+  setTemaOscuro,
+}){
+  return(
+    <aside className={`barra-lateral ${expandida?"expandida":"contraida"}`}>
+      <button
+        type="button"
+        className="barra-menu"
+        onClick={()=>setExpandida(v=>!v)}
+        aria-label={expandida?"Contraer menú":"Expandir menú"}
+      >
+        <Menu size={21}/>
+        {expandida&&<span>Menú</span>}
+      </button>
 
-        {expandida && (
-          <div className="bl-marca">
-            <strong>
-              VIGNO
-            </strong>
-
-            <span>
-              Dashboard meteorológico
-            </span>
-          </div>
-        )}
-      </div>
-
-      <nav className="bl-navegacion">
-        {opciones.map(
-          ({
-            nombre,
-            icono: Icono,
-          }) => {
-            const activa =
-              opcionActiva ===
-              nombre;
-
-            return (
-              <button
-                key={nombre}
-                type="button"
-                className={`bl-opcion ${
-                  activa
-                    ? "activa"
-                    : ""
-                }`}
-                onClick={() =>
-                  cambiarOpcion(
-                    nombre
-                  )
-                }
-                title={
-                  expandida
-                    ? undefined
-                    : nombre
-                }
-                aria-current={
-                  activa
-                    ? "page"
-                    : undefined
-                }
-              >
-                <span className="bl-opcion-icono">
-                  <Icono
-                    size={20}
-                    strokeWidth={1.9}
-                  />
-                </span>
-
-                {expandida && (
-                  <span className="bl-opcion-texto">
-                    {nombre}
-                  </span>
-                )}
-              </button>
-            );
-          }
-        )}
+      <nav className="barra-opciones">
+        {opciones.map(({nombre,icono:Icono})=>(
+          <button
+            key={nombre}
+            type="button"
+            className={`barra-opcion ${opcionActiva===nombre?"activa":""}`}
+            onClick={()=>setOpcionActiva(nombre)}
+            title={!expandida?nombre:undefined}
+          >
+            <Icono size={21}/>
+            {expandida&&<span>{nombre}</span>}
+          </button>
+        ))}
       </nav>
 
-      <div className="bl-pie">
+      <div className="barra-inferior">
         <button
           type="button"
-          className="bl-tema"
-          onClick={
-            cambiarTema
-          }
-          title={
-            temaOscuro
-              ? "Cambiar a tema claro"
-              : "Cambiar a tema oscuro"
-          }
+          className="barra-tema"
+          onClick={()=>setTemaOscuro(v=>!v)}
+          title={temaOscuro?"Cambiar a tema claro":"Cambiar a tema oscuro"}
         >
-          {temaOscuro ? (
-            <Sun
-              size={19}
-              strokeWidth={1.9}
-            />
-          ) : (
-            <Moon
-              size={19}
-              strokeWidth={1.9}
-            />
-          )}
-
-          {expandida && (
-            <span>
-              {temaOscuro
-                ? "Tema claro"
-                : "Tema oscuro"}
-            </span>
-          )}
+          {temaOscuro?<Sun size={20}/>:<Moon size={20}/>}
+          {expandida&&<span>{temaOscuro?"Tema claro":"Tema oscuro"}</span>}
         </button>
       </div>
     </aside>

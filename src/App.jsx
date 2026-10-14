@@ -1,143 +1,167 @@
-import { useEffect, useMemo, useState } from "react";
-
-import BarraLateral from "./componentes/BarraLateral/BarraLateral";
-import TemperatureChart from "./componentes/Historicos/TemperatureChart";
-import ResumenMeteorologico from "./componentes/ResumenMeteorologico/ResumenMeteorologico";
-import AlertasReportes from "./componentes/AlertasReportes/AlertasReportes";
-import { WinklerCard } from "./componentes/WinklerCard/WinklerCard";
-import { HuglinCard } from "./componentes/HuglinCard/HuglinCard";
-
-import { useClimateData } from "./hooks/useClimateData";
-import { adaptarClimateData } from "./services/adaptarClimateData";
-
-import "./App.css";
-import "./responsive.css";
+import{useEffect,useMemo,useState}from"react";
+import BarraLateral from"./componentes/BarraLateral/BarraLateral";
+import ResumenMeteorologico from"./componentes/ResumenMeteorologico/ResumenMeteorologico";
+import AlertasReportes from"./componentes/AlertasReportes/AlertasReportes";
+import TemperatureChart from"./componentes/Historicos/TemperatureChart";
+import WinklerCard from"./componentes/WinklerCard/WinklerCard";
+import HuglinCard from"./componentes/HuglinCard/HuglinCard";
+import{useClimateData}from"./hooks/useClimateData";
+import{adaptarClimateData}from"./services/adaptarClimateData";
+import"./App.css";
+import"./responsive.css";
+import"./paletaVigno.css";
 
 function App(){
-  const [barraExpandida,setBarraExpandida]=useState(false);
-  const [opcionActiva,setOpcionActiva]=useState("Resumen");
+  const{data,loading}=useClimateData();
+  const[barraExpandida,setBarraExpandida]=useState(false);
+  const[opcionActiva,setOpcionActiva]=useState("Resumen");
 
-  const [temaOscuro,setTemaOscuro]=useState(()=>{
-    try{
-      const guardado=localStorage.getItem("tema-dashboard");
-      return guardado===null?true:JSON.parse(guardado);
-    }catch{
-      return true;
-    }
+  const[temaOscuro,setTemaOscuro]=useState(()=>{
+    const valor=localStorage.getItem("tema-oscuro");
+    return valor===null?true:valor==="true";
   });
 
-  useEffect(()=>{
-    localStorage.setItem("tema-dashboard",JSON.stringify(temaOscuro));
-  },[temaOscuro]);
+  const[escalaTexto,setEscalaTexto]=useState(()=>{
+    const valor=Number(localStorage.getItem("escala-texto"));
+    return valor>=90&&valor<=150?valor:120;
+  });
 
-  const {data,loading}=useClimateData();
   const datos=useMemo(()=>adaptarClimateData(data),[data]);
 
-  const cambiarOpcion=(opcion)=>{
-    setOpcionActiva(opcion);
+  useEffect(()=>{
+    localStorage.setItem("tema-oscuro",String(temaOscuro));
+  },[temaOscuro]);
 
-    if(
-      window.innerWidth<=820 ||
-      (window.innerHeight<=520 && window.innerWidth<=950)
-    ){
-      setBarraExpandida(false);
-    }
-  };
+  useEffect(()=>{
+    localStorage.setItem("escala-texto",String(escalaTexto));
+  },[escalaTexto]);
 
   const renderizarContenido=()=>{
-    if(loading)
-      return <div className="estado-datos">Cargando datos meteorológicos...</div>;
-
-    if(!datos)
-      return <div className="estado-datos">No se pudieron cargar los datos.</div>;
-
-    const comunes={
-      estaciones:datos.estaciones,
-      datosTemperatura:datos.seriesTemperaturas,
-      temaOscuro,
-    };
+    if(loading||!datos)return(
+      <div className="estado-carga">Cargando datos meteorológicos...</div>
+    );
 
     switch(opcionActiva){
-      case "Resumen":
-        return <ResumenMeteorologico {...comunes}/>;
-
-      case "Clima en tiempo real":
+      case"Resumen":
         return(
-          <div className="pantalla-provisional">
-            <h2>Clima en tiempo real</h2>
-            <p>Los datos disponibles actualmente tienen resolución diaria.</p>
-          </div>
+          <ResumenMeteorologico
+            estaciones={datos.estaciones}
+            datosTemperatura={datos.seriesTemperaturas}
+            temaOscuro={temaOscuro}
+          />
         );
 
-      case "Históricos":
-        return <TemperatureChart {...comunes}/>;
+      case"Alertas y reportes":
+        return(
+          <AlertasReportes
+            estaciones={datos.estaciones}
+            datosTemperatura={datos.seriesTemperaturas}
+            temaOscuro={temaOscuro}
+          />
+        );
 
-      case "Índices vitivinícolas":
+      case"Índices vitivinícolas":
         return(
           <div className="indices-grid">
             <WinklerCard
               estaciones={datos.estaciones}
-              seriesTemperaturas={datos.seriesTemperaturas}
               fichasTemporada={datos.fichasTemporada}
               temporadaEnCurso={datos.temporadaEnCurso}
             />
+
             <HuglinCard
               estaciones={datos.estaciones}
-              seriesTemperaturas={datos.seriesTemperaturas}
               fichasTemporada={datos.fichasTemporada}
               temporadaEnCurso={datos.temporadaEnCurso}
             />
           </div>
         );
 
-      case "Alertas y reportes":
+      case"Históricos":
         return(
-          <AlertasReportes
-            {...comunes}
-            fichasTemporada={datos.fichasTemporada}
-            rachas={datos.rachas}
-            temporadaEnCurso={datos.temporadaEnCurso}
+          <TemperatureChart
+            estaciones={datos.estaciones}
+            datosTemperatura={datos.seriesTemperaturas}
+            temaOscuro={temaOscuro}
           />
         );
 
-      case "Configuración":
+      case"Configuración":
         return(
-          <div className="pantalla-provisional">
-            <h2>Configuración</h2>
-            <p>Configuración general del sistema.</p>
-          </div>
+          <section className="configuracion">
+            <div className="configuracion-header">
+              <h1>Configuración</h1>
+              <p>Personaliza la visualización del dashboard.</p>
+            </div>
+
+            <div className="configuracion-card">
+              <div className="configuracion-card-header">
+                <div>
+                  <h2>Tamaño del texto</h2>
+                  <p>Ajusta el tamaño general de los textos.</p>
+                </div>
+                <strong>{escalaTexto}%</strong>
+              </div>
+
+              <div className="configuracion-slider">
+                <span>90%</span>
+                <input
+                  type="range"
+                  min="90"
+                  max="150"
+                  step="5"
+                  value={escalaTexto}
+                  onChange={e=>setEscalaTexto(Number(e.target.value))}
+                />
+                <span>150%</span>
+              </div>
+
+              <div
+                className="configuracion-preview"
+                style={{fontSize:`${escalaTexto/100}rem`}}
+              >
+                Vista previa del tamaño del texto
+              </div>
+
+              <button
+                type="button"
+                className="configuracion-reset"
+                onClick={()=>setEscalaTexto(120)}
+              >
+                Restablecer
+              </button>
+            </div>
+          </section>
         );
 
       default:
-        return(
-          <div className="pantalla-provisional">
-            <h2>{opcionActiva}</h2>
-            <p>Esta sección será implementada próximamente.</p>
-          </div>
-        );
+        return null;
     }
   };
 
   return(
-    <div className={`aplicacion ${temaOscuro?"tema-pagina-oscuro":"tema-pagina-claro"}`}>
+    <div
+      className={`aplicacion ${temaOscuro?"tema-pagina-oscuro":"tema-pagina-claro"}`}
+      style={{"--escala-texto":escalaTexto/100}}
+    >
       <BarraLateral
         expandida={barraExpandida}
-        cambiarEstado={setBarraExpandida}
+        setExpandida={setBarraExpandida}
         opcionActiva={opcionActiva}
-        cambiarOpcion={cambiarOpcion}
+        setOpcionActiva={setOpcionActiva}
         temaOscuro={temaOscuro}
-        cambiarTema={()=>setTemaOscuro(actual=>!actual)}
-      />
-
-      <button
-        type="button"
-        aria-label="Cerrar menú"
-        className={`sidebar-overlay ${barraExpandida?"visible":""}`}
-        onClick={()=>setBarraExpandida(false)}
+        setTemaOscuro={setTemaOscuro}
       />
 
       <main className={`contenido ${barraExpandida?"contenido-expandido":"contenido-contraido"}`}>
-        {renderizarContenido()}
+        <div className="contenido-vista">
+          {renderizarContenido()}
+        </div>
+
+        <footer className="footer-vigno">
+          Este proyecto fue potenciado por la{" "}
+          <strong>Universidad Autónoma de Chile</strong>
+        </footer>
       </main>
     </div>
   );
