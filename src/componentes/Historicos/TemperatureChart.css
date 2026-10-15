@@ -1,76 +1,1023 @@
+/* =====================================================
+   TEMAS
+===================================================== */
+
 .panel-temperatura.tema-oscuro{
-  --ht-fondo:var(--vigno-bg-dark);--ht-superficie:var(--vigno-surface-dark);
-  --ht-hover:#202631;--ht-texto:var(--vigno-text-primary);
-  --ht-secundario:var(--vigno-text-secondary);--ht-borde:var(--vigno-surface-border);
+  --fondo:#0F1115;
+  --superficie:#181C24;
+  --superficie-hover:#20252D;
+  --borde:#262C38;
+  --borde-control:#323946;
+  --texto:#F8FAFC;
+  --texto-secundario:#9CA3AF;
+  --sombra:rgba(0,0,0,.20);
 }
+
 .panel-temperatura.tema-claro{
-  --ht-fondo:#FFF;--ht-superficie:#F8F9FA;--ht-hover:#F3F0EC;
-  --ht-texto:#171717;--ht-secundario:var(--vigno-text-muted);--ht-borde:#E5E2DE;
+  --fondo:#FFFFFF;
+  --superficie:#F8F9FA;
+  --superficie-hover:#F3F0EC;
+  --borde:#E5E2DE;
+  --borde-control:#DDD9D4;
+  --texto:#171717;
+  --texto-secundario:#6B7280;
+  --sombra:rgba(15,23,42,.06);
 }
-.panel-temperatura{width:100%;height:calc(100dvh - 32px);min-width:0;min-height:600px;display:flex;flex-direction:column;gap:12px;color:var(--ht-texto);overflow:hidden}
 
-.cabecera-temperatura{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-shrink:0}
-.titulo-temperatura{display:flex;align-items:center;gap:10px}
-.icono-principal{width:38px;height:38px;display:grid;place-items:center;flex-shrink:0;color:var(--vigno-accent);background:var(--vigno-terracota-suave);border-radius:9px}
-.titulo-temperatura h2{margin:0;color:var(--ht-texto);font-family:var(--fuente-vigno);font-size:27px;font-weight:600;line-height:1}
-.acciones-temperatura{display:flex;align-items:center}
+/* =====================================================
+   CORRECCIÓN DE SELECTS OSCUROS
+===================================================== */
 
-.selector-estacion{min-width:190px;height:37px;display:flex;align-items:center;gap:7px;padding:0 10px;color:var(--vigno-accent);background:var(--ht-fondo);border:1px solid var(--ht-borde);border-radius:9px}
-.selector-estacion select{width:100%;min-width:0;color:var(--ht-texto);background:transparent;border:0;outline:0;font-size:9px;font-weight:650;cursor:pointer}
-.tema-oscuro .selector-estacion select,.tema-oscuro .grupo-periodo select{color-scheme:dark}
-.tema-oscuro .selector-estacion option,.tema-oscuro .grupo-periodo option{color:#FFF;background:var(--vigno-bg-dark)}
+.panel-temperatura.tema-oscuro select{
+  color-scheme:dark;
+}
 
-.barra-grafico{min-height:57px;display:flex;align-items:flex-end;gap:10px;padding:9px 11px;flex-shrink:0;background:var(--ht-fondo);border:1px solid var(--ht-borde);border-radius:12px}
-.selector-vista{display:flex;gap:3px;padding:3px;background:var(--ht-superficie);border:1px solid var(--ht-borde);border-radius:8px}
-.boton-vista{height:31px;display:flex;align-items:center;justify-content:center;gap:5px;padding:0 11px;color:var(--ht-secundario);background:transparent;border:0;border-radius:6px;font-size:8px;font-weight:700;cursor:pointer}
-.boton-vista:hover{color:var(--ht-texto);background:var(--ht-hover)}
-.boton-vista.activo{color:#FFF;background:var(--vigno-accent)}
+.panel-temperatura.tema-oscuro select option{
+  color:#F8FAFC;
+  background:#181C24;
+}
 
-.boton-comparar{height:37px;display:flex;align-items:center;gap:6px;padding:0 11px;color:var(--ht-secundario);background:var(--ht-superficie);border:1px solid var(--ht-borde);border-radius:8px;font-size:8px;font-weight:700;cursor:pointer}
-.boton-comparar:hover:not(:disabled){color:var(--ht-texto);border-color:var(--vigno-terracota-borde)}
-.boton-comparar.activo{color:#FFF;background:var(--vigno-accent);border-color:var(--vigno-accent)}
-.boton-comparar:disabled{opacity:.35;cursor:default}
+.panel-temperatura.tema-oscuro select option:disabled{
+  color:#59616E;
+  background:#14171D;
+}
 
-.filtros-periodo{display:flex;align-items:flex-end;gap:8px}
-.grupo-periodo{min-width:128px;display:flex;flex-direction:column;gap:4px}
-.etiqueta-filtro{display:flex;align-items:center;gap:5px;padding-left:2px;color:var(--ht-secundario);font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:.35px}
-.grupo-periodo select,.grupo-periodo input{width:100%;height:34px;padding:0 9px;color:var(--ht-texto);background:var(--ht-superficie);border:1px solid var(--ht-borde);border-radius:8px;outline:0;font-size:8px;font-weight:650}
-.grupo-periodo select:focus,.grupo-periodo input:focus{border-color:var(--vigno-accent)}
+/* =====================================================
+   PANEL
+===================================================== */
 
-.punto-serie{width:7px;height:7px;display:inline-block;border-radius:50%}
-.punto-serie.serie-a,.linea-leyenda.serie-a{background:var(--vigno-accent)}
-.punto-serie.serie-b,.linea-leyenda.serie-b{background:var(--vigno-status-confiable)}
+.panel-temperatura{
+  width:100%;
+  min-width:0;
 
-.resumen-temperatura{margin-left:auto;display:flex;gap:4px}
-.resumen-temperatura>div{min-width:86px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:5px;padding:6px 9px;background:var(--ht-superficie);border:1px solid var(--ht-borde);border-radius:8px}
-.resumen-temperatura svg{grid-row:1/3;align-self:center;color:var(--vigno-accent)}
-.resumen-temperatura span{color:var(--ht-secundario);font-size:6.5px}
-.resumen-temperatura strong{color:var(--ht-texto);font-size:9px;font-weight:700}
-.leyenda-comparacion{margin-left:auto;display:flex;align-items:center;gap:14px;padding:0 8px}
-.item-leyenda{display:flex;align-items:center;gap:6px;color:var(--ht-secundario);font-size:8px}
-.linea-leyenda{width:23px;height:3px;border-radius:999px}
+  box-sizing:border-box;
 
-.area-temperatura{min-width:0;min-height:0;flex:1;position:relative;padding:14px;background:var(--ht-fondo);border:1px solid var(--ht-borde);border-radius:12px;overflow:hidden}
-.grafico-visx{position:relative;width:100%;height:100%;min-height:300px}
-.tooltip-temperatura{position:absolute;z-index:20;min-width:160px;padding:10px 11px;transform:translate(-50%,calc(-100% - 12px));pointer-events:none;color:var(--ht-texto);background:var(--ht-fondo);border:1px solid var(--ht-borde);border-top:2px solid var(--vigno-accent);border-radius:9px;box-shadow:0 12px 32px rgba(0,0,0,.22)}
-.tooltip-titulo{display:block;margin-bottom:7px;font-size:9px}
-.tooltip-serie{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:4px 0}
-.tooltip-serie>div{display:flex;align-items:center;gap:6px}
-.tooltip-serie span,.tooltip-diferencia span{color:var(--ht-secundario);font-size:8px}
-.tooltip-serie strong,.tooltip-diferencia strong{font-size:8px}
-.punto-tooltip{width:7px;height:7px;border-radius:50%}
-.tooltip-diferencia{display:flex;justify-content:space-between;gap:12px;margin-top:6px;padding-top:7px;border-top:1px solid var(--ht-borde)}
-.sin-datos{width:100%;height:100%;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:var(--vigno-accent);text-align:center}
-.sin-datos strong{color:var(--ht-texto);font-size:13px}.sin-datos span{color:var(--ht-secundario);font-size:8px}
+  padding:18px;
 
-@media(min-width:701px){
-  .barra-grafico{min-height:72px;align-items:center;gap:12px;padding:11px 13px}
-  .selector-vista{min-height:44px;padding:4px;gap:4px;border-radius:10px}
-  .boton-vista{min-width:78px;height:38px;padding:0 14px;gap:7px;font-size:11px}
-  .boton-vista svg,.boton-comparar svg,.resumen-temperatura svg{width:17px;height:17px}
-  .boton-comparar{height:44px;padding:0 16px;gap:8px;font-size:11px}
-  .grupo-periodo{min-width:150px;gap:5px}.etiqueta-filtro{font-size:8px}
-  .grupo-periodo select,.grupo-periodo input{min-width:145px;height:40px;padding:0 12px;font-size:11px}
-  .resumen-temperatura{gap:8px}.resumen-temperatura>div{min-width:100px;min-height:46px;padding:7px 11px}
-  .resumen-temperatura span{font-size:8px}.resumen-temperatura strong{font-size:12px}
+  color:var(--texto);
+  background:var(--fondo);
+
+  border:1px solid var(--borde);
+  border-radius:15px;
+
+  overflow:hidden;
+}
+
+/* =====================================================
+   CABECERA
+===================================================== */
+
+.cabecera-temperatura{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  gap:18px;
+}
+
+.titulo-temperatura{
+  min-width:0;
+
+  display:flex;
+  align-items:center;
+
+  gap:10px;
+}
+
+.icono-principal{
+  width:38px;
+  height:38px;
+
+  display:grid;
+  place-items:center;
+
+  flex-shrink:0;
+
+  color:var(--vigno-accent);
+  background:var(--vigno-terracota-suave);
+
+  border-radius:10px;
+}
+
+.titulo-temperatura h2{
+  margin:0;
+
+  color:var(--texto);
+
+  font-size:20px;
+  font-weight:720;
+
+  letter-spacing:-.3px;
+}
+
+.acciones-temperatura{
+  display:flex;
+  align-items:center;
+}
+
+/* =====================================================
+   ESTACIÓN PRINCIPAL
+===================================================== */
+
+.selector-estacion{
+  height:40px;
+
+  display:flex;
+  align-items:center;
+
+  gap:7px;
+
+  padding:0 10px;
+
+  color:var(--vigno-accent);
+
+  background:var(--superficie);
+
+  border:1px solid var(--borde-control);
+  border-radius:8px;
+}
+
+.selector-estacion select{
+  min-width:155px;
+
+  color:var(--texto);
+
+  background:transparent;
+
+  border:0;
+  outline:0;
+
+  font-family:inherit;
+
+  font-size:10px;
+  font-weight:650;
+
+  cursor:pointer;
+}
+
+/* =====================================================
+   BARRA
+===================================================== */
+
+.barra-grafico{
+  width:100%;
+
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+
+  gap:12px;
+
+  margin-top:14px;
+
+  padding:10px 12px;
+
+  box-sizing:border-box;
+
+  background:var(--superficie);
+
+  border:1px solid var(--borde);
+  border-radius:11px;
+}
+
+.controles-historicos{
+  min-width:0;
+  flex:1;
+
+  display:flex;
+  align-items:flex-end;
+
+  flex-wrap:wrap;
+
+  gap:8px;
+}
+
+/* =====================================================
+   MES / AÑO
+===================================================== */
+
+.selector-vista{
+  height:40px;
+
+  display:flex;
+  align-items:center;
+
+  flex-shrink:0;
+
+  gap:3px;
+
+  padding:3px;
+
+  box-sizing:border-box;
+
+  background:var(--fondo);
+
+  border:1px solid var(--borde-control);
+  border-radius:8px;
+}
+
+.boton-vista{
+  height:32px;
+  min-width:76px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  gap:6px;
+
+  padding:0 12px;
+
+  color:var(--texto-secundario);
+
+  background:transparent;
+
+  border:0;
+  border-radius:6px;
+
+  font-family:inherit;
+
+  font-size:10px;
+  font-weight:650;
+
+  cursor:pointer;
+
+  transition:
+    color .18s ease,
+    background .18s ease;
+}
+
+.boton-vista:hover{
+  color:var(--texto);
+  background:var(--superficie-hover);
+}
+
+.boton-vista.activo{
+  color:#fff;
+  background:var(--vigno-accent);
+}
+
+/* =====================================================
+   BOTONES COMPARAR
+===================================================== */
+
+.boton-comparar{
+  height:40px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  flex-shrink:0;
+
+  gap:6px;
+
+  padding:0 12px;
+
+  color:var(--texto-secundario);
+
+  background:var(--fondo);
+
+  border:1px solid var(--borde-control);
+  border-radius:8px;
+
+  font-family:inherit;
+
+  font-size:9px;
+  font-weight:650;
+
+  cursor:pointer;
+
+  transition:
+    color .18s ease,
+    background .18s ease,
+    border-color .18s ease;
+}
+
+.boton-comparar:hover:not(:disabled){
+  color:var(--texto);
+  background:var(--superficie-hover);
+}
+
+.boton-comparar.activo{
+  color:#fff;
+  background:var(--vigno-accent);
+  border-color:var(--vigno-accent);
+}
+
+.boton-estaciones.activo{
+  background:#3E8E58;
+  border-color:#3E8E58;
+}
+
+.boton-comparar:disabled{
+  opacity:.35;
+  cursor:not-allowed;
+}
+
+/* =====================================================
+   FILTROS
+===================================================== */
+
+.filtros-periodo,
+.comparadores-estacion{
+  min-width:0;
+
+  display:flex;
+  align-items:flex-end;
+
+  flex-wrap:wrap;
+
+  gap:8px;
+}
+
+.grupo-periodo{
+  min-width:112px;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:4px;
+}
+
+.etiqueta-filtro{
+  min-height:11px;
+
+  display:flex;
+  align-items:center;
+
+  gap:5px;
+
+  padding-left:2px;
+
+  color:var(--texto-secundario);
+
+  font-size:7px;
+  font-weight:750;
+
+  text-transform:uppercase;
+
+  letter-spacing:.5px;
+}
+
+.grupo-periodo>select{
+  width:100%;
+
+  height:40px;
+
+  min-width:112px;
+  max-width:165px;
+
+  padding:0 9px;
+
+  box-sizing:border-box;
+
+  color:var(--texto);
+
+  background:var(--fondo);
+
+  border:1px solid var(--borde-control);
+  border-radius:8px;
+
+  outline:0;
+
+  font-family:inherit;
+
+  font-size:9px;
+  font-weight:650;
+
+  cursor:pointer;
+}
+
+.grupo-periodo>select:hover{
+  background:var(--superficie-hover);
+}
+
+.grupo-periodo>select:focus{
+  border-color:var(--vigno-accent);
+}
+
+/* =====================================================
+   SELECT + X
+===================================================== */
+
+.selector-eliminable{
+  height:40px;
+
+  display:flex;
+  align-items:center;
+
+  overflow:hidden;
+
+  background:var(--fondo);
+
+  border:1px solid var(--borde-control);
+  border-radius:8px;
+
+  transition:
+    border-color .18s ease;
+}
+
+.selector-eliminable:hover{
+  border-color:rgba(200,109,59,.55);
+}
+
+.selector-eliminable:focus-within{
+  border-color:var(--vigno-accent);
+}
+
+.selector-eliminable select{
+  width:108px;
+  height:38px;
+
+  min-width:0;
+
+  padding:0 8px;
+
+  color:var(--texto);
+
+  background:transparent;
+
+  border:0;
+  outline:0;
+
+  font-family:inherit;
+
+  font-size:9px;
+  font-weight:650;
+
+  cursor:pointer;
+}
+
+/* Mes necesita más ancho */
+.grupo-periodo:not(.grupo-anio)
+.selector-eliminable select{
+  width:130px;
+}
+
+/* Estación necesita más ancho */
+.grupo-estacion-comparada
+.selector-eliminable select{
+  width:145px;
+}
+
+/* X */
+.boton-quitar-comparacion{
+  width:36px;
+  height:38px;
+
+  display:grid;
+  place-items:center;
+
+  flex-shrink:0;
+
+  padding:0;
+
+  color:var(--texto-secundario);
+
+  background:transparent;
+
+  border:0;
+  border-left:1px solid var(--borde-control);
+
+  cursor:pointer;
+
+  transition:
+    color .18s ease,
+    background .18s ease;
+}
+
+.boton-quitar-comparacion:hover{
+  color:#fff;
+  background:var(--vigno-status-critico);
+}
+
+/* =====================================================
+   AÑADIR
+===================================================== */
+
+.boton-agregar-comparacion{
+  height:40px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  flex-shrink:0;
+
+  gap:6px;
+
+  padding:0 11px;
+
+  color:var(--vigno-accent);
+
+  background:var(--vigno-terracota-suave);
+
+  border:
+    1px dashed
+    var(--vigno-terracota-borde);
+
+  border-radius:8px;
+
+  font-family:inherit;
+
+  font-size:8px;
+  font-weight:700;
+
+  white-space:nowrap;
+
+  cursor:pointer;
+
+  transition:
+    color .18s ease,
+    background .18s ease,
+    border-color .18s ease;
+}
+
+.boton-agregar-comparacion:hover:not(:disabled){
+  color:#fff;
+  background:var(--vigno-accent);
+  border-color:var(--vigno-accent);
+}
+
+.boton-agregar-comparacion:disabled{
+  opacity:.35;
+  cursor:not-allowed;
+}
+
+/* =====================================================
+   SERIES
+===================================================== */
+
+.punto-serie{
+  width:7px;
+  height:7px;
+
+  display:inline-block;
+
+  flex-shrink:0;
+
+  border-radius:50%;
+}
+
+/* =====================================================
+   RESUMEN
+===================================================== */
+
+.resumen-temperatura{
+  display:flex;
+  align-items:stretch;
+
+  gap:7px;
+
+  margin-left:auto;
+}
+
+.resumen-temperatura>div{
+  min-width:94px;
+  min-height:48px;
+
+  display:grid;
+
+  grid-template-columns:
+    auto
+    1fr;
+
+  align-items:center;
+
+  gap:
+    1px
+    5px;
+
+  padding:6px 9px;
+
+  box-sizing:border-box;
+
+  background:var(--fondo);
+
+  border:1px solid var(--borde-control);
+  border-radius:8px;
+}
+
+.resumen-temperatura svg{
+  color:var(--vigno-accent);
+}
+
+.resumen-temperatura span{
+  color:var(--texto-secundario);
+  font-size:7px;
+}
+
+.resumen-temperatura strong{
+  grid-column:1/-1;
+
+  color:var(--texto);
+
+  font-size:10px;
+  font-weight:720;
+}
+
+/* =====================================================
+   LEYENDA
+===================================================== */
+
+.leyenda-comparacion{
+  width:100%;
+
+  display:flex;
+  align-items:center;
+
+  flex-wrap:wrap;
+
+  gap:
+    7px
+    15px;
+
+  margin-top:9px;
+
+  padding:0 4px;
+
+  box-sizing:border-box;
+}
+
+.item-leyenda{
+  display:flex;
+  align-items:center;
+
+  gap:6px;
+
+  color:var(--texto-secundario);
+
+  font-size:9px;
+  font-weight:620;
+
+  white-space:nowrap;
+}
+
+.linea-leyenda{
+  width:20px;
+  height:3px;
+
+  display:inline-block;
+
+  flex-shrink:0;
+
+  border-radius:999px;
+}
+
+/* =====================================================
+   GRÁFICO
+===================================================== */
+
+.area-temperatura{
+  position:relative;
+
+  width:100%;
+  height:480px;
+
+  min-width:0;
+
+  margin-top:13px;
+}
+
+.grafico-visx{
+  position:relative;
+
+  width:100%;
+  height:100%;
+}
+
+/* =====================================================
+   TOOLTIP
+===================================================== */
+
+.tooltip-temperatura{
+  position:absolute;
+
+  min-width:190px;
+  max-width:280px;
+
+  padding:10px;
+
+  box-sizing:border-box;
+
+  color:var(--texto);
+
+  background:var(--fondo);
+
+  border:1px solid var(--borde-control);
+  border-radius:9px;
+
+  box-shadow:
+    0 10px 28px
+    var(--sombra);
+
+  transform:
+    translate(
+      -50%,
+      calc(-100% - 12px)
+    );
+
+  pointer-events:none;
+
+  z-index:10;
+}
+
+.tooltip-titulo{
+  display:block;
+
+  margin-bottom:7px;
+
+  color:var(--texto);
+
+  font-size:10px;
+  font-weight:700;
+}
+
+.tooltip-serie{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  gap:14px;
+
+  padding:4px 0;
+}
+
+.tooltip-serie>div{
+  display:flex;
+  align-items:center;
+
+  gap:6px;
+}
+
+.tooltip-serie span{
+  color:var(--texto-secundario);
+  font-size:8px;
+}
+
+.tooltip-serie strong{
+  color:var(--texto);
+  font-size:9px;
+  font-weight:700;
+}
+
+.punto-tooltip{
+  width:7px;
+  height:7px;
+
+  display:inline-block;
+
+  flex-shrink:0;
+
+  border-radius:50%;
+}
+
+.tooltip-diferencia{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  gap:12px;
+
+  margin-top:5px;
+
+  padding-top:7px;
+
+  border-top:1px solid var(--borde);
+}
+
+.tooltip-diferencia span{
+  color:var(--texto-secundario);
+  font-size:7px;
+}
+
+.tooltip-diferencia strong{
+  color:var(--texto);
+  font-size:9px;
+}
+
+/* =====================================================
+   SIN DATOS
+===================================================== */
+
+.sin-datos{
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  gap:5px;
+
+  color:var(--texto-secundario);
+}
+
+.sin-datos strong{
+  color:var(--texto);
+  font-size:12px;
+}
+
+.sin-datos span{
+  font-size:9px;
+}
+
+/* =====================================================
+   LAPTOP
+===================================================== */
+
+@media(max-width:1280px){
+
+  .barra-grafico{
+    flex-wrap:wrap;
+  }
+
+  .controles-historicos{
+    width:100%;
+  }
+
+  .resumen-temperatura{
+    width:100%;
+    margin-left:0;
+  }
+
+  .resumen-temperatura>div{
+    flex:1;
+  }
+}
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media(max-width:900px){
+
+  .controles-historicos{
+    align-items:flex-end;
+  }
+
+  .filtros-periodo,
+  .comparadores-estacion{
+    flex:1;
+  }
+
+  .area-temperatura{
+    height:430px;
+  }
+}
+
+/* =====================================================
+   MÓVIL
+===================================================== */
+
+@media(max-width:650px){
+
+  .panel-temperatura{
+    padding:13px 10px;
+    border-radius:12px;
+  }
+
+  .cabecera-temperatura{
+    flex-direction:column;
+    align-items:stretch;
+
+    gap:10px;
+  }
+
+  .titulo-temperatura{
+    width:100%;
+  }
+
+  .titulo-temperatura h2{
+    font-size:18px;
+  }
+
+  .acciones-temperatura{
+    width:100%;
+  }
+
+  .selector-estacion{
+    width:100%;
+
+    box-sizing:border-box;
+  }
+
+  .selector-estacion select{
+    width:100%;
+    min-width:0;
+  }
+
+  .barra-grafico{
+    flex-direction:column;
+    align-items:stretch;
+
+    padding:8px;
+  }
+
+  .controles-historicos{
+    width:100%;
+  }
+
+  .selector-vista{
+    flex:1;
+  }
+
+  .boton-vista{
+    flex:1;
+    min-width:0;
+  }
+
+  .boton-comparar{
+    flex:1;
+  }
+
+  .filtros-periodo,
+  .comparadores-estacion{
+    width:100%;
+  }
+
+  .grupo-periodo{
+    flex:1 1 130px;
+  }
+
+  .grupo-periodo>select{
+    max-width:none;
+  }
+
+  .selector-eliminable{
+    width:100%;
+  }
+
+  .selector-eliminable select,
+  .grupo-periodo:not(.grupo-anio)
+  .selector-eliminable select,
+  .grupo-estacion-comparada
+  .selector-eliminable select{
+    flex:1;
+    width:auto;
+  }
+
+  .boton-agregar-comparacion{
+    flex:1 1 130px;
+  }
+
+  .resumen-temperatura{
+    width:100%;
+  }
+
+  .resumen-temperatura>div{
+    min-width:0;
+    flex:1;
+  }
+
+  .area-temperatura{
+    height:370px;
+  }
+}
+
+/* =====================================================
+   TELÉFONO PEQUEÑO
+===================================================== */
+
+@media(max-width:430px){
+
+  .controles-historicos{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .selector-vista,
+  .boton-comparar,
+  .filtros-periodo,
+  .comparadores-estacion{
+    width:100%;
+  }
+
+  .filtros-periodo,
+  .comparadores-estacion{
+    flex-direction:column;
+  }
+
+  .grupo-periodo{
+    width:100%;
+  }
+
+  .grupo-periodo>select{
+    width:100%;
+    max-width:none;
+  }
+
+  .boton-agregar-comparacion{
+    width:100%;
+  }
+
+  .resumen-temperatura span{
+    display:none;
+  }
+
+  .area-temperatura{
+    height:350px;
+  }
 }
