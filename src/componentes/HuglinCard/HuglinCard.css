@@ -1,101 +1,142 @@
 .huglin-card{
   width:100%;
-  max-width:none;
-  height:auto;
-  min-height:0;
-  margin:0;
-  padding:1rem;
+  min-width:0;
   display:flex;
   flex-direction:column;
-  align-self:start;
   gap:.7rem;
+  padding:1rem;
   color:#fff;
   background:var(--vigno-surface-dark);
   border:1px solid var(--vigno-surface-border);
   border-radius:12px;
-  box-shadow:0 4px 12px rgba(0,0,0,.18);
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
 }
 
-.huglin-card-header{display:flex;flex-direction:column;gap:.4rem}
-.huglin-header-top{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
-.huglin-badge{color:var(--vigno-accent);font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
-.huglin-card-header h4{margin:0;color:#fff;font-size:1rem;font-weight:600}
+.huglin-card-header{
+  display:flex;
+  flex-direction:column;
+  gap:.4rem;
+}
 
-.huglin-selectores{display:flex;align-items:center;justify-content:flex-end;gap:.4rem;flex-wrap:wrap}
+.huglin-header-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:.8rem;
+  flex-wrap:wrap;
+}
+
+.huglin-badge{
+  color:var(--vigno-accent);
+  font-size:.7rem;
+  font-weight:700;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+
+.huglin-card h4{
+  margin:.35rem 0 0;
+  color:#fff;
+  font-size:1rem;
+  font-weight:600;
+}
+
+.huglin-selectores{
+  display:flex;
+  gap:.4rem;
+  flex-wrap:wrap;
+}
+
 .huglin-select{
   min-width:150px;
-  max-width:210px;
-  height:32px;
-  padding:0 9px;
+  height:34px;
+  padding:0 10px;
   color:#fff;
   background:var(--vigno-surface-dark-2);
   border:1px solid var(--vigno-surface-border);
-  border-radius:6px;
+  border-radius:7px;
   outline:0;
   font-size:.7rem;
   font-weight:600;
   cursor:pointer;
   color-scheme:dark;
 }
-.huglin-select:hover,.huglin-select:focus{border-color:var(--vigno-accent)}
-.huglin-select option{color:#fff;background:var(--vigno-surface-dark)}
 
-.huglin-card-body{min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:.8rem}
-.huglin-metric{display:flex;align-items:baseline;gap:.3rem}
-.huglin-value{color:var(--vigno-accent);font-size:2rem;font-weight:700;line-height:1}
-.huglin-unit{color:var(--vigno-text-secondary);font-size:.8rem}
-
-.huglin-classification{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
-.huglin-region{color:var(--vigno-accent);font-size:.9rem;font-weight:700;text-transform:capitalize}
-.huglin-desc{color:var(--vigno-text-secondary);font-size:.7rem}
-
-.huglin-aviso{
-  padding:7px 9px;
-  color:var(--vigno-status-alerta);
-  background:rgba(217,155,38,.08);
-  border:1px solid rgba(217,155,38,.25);
-  border-radius:7px;
-  font-size:.65rem;
+.huglin-select:focus{
+  border-color:var(--vigno-accent);
 }
 
-.huglin-datos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
-.huglin-datos>div{
-  min-height:44px;
-  padding:6px 9px;
+.huglin-select option{
+  color:#fff;
+  background:var(--vigno-surface-dark);
+}
+
+.huglin-card-body{
+  min-height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+}
+
+.huglin-metric{
+  display:flex;
+  align-items:baseline;
+  gap:.35rem;
+}
+
+.huglin-value{
+  color:var(--vigno-accent);
+  font-size:2rem;
+  font-weight:750;
+  line-height:1;
+}
+
+.huglin-unit{
+  color:var(--vigno-text-secondary);
+  font-size:.8rem;
+  font-weight:600;
+}
+
+.huglin-classification{
   display:flex;
   flex-direction:column;
-  justify-content:center;
-  gap:2px;
-  background:rgba(255,255,255,.035);
-  border:1px solid var(--vigno-surface-border);
-  border-radius:7px;
+  align-items:flex-end;
+  text-align:right;
 }
-.huglin-datos span{color:var(--vigno-text-muted);font-size:.6rem}
-.huglin-datos strong{color:#fff;font-size:.7rem;font-weight:600}
-.huglin-ok{color:var(--vigno-status-confiable)!important}
-.huglin-warn{color:var(--vigno-status-alerta)!important}
 
-.huglin-card-footer{padding-top:.45rem;border-top:1px solid var(--vigno-surface-border)}
-.huglin-card-footer small{color:var(--vigno-text-muted);font-size:.65rem}
+.huglin-region{
+  color:var(--vigno-accent);
+  font-size:.9rem;
+  font-weight:700;
+  text-transform:capitalize;
+}
 
-/* TEMA CLARO */
+.huglin-desc{
+  margin-top:2px;
+  color:var(--vigno-text-secondary);
+  font-size:.7rem;
+}
+
+.huglin-aviso{
+  padding:8px 10px;
+  color:var(--vigno-status-alerta);
+  background:rgba(217,155,38,.08);
+  border:1px solid rgba(217,155,38,.28);
+  border-radius:7px;
+  font-size:.68rem;
+}
+
+/* Claro */
 .tema-pagina-claro .huglin-card{
   color:var(--vigno-text-dark);
-  background:var(--app-fondo)!important;
+  background:transparent;
   border-color:var(--vigno-border-light);
-  box-shadow:none;
+  box-shadow:0 4px 12px rgba(0,0,0,.035);
 }
 
-.tema-pagina-claro .huglin-card-header h4,
-.tema-pagina-claro .huglin-datos strong{
+.tema-pagina-claro .huglin-card h4{
   color:var(--vigno-text-dark);
-}
-
-.tema-pagina-claro .huglin-unit,
-.tema-pagina-claro .huglin-desc,
-.tema-pagina-claro .huglin-datos span,
-.tema-pagina-claro .huglin-card-footer small{
-  color:var(--vigno-text-muted);
 }
 
 .tema-pagina-claro .huglin-select{
@@ -110,32 +151,94 @@
   background:#fff;
 }
 
-.tema-pagina-claro .huglin-datos>div{
+.tema-pagina-claro .huglin-desc,
+.tema-pagina-claro .huglin-unit{
+  color:var(--vigno-text-muted);
+}
+
+.tema-pagina-claro .huglin-aviso{
+  color:#9a6700;
+  background:#fff8e6;
+  border-color:rgba(217,155,38,.35);
+}
+
+@media(max-width:700px){
+  .huglin-header-top{
+    flex-direction:column;
+  }
+
+  .huglin-selectores{
+    width:100%;
+  }
+
+  .huglin-select{
+    flex:1;
+    min-width:0;
+  }
+
+  .huglin-card-body{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .huglin-classification{
+    align-items:flex-start;
+    text-align:left;
+  }
+}
+.huglin-temporada-info{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
+}
+
+.huglin-temporada-info>div{
+  min-width:0;
+  padding:8px 10px;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--vigno-surface-border);
+  border-radius:7px;
+}
+
+.huglin-temporada-info span{
+  color:var(--vigno-text-muted);
+  font-size:.6rem;
+}
+
+.huglin-temporada-info strong{
+  color:#fff;
+  font-size:.7rem;
+  font-weight:650;
+}
+
+.huglin-temporada-info .estado-curso{
+  color:var(--vigno-status-confiable);
+}
+
+.tema-pagina-claro .huglin-temporada-info>div{
   background:#fff;
   border-color:var(--vigno-border-light);
 }
 
-.tema-pagina-claro .huglin-aviso{
-  color:#9A6700;
-  background:#FFF8E6;
-  border-color:rgba(217,155,38,.35);
+.tema-pagina-claro .huglin-temporada-info strong{
+  color:var(--vigno-text-dark);
 }
 
-.tema-pagina-claro .huglin-card-footer{
-  border-color:var(--vigno-border-light);
+.tema-pagina-claro .huglin-temporada-info .estado-curso{
+  color:var(--vigno-status-confiable);
 }
 
 @media(max-width:900px){
-  .huglin-header-top{flex-direction:column;align-items:stretch}
-  .huglin-selectores{width:100%;justify-content:flex-start}
-  .huglin-select{flex:1;max-width:none}
+  .huglin-temporada-info{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
 }
 
 @media(max-width:520px){
-  .huglin-card{padding:.85rem}
-  .huglin-selectores{flex-direction:column;align-items:stretch}
-  .huglin-select{width:100%;min-width:0;max-width:none;height:36px}
-  .huglin-card-body{flex-direction:column;align-items:flex-start}
-  .huglin-classification{align-items:flex-start;text-align:left}
-  .huglin-datos{grid-template-columns:1fr}
+  .huglin-temporada-info{
+    grid-template-columns:1fr;
+  }
 }

@@ -7,69 +7,91 @@ interface Estacion{
   huerto?:string;
 }
 
-interface CalidadDato{
-  completitud_pct:number|null;
-  confiable:boolean;
-  umbral_completitud_pct:number|null;
-  resolucion_origen:string|null;
-  version_calculo:string|null;
-}
-
 interface HuglinJSON{
   valor:number|null;
   clasificacion:string|null;
-  calidad_dato?:CalidadDato|null;
   motivo_nulo?:string|null;
 }
 
-interface Ficha{
+interface FichaTemporada{
   temporada:string;
   estacion_id?:string;
   estacionId?:string;
-  periodo?:{inicio?:string;fin?:string};
+  periodo?:{
+    inicio?:string|null;
+    fin?:string|null;
+  };
   indices?:{huglin?:HuglinJSON|null};
   huglin?:HuglinJSON|null;
-  clasificacion?:{en_curso?:boolean};
+  clasificacion?:{
+    en_curso?:boolean|null;
+  };
 }
 
 interface Props{
   estaciones?:Estacion[];
-  fichasTemporada?:Ficha[];
+  fichasTemporada?:FichaTemporada[];
   temporadaEnCurso?:string|null;
 }
 
-const texto=(v:any)=>v===null||v===undefined||v===""?"Sin dato":String(v);
-const numero=(v:number|null|undefined)=>v==null?"Sin dato":v.toFixed(1).replace(".",",");
-const fecha=(v?:string|null)=>v
-  ?new Intl.DateTimeFormat("es-CL",{day:"2-digit",month:"short",year:"numeric"})
-    .format(new Date(`${v}T12:00:00`)).replace(".","")
-  :"Sin dato";
+const numero=(v:number|null|undefined)=>
+  v===null||v===undefined
+    ?"Sin dato"
+    :Number(v).toFixed(1).replace(".",",");
+
+const fecha=(v?:string|null)=>{
+  if(!v)return"Sin dato";
+
+  return new Intl.DateTimeFormat("es-CL",{
+    day:"2-digit",
+    month:"short",
+    year:"numeric"
+  })
+    .format(new Date(`${v}T12:00:00`))
+    .replace(".","");
+};
 
 function HuglinCard({
   estaciones=[],
   fichasTemporada=[],
   temporadaEnCurso=null,
 }:Props){
+
   const[estacionId,setEstacionId]=useState("");
   const[temporada,setTemporada]=useState("");
 
-  const estacionActiva=estacionId||estaciones[0]?.id||
-    fichasTemporada[0]?.estacionId||fichasTemporada[0]?.estacion_id||"";
+  const estacionActiva=
+    estacionId||
+    estaciones[0]?.id||
+    fichasTemporada[0]?.estacionId||
+    fichasTemporada[0]?.estacion_id||
+    "";
 
   useEffect(()=>{
-    if(!estacionId&&estacionActiva)setEstacionId(estacionActiva);
+    if(!estacionId&&estacionActiva){
+      setEstacionId(estacionActiva);
+    }
   },[estacionId,estacionActiva]);
 
   const temporadas=useMemo(()=>[
     ...new Set(
       fichasTemporada
-        .filter(f=>(f.estacionId??f.estacion_id)===estacionActiva)
+        .filter(
+          f=>(f.estacionId??f.estacion_id)===estacionActiva
+        )
         .map(f=>f.temporada)
     )
-  ].sort(),[fichasTemporada,estacionActiva]);
+  ].sort(),[
+    fichasTemporada,
+    estacionActiva
+  ]);
 
   useEffect(()=>{
-    if(!temporadas.length)return setTemporada("");
+    if(!temporadas.length){
+      setTemporada("");
+      return;
+    }
+
     if(!temporadas.includes(temporada)){
       setTemporada(
         temporadas.includes(temporadaEnCurso??"")
@@ -77,33 +99,75 @@ function HuglinCard({
           :temporadas.at(-1)!
       );
     }
-  },[temporadas,temporada,temporadaEnCurso]);
+  },[
+    temporadas,
+    temporada,
+    temporadaEnCurso
+  ]);
 
-  const ficha=useMemo(()=>fichasTemporada.find(
-    f=>(f.estacionId??f.estacion_id)===estacionActiva&&f.temporada===temporada
-  )??null,[fichasTemporada,estacionActiva,temporada]);
+  const ficha=useMemo(()=>
+    fichasTemporada.find(
+      f=>
+        (f.estacionId??f.estacion_id)===estacionActiva&&
+        f.temporada===temporada
+    )??null,
+  [
+    fichasTemporada,
+    estacionActiva,
+    temporada
+  ]);
 
-  const huglin=ficha?.indices?.huglin??ficha?.huglin??null;
-  const calidad=huglin?.calidad_dato??null;
-  const enCurso=temporada===temporadaEnCurso||ficha?.clasificacion?.en_curso===true;
+  const huglin=
+    ficha?.indices?.huglin??
+    ficha?.huglin??
+    null;
+
+  const sinDato=
+    huglin?.valor===null||
+    huglin?.valor===undefined;
+
+  /* La temporada puede estar en curso aunque el índice aún no tenga valor */
+  const enCurso=
+    ficha?.clasificacion?.en_curso===true||
+    ficha?.temporada===temporadaEnCurso;
+
+  const estadoTemporada=
+    !ficha
+      ?"Sin dato"
+      :enCurso
+        ?"En curso"
+        :"Finalizada";
 
   return(
     <article className="huglin-card">
+
       <header className="huglin-card-header">
         <div className="huglin-header-top">
+
           <div>
-            <span className="huglin-badge">Índice bioclimático</span>
-            <h4>Índice Heliotérmico de Huglin (IH)</h4>
+            <span className="huglin-badge">
+              Índice bioclimático
+            </span>
+
+            <h4>
+              Índice Heliotérmico de Huglin (IH)
+            </h4>
           </div>
 
           <div className="huglin-selectores">
+
             <select
               className="huglin-select"
               value={estacionActiva}
-              onChange={e=>setEstacionId(e.target.value)}
+              onChange={e=>
+                setEstacionId(e.target.value)
+              }
             >
               {estaciones.map(est=>(
-                <option key={est.id} value={est.id}>
+                <option
+                  key={est.id}
+                  value={est.id}
+                >
                   {est.nombre??est.huerto??est.id}
                 </option>
               ))}
@@ -112,51 +176,98 @@ function HuglinCard({
             <select
               className="huglin-select"
               value={temporada}
-              onChange={e=>setTemporada(e.target.value)}
+              onChange={e=>
+                setTemporada(e.target.value)
+              }
             >
               {temporadas.map(t=>(
-                <option key={t} value={t}>Temporada {t}</option>
+                <option
+                  key={t}
+                  value={t}
+                >
+                  Temporada {t}
+                </option>
               ))}
             </select>
+
           </div>
         </div>
       </header>
 
       <div className="huglin-card-body">
+
         <div className="huglin-metric">
-          <span className="huglin-value">{numero(huglin?.valor)}</span>
-          {huglin?.valor!=null&&<span className="huglin-unit">IH</span>}
+          <span className="huglin-value">
+            {numero(huglin?.valor)}
+          </span>
+
+          {!sinDato&&(
+            <span className="huglin-unit">
+              IH
+            </span>
+          )}
         </div>
 
         <div className="huglin-classification">
-          <span className="huglin-region">{texto(huglin?.clasificacion)}</span>
-          <span className="huglin-desc">Clasificación heliotérmica</span>
+
+          <span className="huglin-region">
+            {huglin?.clasificacion??"Sin dato"}
+          </span>
+
+          <span className="huglin-desc">
+            Clasificación heliotérmica
+          </span>
+
         </div>
       </div>
 
       {huglin?.motivo_nulo&&(
-        <div className="huglin-aviso">{huglin.motivo_nulo}</div>
+        <div className="huglin-aviso">
+          {huglin.motivo_nulo}
+        </div>
       )}
 
-      <div className="huglin-datos">
-        <div><span>Temporada</span><strong>{texto(temporada)}</strong></div>
-        <div><span>Estado</span><strong>{enCurso?"En curso":"Finalizada"}</strong></div>
-        <div><span>Inicio</span><strong>{fecha(ficha?.periodo?.inicio)}</strong></div>
-        <div><span>Fin</span><strong>{fecha(ficha?.periodo?.fin)}</strong></div>
-        <div><span>Completitud</span><strong>{calidad?.completitud_pct!=null?`${calidad.completitud_pct}%`:"Sin dato"}</strong></div>
+      <div className="huglin-temporada-info">
+
         <div>
-          <span>Dato confiable</span>
-          <strong className={calidad?.confiable?"huglin-ok":"huglin-warn"}>
-            {calidad?.confiable?"Sí":"No"}
+          <span>Temporada</span>
+          <strong>
+            {ficha?.temporada??"Sin dato"}
           </strong>
         </div>
-        <div><span>Resolución</span><strong>{texto(calidad?.resolucion_origen)}</strong></div>
-        <div><span>Umbral calidad</span><strong>{calidad?.umbral_completitud_pct!=null?`${calidad.umbral_completitud_pct}%`:"Sin dato"}</strong></div>
+
+        <div>
+          <span>Estado</span>
+
+          <strong
+            className={
+              enCurso
+                ?"estado-curso"
+                :""
+            }
+          >
+            {estadoTemporada}
+          </strong>
+        </div>
+
+        <div>
+          <span>Inicio</span>
+
+          <strong>
+            {fecha(ficha?.periodo?.inicio)}
+          </strong>
+        </div>
+
+        <div>
+          <span>Fin</span>
+
+          <strong>
+            {fecha(ficha?.periodo?.fin)}
+          </strong>
+        </div>
+
       </div>
 
-      <footer className="huglin-card-footer">
-        <small>Valores obtenidos directamente de la ficha de temporada · Base 10 °C</small>
-      </footer>
     </article>
   );
 }
