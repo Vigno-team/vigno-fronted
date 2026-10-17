@@ -1,10 +1,13 @@
 import{useEffect,useMemo,useState}from"react";
 import"./HuglinCard.css";
+import BadgeCompletitud from "../BadgeCompletitud/BadgeCompletitud";
+import "./HuglinCard.css";
 
 interface Estacion{
   id:string;
   nombre?:string;
   huerto?:string;
+  calidad_dato?: CalidadDato;
 }
 
 interface HuglinJSON{
@@ -72,6 +75,8 @@ function HuglinCard({
       setEstacionId(estacionActiva);
     }
   },[estacionId,estacionActiva]);
+
+  const estacionObjeto = estaciones.find((e) => e.id === estacionActiva);
 
   const temporadas=useMemo(()=>[
     ...new Set(
@@ -192,6 +197,16 @@ function HuglinCard({
 
           </div>
         </div>
+
+        {/* Muestra el badge de calidad de la estación activa si existe */}
+        {estacionObjeto?.calidad_dato && (
+          <div style={{ marginTop: "0.5rem" }}>
+            <BadgeCompletitud
+              completitud={estacionObjeto.calidad_dato.completitud_pct}
+              confiable={estacionObjeto.calidad_dato.confiable}
+            />
+          </div>
+        )}
       </header>
 
       <div className="huglin-card-body">
