@@ -2,45 +2,35 @@ import React from 'react';
 import './HarvestProgressBar.css';
 
 export const HarvestProgressBar = ({
-  avance= 0,
-  diasEstimados= 0,
-  temperaturas= [0, 0, 0, 0, 0],
+  avance = 0,
+  diasEstimados = 0,
+  temperaturas = [0, 0, 0, 0, 0],
+  rachaCalor = false, // <-- Recibe la bandera directa del backend (calor.rachas.con_incidencia)
 }) => {
-  //Seccion variables a usar
-  let progreso= avance;
-  let estado= "";
-  let mensajeEstado= "";
+  // Sección variables
+  let progreso = avance;
 
-  //Seccion barra
-  if(progreso<0){
-    progreso= 0;
-  }else if(progreso > 100){
-    progreso= 100;
-  }
-  
-
-  //Seccion alerta
-  let alertaOlaCalor = temperaturas.length >= 5 && temperaturas.every(temp => temp > 35);
-
-  if (alertaOlaCalor) {
-    estado = "alerta";
-    mensajeEstado = "Registros mayores a 35 °C en últimos 5 días";
-  } else {
-    estado = "normal";
-    mensajeEstado = "Registros normales en últimos 5 días";
+  if (progreso < 0) {
+    progreso = 0;
+  } else if (progreso > 100) {
+    progreso = 100;
   }
 
-  //Card devuelto
+  // Sección alerta usando el estado que viene del backend
+  const estado = rachaCalor ? "alerta" : "normal";
+  const mensajeEstado = rachaCalor
+    ? "Alerta de ola de calor detectada por el sistema"
+    : "Registros normales en últimos 5 días";
+
   return (
     <div className="vigno-card">
-
       <div className="vigno-tiempo-estimado">
         Aproximadamente a {diasEstimados} días de ventana óptima
       </div>
 
       <div className="vigno-barra">
-        <div className="vigno-barra-avance" style={{width: `${progreso}%`}} />
-        <div className="vigno-circulo" style={{left: `calc(${progreso}% - 18px)`}}>
+        <div className="vigno-barra-avance" style={{ width: `${progreso}%` }} />
+        <div className="vigno-circulo" style={{ left: `calc(${progreso}% - 18px)` }}>
           {Math.round(progreso)}%
         </div>
       </div>
@@ -61,4 +51,5 @@ export const HarvestProgressBar = ({
     </div>
   );
 };
+
 export default HarvestProgressBar;
