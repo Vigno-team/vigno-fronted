@@ -150,7 +150,10 @@ function ResumenMeteorologico({estaciones=[],datosTemperatura=[],temaOscuro=true
           </div>
 
           <div className="rm-grafico">
-            <MiniGraficoLinea datos={datos} series={[{...serieActual,unidad:" °C",grosor:2.4}]}/>
+            <MiniGraficoLinea 
+              datos={datos} 
+              esGraficoTemperatura={true}
+              series={[{...serieActual,unidad:" °C",grosor:2.4}]}/>
           </div>
         </article>
 

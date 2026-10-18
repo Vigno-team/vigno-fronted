@@ -76,6 +76,9 @@ function TarjetaTemperatura({
       <div className="rm-grafico">
         <MiniGraficoLinea
           datos={datos}
+          //seccion de tooltip
+          //esGraficoTemperatura={true}
+          //fin seccion de tooltip
           series={[
             {
               ...configuracionSerie,
