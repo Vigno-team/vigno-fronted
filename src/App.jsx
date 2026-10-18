@@ -18,6 +18,8 @@ import WinklerCard from"./componentes/WinklerCard/WinklerCard";
 
 import HuglinCard from"./componentes/HuglinCard/HuglinCard";
 
+import LluviaInvernalCard from "./componentes/LluviaInvernalCard/LluviaInvernalCard";
+
 import Configuracion from"./componentes/Configuracion/Configuracion";
 
 import{
@@ -180,6 +182,11 @@ function App(){
               }
             />
 
+            <LluviaInvernalCard
+              estaciones={datos.estaciones}
+              fichasTemporada={datos.fichasTemporada}
+              temporadaEnCurso={datos.temporadaEnCurso}
+            />
           </div>
         );
 
