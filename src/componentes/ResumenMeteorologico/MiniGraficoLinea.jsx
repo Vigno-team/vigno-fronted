@@ -66,7 +66,7 @@ function MiniGraficoLinea({
   destacarRiesgo=false,
   campoRiesgo="minima",
   // Inicio Seccion tooltip  ------------------
-  esGraficoTemperatura = true,
+  esGraficoTemperatura = false,
   // Fin Seccion tooltip  ------------------
 }){
 
