@@ -305,11 +305,15 @@ function MiniGraficoLinea({
           const index = Math.round(Math.max(0, Math.min(datos.length - 1, indexBruto)));
           const datoSeleccionado = datos[index];
 
-          if (datoSeleccionado) {
+          if (datoSeleccionado) {     
+            const offsetArriba = 45;
+            const topDeseado = coords.y - offsetArriba;
+            const limiteMaximo = altoInterno - 110; 
+            const topFinal = Math.max(15, Math.min(topDeseado, limiteMaximo));
             showTooltip({
               tooltipData: datoSeleccionado,
               tooltipLeft: xScale(index),
-              tooltipTop: coords.y,
+              tooltipTop: topFinal,
             });
           }
         };  
