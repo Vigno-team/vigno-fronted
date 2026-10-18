@@ -216,7 +216,7 @@ export function CalorExtremoCard({
                   )}
                   {r.interrumpida_por_dato_faltante && (
                     <span className="tag-advertencia" title="Racha interrumpida por dato faltante">
-                      Dato Incompleto
+                      ⚠️ Dato Incompleto
                     </span>
                   )}
                 </div>
