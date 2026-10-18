@@ -48,8 +48,29 @@ interface Props {
   temporadaEnCurso?: string | null;
 }
 
+// Helper: Formato de número genérico
 const numero = (v: number | null | undefined) =>
   v === null || v === undefined ? "Sin dato" : String(v);
+
+// Helper: Formato de temperatura 
+const formatoTemp = (v: number | null | undefined) => {
+  if (v === null || v === undefined) return "Sin dato";
+  return `${Number(v).toFixed(1).replace(".", ",")} °C`;
+};
+
+// Helper: Formato de fecha 
+const fechaFormateada = (v?: string | null) => {
+  if (!v) return "Sin dato";
+  const d = new Date(`${v}T12:00:00`);
+  if (isNaN(d.getTime())) return v;
+  return new Intl.DateTimeFormat("es-CL", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })
+    .format(d)
+    .replace(".", "");
+};
 
 export function CalorExtremoCard({
   estaciones = [],
@@ -161,10 +182,10 @@ export function CalorExtremoCard({
         )}
       </header>
 
-      {/* Métricas Principales de Calor */}
+      {/* 1. Métricas Principales de Calor */}
       <div className="huglin-temporada-info calor-metricas-3">
         <div>
-          <span>Días sobre {calor?.umbral_c ?? 35}°C</span>
+          <span>Días sobre {calor?.umbral_c ?? 35} °C</span>
           <strong>{numero(calor?.dias_sobre_umbral)}</strong>
         </div>
 
@@ -179,15 +200,15 @@ export function CalorExtremoCard({
         </div>
       </div>
 
-      {/* Días Críticos (Top 10 T. Máx) */}
+      {/* 2. Días Críticos (Top 10 T. Máx) */}
       <div className="calor-bloque-seccion">
         <span className="calor-subtitulo">Días Críticos (Top 10 T. Máx)</span>
         {diasCriticos.length > 0 ? (
           <div className="dias-criticos-chips">
             {diasCriticos.slice(0, 10).map((d, i) => (
               <div key={i} className="chip-dia">
-                <span className="chip-fecha">{d.fecha}</span>
-                <strong className="chip-temp">{d.tmax}°C</strong>
+                <span className="chip-fecha">{fechaFormateada(d.fecha)}</span>
+                <strong className="chip-temp">{formatoTemp(d.tmax)}</strong>
               </div>
             ))}
           </div>
@@ -196,18 +217,18 @@ export function CalorExtremoCard({
         )}
       </div>
 
-      {/* Rachas Térmicas y Advertencias */}
+      {/* 3 y 4. Rachas Térmicas y Advertencias */}
       <div className="calor-bloque-seccion">
-        <span className="calor-subtitulo">Rachas Térmicas</span>
+        <span className="calor-subtitulo">Rachas Térmicas con Incidencia</span>
         {rachas.length > 0 ? (
           <div className="lista-rachas">
             {rachas.map((r, i) => (
               <div key={i} className="item-racha">
                 <div className="racha-detalles">
-                  <span><strong>Inicio:</strong> {r.fecha_inicio}</span>
-                  <span><strong>Fin:</strong> {r.fecha_fin}</span>
+                  <span><strong>Inicio:</strong> {fechaFormateada(r.fecha_inicio)}</span>
+                  <span><strong>Fin:</strong> {fechaFormateada(r.fecha_fin)}</span>
                   <span><strong>Duración:</strong> {r.dias} días</span>
-                  <span><strong>T. Máx:</strong> {r.tmax_maxima}°C</span>
+                  <span><strong>T. Máx:</strong> {formatoTemp(r.tmax_maxima)}</span>
                 </div>
 
                 <div className="racha-tags">
@@ -224,7 +245,9 @@ export function CalorExtremoCard({
             ))}
           </div>
         ) : (
-          <div className="huglin-aviso">No se registraron rachas de calor en el periodo.</div>
+          <div className="huglin-aviso">
+            No se registraron rachas de calor con incidencia en el periodo.
+          </div>
         )}
       </div>
     </article>
