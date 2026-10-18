@@ -79,7 +79,6 @@ const capitalizar = (texto?: string | null) => {
   return limpio.charAt(0).toUpperCase() + limpio.slice(1).toLowerCase();
 };
 
-/* Separa cada regla y omite la frase redundante de "Temporada en curso" */
 const desglosarCriterio = (criterio?: string | null): string[] => {
   if (!criterio) return [];
   return criterio
@@ -310,13 +309,13 @@ function LluviaInvernalCard({
       {/* Avisos independientes para cada eje */}
       {faltaHidrico && (
         <div className="winkler-aviso">
-          <strong>Eje Hídrico ({TEXTO_SIN_DATOS}):</strong> {motivoNuloHidrico}
+          <strong>Eje Hídrico:</strong> {motivoNuloHidrico}
         </div>
       )}
 
       {faltaTermico && (
         <div className="winkler-aviso">
-          <strong>Eje Térmico ({TEXTO_SIN_DATOS}):</strong> {motivoNuloTermico}
+          <strong>Eje Térmico:</strong> {motivoNuloTermico}
         </div>
       )}
 
