@@ -22,6 +22,8 @@ import LluviaInvernalCard from "./componentes/LluviaInvernalCard/LluviaInvernalC
 
 import MapaSatelital from "./componentes/MapaSatelital/MapaSatelital";
 
+import  CalorExtremoCard  from './componentes/CalorExtremo/CalorExtremoCard';
+
 import Configuracion from"./componentes/Configuracion/Configuracion";
 
 import{
@@ -173,6 +175,18 @@ function App(){
             />
 
             <HuglinCard
+              estaciones={
+                datos.estaciones
+              }
+              fichasTemporada={
+                datos.fichasTemporada
+              }
+              temporadaEnCurso={
+                datos.temporadaEnCurso
+              }
+            />
+
+            <CalorExtremoCard
               estaciones={
                 datos.estaciones
               }
