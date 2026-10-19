@@ -5,6 +5,7 @@ import{
   Menu,
   Settings,
   TriangleAlert,
+  Map,
 }from"lucide-react";
 
 import"./BarraLateral.css";
@@ -25,6 +26,10 @@ const opciones=[
   {
     nombre:"Históricos",
     icono:Clock3,
+  },
+  {
+    nombre:"Mapa Satelital",
+    icono:Map,
   },
   {
     nombre:"Configuración",

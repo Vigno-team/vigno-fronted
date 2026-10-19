@@ -20,6 +20,8 @@ import HuglinCard from"./componentes/HuglinCard/HuglinCard";
 
 import LluviaInvernalCard from "./componentes/LluviaInvernalCard/LluviaInvernalCard";
 
+import MapaSatelital from "./componentes/MapaSatelital/MapaSatelital";
+
 import Configuracion from"./componentes/Configuracion/Configuracion";
 
 import{
@@ -202,6 +204,15 @@ function App(){
             temaOscuro={
               temaOscuro
             }
+          />
+        );
+
+      case "Mapa Satelital":
+        return (
+          <MapaSatelital
+            estaciones={datos?.estaciones}
+            mapaCalor={datos?.mapa_calor}
+            temaOscuro={temaOscuro}
           />
         );
 
