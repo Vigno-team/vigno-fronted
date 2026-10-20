@@ -12,6 +12,15 @@ function ControlesHistoricos({
   periodosMensuales,periodoMes,setPeriodoMes,periodoMesComparacion,setPeriodoMesComparacion,
   anios,anio,setAnio,anioComparacion,setAnioComparacion,periodoMesLegible,resumen,series,
 }){
+  const esMes=vista==="mes";
+  const opciones=esMes?periodosMensuales:anios;
+  const valorA=esMes?periodoMes:anio;
+  const valorB=esMes?periodoMesComparacion:anioComparacion;
+  const setA=esMes?setPeriodoMes:setAnio;
+  const setB=esMes?setPeriodoMesComparacion:setAnioComparacion;
+  const textoA=esMes?"Mes":"Año";
+  const mostrar=valor=>esMes?periodoMesLegible(valor):valor;
+
   return(
     <>
       <header className="cabecera-temperatura">
@@ -32,71 +41,72 @@ function ControlesHistoricos({
 
       <div className="barra-grafico">
         <nav className="selector-vista">
-          {VISTAS.map(({valor,texto,Icono})=>
-            <button key={valor} type="button" className={vista===valor?"boton-vista activo":"boton-vista"} onClick={()=>setVista(valor)}>
+          {VISTAS.map(({valor,texto,Icono})=>(
+            <button
+              key={valor}
+              type="button"
+              className={`boton-vista ${vista===valor?"activo":""}`}
+              onClick={()=>setVista(valor)}
+            >
               <Icono size={15}/><span>{texto}</span>
             </button>
-          )}
+          ))}
         </nav>
 
-        <button type="button" className={comparar?"boton-comparar activo":"boton-comparar"} disabled={!puedeComparar} onClick={()=>setComparar(!comparar)}>
+        <button
+          type="button"
+          className={`boton-comparar ${comparar?"activo":""}`}
+          disabled={!puedeComparar}
+          onClick={()=>setComparar(!comparar)}
+        >
           <ArrowLeftRight size={15}/>Comparar
         </button>
 
         <div className="filtros-periodo">
-          {vista==="mes"?
-            <>
-              <label className="grupo-periodo">
-                <span className="etiqueta-filtro">{comparar&&<span className="punto-serie serie-a"/>}{comparar?"Mes A":"Mes"}</span>
-                <select value={periodoMes} onChange={e=>setPeriodoMes(e.target.value)}>
-                  {periodosMensuales.map(p=><option key={p} value={p}>{periodoMesLegible(p)}</option>)}
-                </select>
-              </label>
+          <label className="grupo-periodo">
+            <span className="etiqueta-filtro">
+              {comparar&&<span className="punto-serie serie-a"/>}
+              {comparar?`${textoA} A`:textoA}
+            </span>
 
-              {comparar&&
-                <label className="grupo-periodo">
-                  <span className="etiqueta-filtro"><span className="punto-serie serie-b"/>Mes B</span>
-                  <select value={periodoMesComparacion} onChange={e=>setPeriodoMesComparacion(e.target.value)}>
-                    {periodosMensuales.map(p=><option key={p} value={p} disabled={p===periodoMes}>{periodoMesLegible(p)}</option>)}
-                  </select>
-                </label>
-              }
-            </>:
-            <>
-              <label className="grupo-periodo">
-                <span className="etiqueta-filtro">{comparar&&<span className="punto-serie serie-a"/>}{comparar?"Año A":"Año"}</span>
-                <select value={anio} onChange={e=>setAnio(e.target.value)}>
-                  {anios.map(a=><option key={a}>{a}</option>)}
-                </select>
-              </label>
+            <select value={valorA} onChange={e=>setA(e.target.value)}>
+              {opciones.map(v=>(
+                <option key={v} value={v}>{mostrar(v)}</option>
+              ))}
+            </select>
+          </label>
 
-              {comparar&&
-                <label className="grupo-periodo">
-                  <span className="etiqueta-filtro"><span className="punto-serie serie-b"/>Año B</span>
-                  <select value={anioComparacion} onChange={e=>setAnioComparacion(e.target.value)}>
-                    {anios.map(a=><option key={a} disabled={a===anio}>{a}</option>)}
-                  </select>
-                </label>
-              }
-            </>
-          }
+          {comparar&&(
+            <label className="grupo-periodo">
+              <span className="etiqueta-filtro">
+                <span className="punto-serie serie-b"/>{textoA} B
+              </span>
+
+              <select value={valorB} onChange={e=>setB(e.target.value)}>
+                {opciones.map(v=>(
+                  <option key={v} value={v} disabled={v===valorA}>{mostrar(v)}</option>
+                ))}
+              </select>
+            </label>
+          )}
         </div>
 
-        {!comparar?
+        {!comparar?(
           <div className="resumen-temperatura">
             <div><Snowflake size={13}/><span>Mínima</span><strong>{temperatura(resumen.minima)}</strong></div>
             <div><Thermometer size={13}/><span>Media</span><strong>{temperatura(resumen.media)}</strong></div>
             <div><ThermometerSun size={13}/><span>Máxima</span><strong>{temperatura(resumen.maxima)}</strong></div>
-          </div>:
+          </div>
+        ):(
           <div className="leyenda-comparacion">
-            {series.map((s,i)=>
+            {series.map((s,i)=>(
               <div className="item-leyenda" key={s.nombre}>
                 <span className={`linea-leyenda ${i===0?"serie-a":"serie-b"}`}/>
                 <span>{s.nombre}</span>
               </div>
-            )}
+            ))}
           </div>
-        }
+        )}
       </div>
     </>
   );

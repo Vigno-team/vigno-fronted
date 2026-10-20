@@ -1,44 +1,44 @@
-import { Snowflake, TriangleAlert } from "lucide-react";
-import MiniGraficoLinea from "./MiniGraficoLinea";
+import{Snowflake,TriangleAlert}from"lucide-react";
+import MiniGraficoLinea from"./MiniGraficoLinea";
 
-const LINEAS_REFERENCIA = [
-  { valor: 2, color: "#f59e0b" },
-  { valor: 0, color: "#ef4444" },
+const LINEAS_REFERENCIA=[
+  {valor:2,color:"#f59e0b"},
+  {valor:0,color:"#ef4444"},
 ];
 
-const SERIE_MINIMA = [
-  {
-    campo: "minima",
-    nombre: "Mínima diaria",
-    unidad: " °C",
-    color: "#3389f4",
-    grosor: 2.3,
-  },
-];
+const SERIE_MINIMA=[{
+  campo:"minima",
+  nombre:"Mínima diaria",
+  unidad:" °C",
+  color:"#3389f4",
+  grosor:2.3,
+}];
 
 function TarjetaRiesgo({
-  datos,
-  registroMinimo,
-  diasBajo2,
-  diasBajo0,
-  formatearNumero,
-  formatearFecha,
-}) {
-  const riesgoCritico = diasBajo0 > 0;
-  const riesgoTermico = diasBajo2 > 0;
+  datos,registroMinimo,diasBajo2,diasBajo0,
+  formatearNumero,formatearFecha,
+}){
+  const riesgoCritico=diasBajo0>0;
+  const riesgoTermico=diasBajo2>0;
 
-  const claseRiesgo = riesgoCritico
-    ? "rm-riesgo-critico"
-    : riesgoTermico
-      ? "rm-riesgo-atencion"
-      : "";
+  const claseRiesgo=riesgoCritico
+    ?"rm-riesgo-critico"
+    :riesgoTermico
+      ?"rm-riesgo-atencion"
+      :"";
 
-  return (
+  const badge=riesgoCritico
+    ?["rm-badge-critico","Helada crítica"]
+    :riesgoTermico
+      ?["rm-badge-riesgo","Riesgo de helada"]
+      :null;
+
+  return(
     <article className={`rm-card rm-card-riesgo ${claseRiesgo}`}>
       <div className="rm-card-top">
         <div className="rm-card-titulo">
           <div className="rm-icono rm-icono-riesgo">
-            <Snowflake size={18} />
+            <Snowflake size={18}/>
           </div>
 
           <div>
@@ -47,22 +47,17 @@ function TarjetaRiesgo({
           </div>
         </div>
 
-        {riesgoCritico ? (
-          <span className="rm-badge-critico">
-            <TriangleAlert size={12} />
-            Helada crítica
+        {badge&&(
+          <span className={badge[0]}>
+            <TriangleAlert size={12}/>
+            {badge[1]}
           </span>
-        ) : riesgoTermico ? (
-          <span className="rm-badge-riesgo">
-            <TriangleAlert size={12} />
-            Riesgo de helada
-          </span>
-        ) : null}
+        )}
       </div>
 
       <div className="rm-metricas rm-metricas-3">
-        <div className={riesgoCritico ? "rm-metrica-roja" : ""}>
-          <strong className={riesgoCritico ? "rm-rojo" : "rm-minima"}>
+        <div className={riesgoCritico?"rm-metrica-roja":""}>
+          <strong className={riesgoCritico?"rm-rojo":"rm-minima"}>
             {formatearNumero(registroMinimo?.minima)} °C
           </strong>
           <span>Mínima del período</span>
@@ -91,20 +86,9 @@ function TarjetaRiesgo({
       </div>
 
       <div className="rm-leyenda">
-        <span>
-          <i className="rm-dot rm-dot-min" />
-          Mínima diaria
-        </span>
-
-        <span>
-          <i className="rm-line rm-line-2" />
-          Riesgo · 2 °C
-        </span>
-
-        <span>
-          <i className="rm-line rm-line-0" />
-          Crítico · 0 °C
-        </span>
+        <span><i className="rm-dot rm-dot-min"/>Mínima diaria</span>
+        <span><i className="rm-line rm-line-2"/>Riesgo · 2 °C</span>
+        <span><i className="rm-line rm-line-0"/>Crítico · 0 °C</span>
       </div>
     </article>
   );

@@ -1,525 +1,244 @@
-import{
-  Accessibility,
-  ChartLine,
-  Contrast,
-  Moon,
-  RotateCcw,
-  Settings2,
-  Sun,
-  Type,
-}from"lucide-react";
-
-import{
-  useConfiguracion
-}from"../../contexto/ConfiguracionContext";
-
+import{Accessibility,ChartLine,Contrast,Moon,RotateCcw,Settings2,Sun,Type}from"lucide-react";
+import{useConfiguracion}from"../../contexto/ConfiguracionContext";
 import"./Configuracion.css";
 
-function GrupoOpciones({
-  valor,
-  opciones,
-  onChange,
-}){
+const OPCIONES={
+  tema:[
+    {valor:"claro",texto:"Claro",icono:Sun},
+    {valor:"oscuro",texto:"Oscuro",icono:Moon},
+  ],
+  densidad:[
+    {valor:"compacta",texto:"Compacta"},
+    {valor:"normal",texto:"Normal"},
+    {valor:"amplia",texto:"Amplia"},
+  ],
+  grafico:[
+    {valor:"normal",texto:"Normal"},
+    {valor:"grande",texto:"Grande"},
+  ],
+  contraste:[
+    {valor:"normal",texto:"Normal"},
+    {valor:"alto",texto:"Alto",icono:Contrast},
+  ],
+  tipoGrafico:[
+    {valor:"lineas",texto:"Líneas"},
+    {valor:"puntos",texto:"Puntos"},
+    {valor:"ambos",texto:"Ambos"},
+  ],
+  animaciones:[
+    {valor:"activadas",texto:"Activadas"},
+    {valor:"desactivadas",texto:"Desactivadas"},
+  ],
+  movimiento:[
+    {valor:"no",texto:"No"},
+    {valor:"si",texto:"Sí"},
+  ],
+};
+
+function GrupoOpciones({valor,opciones,onChange}){
   return(
     <div className="cfg-opciones">
-
       {opciones.map(opcion=>{
-        const Icono=opcion.icono;
+        const Icono=opcion.icono,activa=valor===opcion.valor;
 
         return(
           <button
             key={opcion.valor}
             type="button"
-            className={
-              valor===opcion.valor
-                ?"cfg-opcion activa"
-                :"cfg-opcion"
-            }
-            aria-pressed={
-              valor===opcion.valor
-            }
-            onClick={()=>
-              onChange(opcion.valor)
-            }
+            className={`cfg-opcion ${activa?"activa":""}`}
+            aria-pressed={activa}
+            onClick={()=>onChange(opcion.valor)}
           >
-            {Icono&&(
-              <Icono
-                size={15}
-                strokeWidth={1.9}
-              />
-            )}
-
-            <span>
-              {opcion.texto}
-            </span>
+            {Icono&&<Icono size={15} strokeWidth={1.9}/>}
+            <span>{opcion.texto}</span>
           </button>
         );
       })}
+    </div>
+  );
+}
 
+function Fila({titulo,descripcion,children,clase=""}){
+  return(
+    <div className={`cfg-fila ${clase}`}>
+      <div className="cfg-info">
+        <strong>{titulo}</strong>
+        <span>{descripcion}</span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function TituloSeccion({Icono,titulo,descripcion}){
+  return(
+    <div className="cfg-seccion-titulo">
+      <Icono size={18} strokeWidth={1.8}/>
+      <div>
+        <h2>{titulo}</h2>
+        <p>{descripcion}</p>
+      </div>
     </div>
   );
 }
 
 function Configuracion(){
-
   const{
-    tamanoTexto,
-    tema,
-    densidad,
-    tamanoGrafico,
-    contraste,
-    tipoGrafico,
-    animaciones,
-    movimientoReducido,
-    actualizar,
-    restablecer,
+    tamanoTexto,tema,densidad,tamanoGrafico,contraste,tipoGrafico,
+    animaciones,movimientoReducido,actualizar,restablecer,
   }=useConfiguracion();
+
+  const cambiar=campo=>valor=>actualizar(campo,valor);
 
   return(
     <section className="cfg-pagina">
-
-      {/* CABECERA */}
       <header className="cfg-cabecera">
-
         <div className="cfg-icono-principal">
-          <Settings2
-            size={21}
-            strokeWidth={1.8}
-          />
+          <Settings2 size={21} strokeWidth={1.8}/>
         </div>
-
         <div>
-          <h1>
-            Configuración
-          </h1>
-
-          <p>
-            Personaliza la visualización y accesibilidad de VIGNO.
-          </p>
+          <h1>Configuración</h1>
+          <p>Personaliza la visualización y accesibilidad de VIGNO.</p>
         </div>
-
       </header>
 
       <div className="cfg-contenido">
-
-        {/* =========================================
-            APARIENCIA
-        ========================================== */}
         <section className="cfg-seccion">
+          <TituloSeccion
+            Icono={Type}
+            titulo="Apariencia"
+            descripcion="Ajusta la escala visual y el tema general."
+          />
 
-          <div className="cfg-seccion-titulo">
-
-            <Type
-              size={18}
-              strokeWidth={1.8}
-            />
-
-            <div>
-              <h2>
-                Apariencia
-              </h2>
-
-              <p>
-                Ajusta la escala visual y el tema general.
-              </p>
-            </div>
-
-          </div>
-
-          {/* TAMAÑO TEXTO */}
-          <div className="cfg-fila cfg-fila-slider">
-
-            <div className="cfg-info">
-              <strong>
-                Tamaño del texto
-              </strong>
-
-              <span>
-                Afecta títulos, textos, controles,
-                leyendas, tooltips y ejes de gráficos.
-              </span>
-            </div>
-
+          <Fila
+            clase="cfg-fila-slider"
+            titulo="Tamaño del texto"
+            descripcion="Afecta títulos, textos, controles, leyendas, tooltips y ejes de gráficos."
+          >
             <div className="cfg-slider-area">
-
               <div className="cfg-slider-superior">
-                <span>
-                  Escala global
-                </span>
-
-                <strong>
-                  {tamanoTexto}%
-                </strong>
+                <span>Escala global</span>
+                <strong>{tamanoTexto}%</strong>
               </div>
 
               <input
                 type="range"
                 min="90"
-                max="150"
+                max="180"
                 step="5"
                 value={tamanoTexto}
-                onChange={evento=>
-                  actualizar(
-                    "tamanoTexto",
-                    Number(
-                      evento.target.value
-                    )
-                  )
-                }
+                onChange={e=>actualizar("tamanoTexto",Number(e.target.value))}
                 aria-label="Tamaño global del texto"
               />
 
               <div className="cfg-slider-limites">
-                <span>
-                  90%
-                </span>
-
-                <span>
-                  150%
-                </span>
+                <span>90%</span>
+                <span>180%</span>
               </div>
-
             </div>
+          </Fila>
 
-          </div>
-
-          {/* TEMA */}
-          <div className="cfg-fila">
-
-            <div className="cfg-info">
-              <strong>
-                Tema
-              </strong>
-
-              <span>
-                Cambia toda la aplicación entre modo claro y oscuro.
-              </span>
-            </div>
-
+          <Fila
+            titulo="Tema"
+            descripcion="Cambia toda la aplicación entre modo claro y oscuro."
+          >
             <GrupoOpciones
               valor={tema}
-              onChange={valor=>
-                actualizar(
-                  "tema",
-                  valor
-                )
-              }
-              opciones={[
-                {
-                  valor:"claro",
-                  texto:"Claro",
-                  icono:Sun,
-                },
-                {
-                  valor:"oscuro",
-                  texto:"Oscuro",
-                  icono:Moon,
-                },
-              ]}
+              opciones={OPCIONES.tema}
+              onChange={cambiar("tema")}
             />
-
-          </div>
-
+          </Fila>
         </section>
 
-        {/* =========================================
-            VISUALIZACIÓN
-        ========================================== */}
         <section className="cfg-seccion">
+          <TituloSeccion
+            Icono={ChartLine}
+            titulo="Visualización"
+            descripcion="Controla cómo se distribuye y representa la información."
+          />
 
-          <div className="cfg-seccion-titulo">
-
-            <ChartLine
-              size={18}
-              strokeWidth={1.8}
-            />
-
-            <div>
-              <h2>
-                Visualización
-              </h2>
-
-              <p>
-                Controla cómo se distribuye y representa la información.
-              </p>
-            </div>
-
-          </div>
-
-          {/* DENSIDAD */}
-          <div className="cfg-fila">
-
-            <div className="cfg-info">
-              <strong>
-                Densidad de interfaz
-              </strong>
-
-              <span>
-                Modifica el espacio entre tarjetas y componentes.
-              </span>
-            </div>
-
+          <Fila
+            titulo="Densidad de interfaz"
+            descripcion="Modifica el espacio entre tarjetas y componentes."
+          >
             <GrupoOpciones
               valor={densidad}
-              onChange={valor=>
-                actualizar(
-                  "densidad",
-                  valor
-                )
-              }
-              opciones={[
-                {
-                  valor:"compacta",
-                  texto:"Compacta",
-                },
-                {
-                  valor:"normal",
-                  texto:"Normal",
-                },
-                {
-                  valor:"amplia",
-                  texto:"Amplia",
-                },
-              ]}
+              opciones={OPCIONES.densidad}
+              onChange={cambiar("densidad")}
             />
+          </Fila>
 
-          </div>
-
-          {/* TAMAÑO GRÁFICOS */}
-          <div className="cfg-fila">
-
-            <div className="cfg-info">
-              <strong>
-                Tamaño de gráficos
-              </strong>
-
-              <span>
-                Aumenta el espacio vertical disponible para los gráficos.
-              </span>
-            </div>
-
+          <Fila
+            titulo="Tamaño de gráficos"
+            descripcion="Aumenta el espacio vertical disponible para los gráficos."
+          >
             <GrupoOpciones
               valor={tamanoGrafico}
-              onChange={valor=>
-                actualizar(
-                  "tamanoGrafico",
-                  valor
-                )
-              }
-              opciones={[
-                {
-                  valor:"normal",
-                  texto:"Normal",
-                },
-                {
-                  valor:"grande",
-                  texto:"Grande",
-                },
-              ]}
+              opciones={OPCIONES.grafico}
+              onChange={cambiar("tamanoGrafico")}
             />
+          </Fila>
 
-          </div>
-
-          {/* CONTRASTE */}
-          <div className="cfg-fila">
-
-            <div className="cfg-info">
-              <strong>
-                Contraste
-              </strong>
-
-              <span>
-                Refuerza textos, bordes y elementos secundarios.
-              </span>
-            </div>
-
+          <Fila
+            titulo="Contraste"
+            descripcion="Refuerza textos, bordes y elementos secundarios."
+          >
             <GrupoOpciones
               valor={contraste}
-              onChange={valor=>
-                actualizar(
-                  "contraste",
-                  valor
-                )
-              }
-              opciones={[
-                {
-                  valor:"normal",
-                  texto:"Normal",
-                },
-                {
-                  valor:"alto",
-                  texto:"Alto",
-                  icono:Contrast,
-                },
-              ]}
+              opciones={OPCIONES.contraste}
+              onChange={cambiar("contraste")}
             />
+          </Fila>
 
-          </div>
-
-          {/* TIPO GRÁFICO */}
-          <div className="cfg-fila">
-
-            <div className="cfg-info">
-              <strong>
-                Tipo de gráfico
-              </strong>
-
-              <span>
-                Selecciona cómo se representan las series meteorológicas.
-              </span>
-            </div>
-
+          <Fila
+            titulo="Tipo de gráfico"
+            descripcion="Selecciona cómo se representan las series meteorológicas."
+          >
             <GrupoOpciones
               valor={tipoGrafico}
-              onChange={valor=>
-                actualizar(
-                  "tipoGrafico",
-                  valor
-                )
-              }
-              opciones={[
-                {
-                  valor:"lineas",
-                  texto:"Líneas",
-                },
-                {
-                  valor:"puntos",
-                  texto:"Puntos",
-                },
-                {
-                  valor:"ambos",
-                  texto:"Ambos",
-                },
-              ]}
+              opciones={OPCIONES.tipoGrafico}
+              onChange={cambiar("tipoGrafico")}
             />
-
-          </div>
-
+          </Fila>
         </section>
 
-        {/* =========================================
-            ACCESIBILIDAD
-        ========================================== */}
         <section className="cfg-seccion">
+          <TituloSeccion
+            Icono={Accessibility}
+            titulo="Accesibilidad"
+            descripcion="Controla el movimiento y las transiciones de la interfaz."
+          />
 
-          <div className="cfg-seccion-titulo">
-
-            <Accessibility
-              size={18}
-              strokeWidth={1.8}
-            />
-
-            <div>
-              <h2>
-                Accesibilidad
-              </h2>
-
-              <p>
-                Controla el movimiento y las transiciones de la interfaz.
-              </p>
-            </div>
-
-          </div>
-
-          {/* ANIMACIONES */}
-          <div className="cfg-fila">
-
-            <div className="cfg-info">
-              <strong>
-                Animaciones
-              </strong>
-
-              <span>
-                Activa o desactiva las animaciones generales.
-              </span>
-            </div>
-
+          <Fila
+            titulo="Animaciones"
+            descripcion="Activa o desactiva las animaciones generales."
+          >
             <GrupoOpciones
-              valor={
-                animaciones
-                  ?"activadas"
-                  :"desactivadas"
-              }
-              onChange={valor=>
-                actualizar(
-                  "animaciones",
-                  valor==="activadas"
-                )
-              }
-              opciones={[
-                {
-                  valor:"activadas",
-                  texto:"Activadas",
-                },
-                {
-                  valor:"desactivadas",
-                  texto:"Desactivadas",
-                },
-              ]}
+              valor={animaciones?"activadas":"desactivadas"}
+              opciones={OPCIONES.animaciones}
+              onChange={valor=>actualizar("animaciones",valor==="activadas")}
             />
+          </Fila>
 
-          </div>
-
-          {/* MOVIMIENTO REDUCIDO */}
-          <div className="cfg-fila">
-
-            <div className="cfg-info">
-              <strong>
-                Movimiento reducido
-              </strong>
-
-              <span>
-                Mantiene transiciones suaves evitando escalados y desplazamientos.
-              </span>
-            </div>
-
+          <Fila
+            titulo="Movimiento reducido"
+            descripcion="Mantiene transiciones suaves evitando escalados y desplazamientos."
+          >
             <GrupoOpciones
-              valor={
-                movimientoReducido
-                  ?"si"
-                  :"no"
-              }
-              onChange={valor=>
-                actualizar(
-                  "movimientoReducido",
-                  valor==="si"
-                )
-              }
-              opciones={[
-                {
-                  valor:"no",
-                  texto:"No",
-                },
-                {
-                  valor:"si",
-                  texto:"Sí",
-                },
-              ]}
+              valor={movimientoReducido?"si":"no"}
+              opciones={OPCIONES.movimiento}
+              onChange={valor=>actualizar("movimientoReducido",valor==="si")}
             />
-
-          </div>
-
+          </Fila>
         </section>
 
-        {/* RESTABLECER */}
         <div className="cfg-restablecer">
-
-          <button
-            type="button"
-            onClick={restablecer}
-          >
-            <RotateCcw
-              size={16}
-              strokeWidth={1.9}
-            />
-
+          <button type="button" onClick={restablecer}>
+            <RotateCcw size={16} strokeWidth={1.9}/>
             Restablecer preferencias
           </button>
-
         </div>
-
       </div>
-
     </section>
   );
 }
