@@ -38,6 +38,7 @@ export interface CompletitudTemporada {
   variables: VariablesCompletitud;
   confiable: boolean;
   observacion?: string;
+  lluvia_fuera_invierno_mm?: number | null;
 }
 
 // Registro meteorológico diario individual con tolerancia a nulos por falla.
