@@ -22,8 +22,6 @@ import  CalorExtremoCard  from './componentes/CalorExtremo/CalorExtremoCard';
 
 import LluviaFueraInvernalCard from "./componentes/LluviaFueraInvernalCard/LluviaFueraInvernalCard";
 
-import CalorExtremoCard from "./componentes/CalorExtremo/CalorExtremoCard";
-
 import Configuracion from "./componentes/Configuracion/Configuracion";
 
 import { useClimateData } from "./hooks/useClimateData";
