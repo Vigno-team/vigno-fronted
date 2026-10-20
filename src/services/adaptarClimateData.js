@@ -94,6 +94,7 @@ export const adaptarClimateData = (data) => {
     ),
     temporadas: Array.isArray(data.temporadas) ? data.temporadas : [],
     completitudPorTemporada,
+    completitud_por_temporada: completitudPorTemporada,
     seriesTemperaturas: adaptarResumenDiario(data.resumen_diario),
     fichasTemporada: adaptarFichasTemporada(
       data.ficha_temporada,
