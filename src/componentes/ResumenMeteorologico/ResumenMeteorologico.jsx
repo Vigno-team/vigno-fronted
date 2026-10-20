@@ -1,235 +1,418 @@
 import{useEffect,useMemo,useState}from"react";
-import{ArrowUpDown,CalendarDays,CheckCircle2,CloudRain,MapPin,Snowflake,ThermometerSun,TriangleAlert}from"lucide-react";
-import MiniGraficoLinea from"./MiniGraficoLinea";
+import{CalendarDays,CheckCircle2,MapPin,TriangleAlert}from"lucide-react";
+import TarjetaTemperatura from"./TarjetaTemperatura";
+import TarjetaAmplitud from"./TarjetaAmplitud";
+import TarjetaPrecipitacion from"./TarjetaPrecipitacion";
+import TarjetaRiesgo from"./TarjetaRiesgo";
 import"./ResumenMeteorologico.css";
 
 const PERIODOS=[
-  {valor:"ultimo",texto:"Último día"},
   {valor:"7",texto:"7 días"},
-  {valor:"30",texto:"30 días"},
+  {valor:"mes",texto:"Mes"},
   {valor:"temporada",texto:"Temporada"},
 ];
 
+const MESES=[
+  ["01","Enero"],["02","Febrero"],["03","Marzo"],["04","Abril"],
+  ["05","Mayo"],["06","Junio"],["07","Julio"],["08","Agosto"],
+  ["09","Septiembre"],["10","Octubre"],["11","Noviembre"],["12","Diciembre"],
+].map(([valor,texto])=>({valor,texto}));
+
 const SERIES_TEMPERATURA={
-  maxima:{campo:"maxima",nombre:"Máxima",color:"#C86D3B"},
-  mediaDiaria:{campo:"mediaDiaria",nombre:"Media",color:"#9CA3AF"},
-  minima:{campo:"minima",nombre:"Mínima",color:"#38BDF8"},
+  maxima:{campo:"maxima",nombre:"Máxima",color:"#fb5263"},
+  mediaDiaria:{campo:"mediaDiaria",nombre:"Media",color:"#aebed5"},
+  minima:{campo:"minima",nombre:"Mínima",color:"#3389f4"},
 };
 
-const esNumero=v=>Number.isFinite(v);
-const numero=(v,d=1)=>esNumero(v)?v.toFixed(d).replace(".",","):"—";
-const fecha=f=>f?new Intl.DateTimeFormat("es-CL",{day:"2-digit",month:"short",year:"numeric"}).format(new Date(`${f}T12:00:00`)).replace(".",""):"—";
-const promedio=a=>{const v=a.filter(esNumero);return v.length?v.reduce((s,n)=>s+n,0)/v.length:null};
-const sumar=a=>{const v=a.filter(esNumero);return v.length?v.reduce((s,n)=>s+n,0):null};
-const tieneDatos=d=>Boolean(d&&[d.maxima,d.minima,d.mediaDiaria,d.amplitudTermica,d.precipitacionMm].some(esNumero));
+const esNumero=Number.isFinite;
 
-function ResumenMeteorologico({estaciones=[],datosTemperatura=[],temaOscuro=true}){
+const formatearNumero=(v,decimales=1)=>
+  esNumero(v)?v.toFixed(decimales).replace(".",","):"—";
+
+const formatearPorcentaje=v=>formatearNumero(v);
+
+const formatearFecha=fecha=>fecha
+  ?new Intl.DateTimeFormat("es-CL",{day:"2-digit",month:"short",year:"numeric"})
+    .format(new Date(`${fecha}T12:00:00`)).replace(".","")
+  :"—";
+
+const promedio=valores=>{
+  const validos=valores.filter(esNumero);
+  return validos.length?validos.reduce((a,b)=>a+b,0)/validos.length:null;
+};
+
+const sumar=valores=>{
+  const validos=valores.filter(esNumero);
+  return validos.length?validos.reduce((a,b)=>a+b,0):null;
+};
+
+const tieneDatos=dato=>Boolean(
+  dato&&[
+    dato.maxima,dato.minima,dato.mediaDiaria,
+    dato.amplitudTermica,dato.precipitacionMm,
+  ].some(esNumero)
+);
+
+const obtenerExtremo=(datos,campo,mayor=true)=>
+  datos.reduce((mejor,dato)=>{
+    if(!esNumero(dato[campo]))return mejor;
+    if(!mejor)return dato;
+
+    return(mayor
+      ?dato[campo]>mejor[campo]
+      :dato[campo]<mejor[campo]
+    )?dato:mejor;
+  },null);
+
+const construirMesCompleto=(datos,anio,mes,estacionId)=>{
+  if(!anio||!mes)return[];
+
+  const dias=new Date(Number(anio),Number(mes),0).getDate();
+  const registros=new Map(datos.map(d=>[d.fecha,d]));
+
+  return Array.from({length:dias},(_,i)=>{
+    const dia=String(i+1).padStart(2,"0");
+    const fecha=`${anio}-${mes}-${dia}`;
+
+    return registros.get(fecha)??{
+      estacionId,fecha,maxima:null,minima:null,mediaDiaria:null,
+      amplitudTermica:null,precipitacionMm:null,
+      motivoNulo:"Sin registro disponible",
+    };
+  });
+};
+
+function ResumenMeteorologico({
+  estaciones=[],
+  datosTemperatura=[],
+  temaOscuro=true,
+}){
   const[estacionId,setEstacionId]=useState("");
   const[temporada,setTemporada]=useState("");
-  const[periodo,setPeriodo]=useState("30");
-  const[serie,setSerie]=useState("maxima");
+  const[periodo,setPeriodo]=useState("7");
+  const[mesSeleccionado,setMesSeleccionado]=useState("");
+  const[serieTemperatura,setSerieTemperatura]=useState("maxima");
 
   useEffect(()=>{
-    if(estaciones.length&&!estaciones.some(e=>e.id===estacionId))setEstacionId(estaciones[0].id);
+    if(estaciones.length&&!estaciones.some(e=>e.id===estacionId)){
+      setEstacionId(estaciones[0].id);
+    }
   },[estaciones,estacionId]);
 
-  const estacion=useMemo(()=>estaciones.find(e=>e.id===estacionId),[estaciones,estacionId]);
+  const estacion=useMemo(
+    ()=>estaciones.find(e=>e.id===estacionId)??null,
+    [estaciones,estacionId]
+  );
 
-  const datosEstacion=useMemo(()=>datosTemperatura
-    .filter(d=>d.estacionId===estacionId)
-    .sort((a,b)=>a.fecha.localeCompare(b.fecha)),[datosTemperatura,estacionId]);
+  const datosEstacion=useMemo(
+    ()=>datosTemperatura
+      .filter(d=>d.estacionId===estacionId)
+      .sort((a,b)=>a.fecha.localeCompare(b.fecha)),
+    [datosTemperatura,estacionId]
+  );
 
-  const temporadas=useMemo(()=>[...new Set(datosEstacion.map(d=>d.fecha.slice(0,4)))]
-    .sort((a,b)=>Number(b)-Number(a)),[datosEstacion]);
+  const temporadas=useMemo(
+    ()=>[...new Set(datosEstacion.map(d=>d.fecha.slice(0,4)))]
+      .sort((a,b)=>Number(b)-Number(a)),
+    [datosEstacion]
+  );
 
   useEffect(()=>{
-    if(temporadas.length&&!temporadas.includes(temporada))setTemporada(temporadas[0]);
+    if(temporadas.length&&!temporadas.includes(temporada)){
+      setTemporada(temporadas[0]);
+    }
   },[temporadas,temporada]);
 
-  const datosTemporada=useMemo(()=>temporada?datosEstacion.filter(d=>d.fecha.startsWith(`${temporada}-`)):[],[datosEstacion,temporada]);
+  const datosTemporada=useMemo(
+    ()=>datosEstacion.filter(d=>d.fecha.startsWith(`${temporada}-`)),
+    [datosEstacion,temporada]
+  );
 
-  const datos=useMemo(()=>{
+  const mesesConRegistros=useMemo(
+    ()=>[...new Set(datosTemporada.map(d=>d.fecha.slice(5,7)))].sort(),
+    [datosTemporada]
+  );
+
+  useEffect(()=>{
+    setMesSeleccionado(mesesConRegistros.at(-1)??"01");
+  },[estacionId,temporada,mesesConRegistros]);
+
+  const datosMes=useMemo(
+    ()=>construirMesCompleto(
+      datosTemporada,temporada,mesSeleccionado,estacionId
+    ),
+    [datosTemporada,temporada,mesSeleccionado,estacionId]
+  );
+
+  const datosPeriodo=useMemo(()=>{
     if(periodo==="temporada")return datosTemporada;
-    if(periodo==="ultimo")return datosTemporada.slice(-1);
-    return datosTemporada.slice(-Number(periodo));
-  },[datosTemporada,periodo]);
+    if(periodo==="mes")return datosMes;
+    return datosTemporada.slice(-7);
+  },[datosTemporada,datosMes,periodo]);
 
-  const config=estacion?.temporadas?.[temporada];
-  const confiable=config?.confiable!==false;
-  const completitud=config?.completitud??null;
-  const sinDatos=datosTemporada.filter(d=>!tieneDatos(d)).length;
+  const sinDatos=!useMemo(
+    ()=>datosPeriodo.some(tieneDatos),
+    [datosPeriodo]
+  );
 
-  const maximo=useMemo(()=>datos.reduce((m,d)=>!esNumero(d.maxima)?m:!m||d.maxima>m.maxima?d:m,null),[datos]);
-  const minimo=useMemo(()=>datos.reduce((m,d)=>!esNumero(d.minima)?m:!m||d.minima<m.minima?d:m,null),[datos]);
-  const media=useMemo(()=>promedio(datos.map(d=>d.mediaDiaria)),[datos]);
-  const amplitudMedia=useMemo(()=>promedio(datos.map(d=>d.amplitudTermica)),[datos]);
-  const amplitudMax=useMemo(()=>datos.reduce((m,d)=>!esNumero(d.amplitudTermica)?m:!m||d.amplitudTermica>m.amplitudTermica?d:m,null),[datos]);
+  const diasTotalesMes=useMemo(
+    ()=>temporada&&mesSeleccionado
+      ?new Date(Number(temporada),Number(mesSeleccionado),0).getDate()
+      :0,
+    [temporada,mesSeleccionado]
+  );
 
-  const lluviaPeriodo=useMemo(()=>sumar(datos.map(d=>d.precipitacionMm)),[datos]);
-  const lluviaTemporada=useMemo(()=>sumar(datosTemporada.map(d=>d.precipitacionMm)),[datosTemporada]);
-  const lluviaMax=useMemo(()=>datos.reduce((m,d)=>!esNumero(d.precipitacionMm)?m:!m||d.precipitacionMm>m.precipitacionMm?d:m,null),[datos]);
-  const diasLluvia=datos.filter(d=>esNumero(d.precipitacionMm)&&d.precipitacionMm>0).length;
-  const diasBajo2=datos.filter(d=>esNumero(d.minima)&&d.minima<=2).length;
-  const diasBajo0=datos.filter(d=>esNumero(d.minima)&&d.minima<=0).length;
+  const diasValidosMes=useMemo(
+    ()=>datosMes.filter(tieneDatos).length,
+    [datosMes]
+  );
 
-  const riesgo=diasBajo2>0,critico=diasBajo0>0;
-  const inicio=datosTemporada[0]?.fecha,fin=datosTemporada.at(-1)?.fecha;
-  const textoPeriodo=periodo==="ultimo"?"Último día":periodo==="temporada"?"Temporada completa":`Últimos ${periodo} días`;
-  const serieActual=SERIES_TEMPERATURA[serie];
+  const calidadMes=diasTotalesMes
+    ?diasValidosMes/diasTotalesMes*100
+    :null;
+
+  const mesConfiable=esNumero(calidadMes)&&calidadMes>80;
+
+  const configTemporada=estacion?.temporadas?.[temporada];
+  const completitudTemporada=configTemporada?.completitud??null;
+  const temporadaConfiable=configTemporada?.confiable!==false;
+
+  const completitud=periodo==="mes"
+    ?calidadMes
+    :completitudTemporada;
+
+  const confiable=periodo==="mes"
+    ?mesConfiable
+    :temporadaConfiable;
+
+  const diasSinDatos=useMemo(
+    ()=>periodo==="mes"
+      ?Math.max(0,diasTotalesMes-diasValidosMes)
+      :datosPeriodo.filter(d=>!tieneDatos(d)).length,
+    [periodo,diasTotalesMes,diasValidosMes,datosPeriodo]
+  );
+
+  const metricas=useMemo(()=>({
+    registroMaximo:obtenerExtremo(datosPeriodo,"maxima"),
+    registroMinimo:obtenerExtremo(datosPeriodo,"minima",false),
+    temperaturaMedia:promedio(datosPeriodo.map(d=>d.mediaDiaria)),
+    amplitudPromedio:promedio(datosPeriodo.map(d=>d.amplitudTermica)),
+    amplitudMaxima:obtenerExtremo(datosPeriodo,"amplitudTermica"),
+    precipitacionPeriodo:sumar(datosPeriodo.map(d=>d.precipitacionMm)),
+    maximaLluvia:obtenerExtremo(datosPeriodo,"precipitacionMm"),
+    diasConLluvia:datosPeriodo.filter(
+      d=>esNumero(d.precipitacionMm)&&d.precipitacionMm>0
+    ).length,
+    diasBajo2:datosPeriodo.filter(
+      d=>esNumero(d.minima)&&d.minima<=2
+    ).length,
+    diasBajo0:datosPeriodo.filter(
+      d=>esNumero(d.minima)&&d.minima<=0
+    ).length,
+  }),[datosPeriodo]);
+
+  const precipitacionTemporada=useMemo(
+    ()=>sumar(datosTemporada.map(d=>d.precipitacionMm)),
+    [datosTemporada]
+  );
+
+  const rangoInicio=datosPeriodo[0]?.fecha;
+  const rangoFin=datosPeriodo.at(-1)?.fecha;
+
+  const nombreMes=
+    MESES.find(m=>m.valor===mesSeleccionado)?.texto??"Mes";
+
+  const textoPeriodo=
+    periodo==="temporada"
+      ?"Temporada completa"
+      :periodo==="mes"
+        ?`${nombreMes} ${temporada}`
+        :"Últimos 7 días";
 
   return(
     <section className={`rm-dashboard ${temaOscuro?"tema-oscuro":"tema-claro"}`}>
-      <header className="rm-header">
-        <div className="rm-header-texto">
-          <h1>Resumen meteorológico</h1>
-          <p>Principales condiciones observadas en la estación.</p>
+      <header className="rm-header rm-header-compacto">
+
+        <div className="rm-resumen-barra rm-resumen-barra-header">
+          <span className="rm-rango-datos">
+            <strong>Datos</strong>
+            <span>
+              {formatearFecha(rangoInicio)} — {formatearFecha(rangoFin)}
+            </span>
+          </span>
+
+          {!sinDatos&&esNumero(completitud)&&(
+            <span className="rm-completitud">
+              <strong>{formatearPorcentaje(completitud)} %</strong>{" "}completos
+            </span>
+          )}
+
+          {sinDatos?(
+            <span className="rm-chip-empty">
+              <TriangleAlert size={12}/>
+              Sin datos
+            </span>
+          ):confiable?(
+            <span className="rm-chip-ok">
+              <CheckCircle2 size={12}/>
+              Confiable
+            </span>
+          ):(
+            <span className="rm-chip-warn">
+              <TriangleAlert size={12}/>
+              Calidad limitada
+            </span>
+          )}
+
+          {!sinDatos&&diasSinDatos>0&&(
+            <span className="rm-dias-faltantes">
+              <strong>{diasSinDatos}</strong>{" "}
+              {diasSinDatos===1?"día sin datos":"días sin datos"}
+            </span>
+          )}
         </div>
 
         <div className="rm-controles">
           <label className="rm-control">
             <span>Estación</span>
+
             <div className="rm-select">
               <MapPin size={14}/>
-              <select value={estacionId} onChange={e=>setEstacionId(e.target.value)}>
-                {estaciones.map(e=><option key={e.id} value={e.id}>{e.nombre??e.huerto??e.id}</option>)}
+              <select
+                value={estacionId}
+                onChange={e=>setEstacionId(e.target.value)}
+              >
+                {estaciones.map(e=>(
+                  <option key={e.id} value={e.id}>
+                    {e.nombre??e.huerto??e.id}
+                  </option>
+                ))}
               </select>
             </div>
           </label>
 
           <label className="rm-control rm-control-temporada">
             <span>Temporada</span>
+
             <div className="rm-select">
               <CalendarDays size={14}/>
-              <select value={temporada} onChange={e=>setTemporada(e.target.value)}>
-                {temporadas.map(t=><option key={t}>{t}</option>)}
+              <select
+                value={temporada}
+                onChange={e=>setTemporada(e.target.value)}
+              >
+                {temporadas.map(anio=>(
+                  <option key={anio} value={anio}>{anio}</option>
+                ))}
               </select>
             </div>
           </label>
 
-          <div className="rm-control">
+          <div className="rm-control rm-control-periodo">
             <span>Período</span>
-            <div className="rm-periodos">
-              {PERIODOS.map(p=>
-                <button key={p.valor} type="button" className={periodo===p.valor?"activo":""} onClick={()=>setPeriodo(p.valor)}>
-                  {p.texto}
-                </button>
+
+            <div className="rm-periodo-fila">
+              <div className="rm-periodos">
+                {PERIODOS.map(opcion=>(
+                  <button
+                    key={opcion.valor}
+                    type="button"
+                    className={periodo===opcion.valor?"activo":""}
+                    onClick={()=>setPeriodo(opcion.valor)}
+                  >
+                    {opcion.texto}
+                  </button>
+                ))}
+              </div>
+
+              {periodo==="mes"&&(
+                <div className="rm-mes-select">
+                  <CalendarDays size={13}/>
+
+                  <select
+                    value={mesSeleccionado}
+                    onChange={e=>setMesSeleccionado(e.target.value)}
+                    aria-label="Seleccionar mes"
+                  >
+                    {MESES.map(mes=>(
+                      <option key={mes.valor} value={mes.valor}>
+                        {mes.texto}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               )}
             </div>
           </div>
         </div>
       </header>
 
-      <div className="rm-resumen-barra">
-        <span><strong>Datos</strong> {fecha(inicio)} — {fecha(fin)}</span>
-        {esNumero(completitud)&&<span><strong>{completitud} %</strong> completos</span>}
-        {confiable
-          ?<span className="rm-chip-ok"><CheckCircle2 size={12}/>Confiable</span>
-          :<span className="rm-chip-warn"><TriangleAlert size={12}/>Calidad limitada</span>}
-        {sinDatos>0&&<span><strong>{sinDatos}</strong> {sinDatos===1?"día sin datos":"días sin datos"}</span>}
-      </div>
-
-      <div className="rm-grid">
-        <article className="rm-card">
-          <div className="rm-card-top">
-            <div className="rm-card-titulo">
-              <div className="rm-icono rm-icono-temperatura"><ThermometerSun size={18}/></div>
-              <div><h2>Temperatura del aire</h2><p>{textoPeriodo}</p></div>
-            </div>
+      {sinDatos?(
+        <div className="rm-vacio-periodo">
+          <div className="rm-vacio-periodo-icono">
+            <CalendarDays size={24}/>
           </div>
 
-          <div className="rm-metricas rm-metricas-3">
-            <div><strong className="rm-maxima">{numero(maximo?.maxima)} °C</strong><span>Máxima del período</span><small>{fecha(maximo?.fecha)}</small></div>
-            <div><strong className="rm-media">{numero(media)} °C</strong><span>Promedio del período</span></div>
-            <div><strong className="rm-minima">{numero(minimo?.minima)} °C</strong><span>Mínima del período</span><small>{fecha(minimo?.fecha)}</small></div>
-          </div>
+          <h2>
+            {periodo==="mes"
+              ?"Sin registros disponibles para el mes seleccionado"
+              :"Sin registros disponibles para el período seleccionado"
+            }
+          </h2>
 
-          <div className="rm-selector-series">
-            <button className={serie==="maxima"?"activo maxima":""} onClick={()=>setSerie("maxima")}><i/>Máxima</button>
-            <button className={serie==="mediaDiaria"?"activo media":""} onClick={()=>setSerie("mediaDiaria")}><i/>Media</button>
-            <button className={serie==="minima"?"activo minima":""} onClick={()=>setSerie("minima")}><i/>Mínima</button>
-          </div>
+          <p>
+            {periodo==="mes"
+              ?`No existen observaciones válidas para ${nombreMes} de ${temporada}. Selecciona otro mes para continuar.`
+              :"No existen observaciones válidas para este período."
+            }
+          </p>
+        </div>
+      ):(
+        <div className="rm-grid">
+          <TarjetaTemperatura
+            datos={datosPeriodo}
+            textoPeriodo={textoPeriodo}
+            maximo={metricas.registroMaximo}
+            minimo={metricas.registroMinimo}
+            media={metricas.temperaturaMedia}
+            serie={serieTemperatura}
+            cambiarSerie={setSerieTemperatura}
+            configuracionSerie={SERIES_TEMPERATURA[serieTemperatura]}
+            formatearNumero={formatearNumero}
+            formatearFecha={formatearFecha}
+          />
 
-          <div className="rm-grafico">
-            <MiniGraficoLinea 
-              datos={datos} 
-              esGraficoTemperatura={true}
-              series={[{...serieActual,unidad:" °C",grosor:2.4}]}/>
-          </div>
-        </article>
+          <TarjetaAmplitud
+            datos={datosPeriodo}
+            promedio={metricas.amplitudPromedio}
+            maxima={metricas.amplitudMaxima}
+            formatearNumero={formatearNumero}
+            formatearFecha={formatearFecha}
+          />
 
-        <article className="rm-card">
-          <div className="rm-card-top">
-            <div className="rm-card-titulo">
-              <div className="rm-icono rm-icono-amplitud"><ArrowUpDown size={18}/></div>
-              <div><h2>Amplitud térmica</h2><p>Diferencia entre máxima y mínima diaria</p></div>
-            </div>
-          </div>
+          <TarjetaPrecipitacion
+            datos={datosPeriodo}
+            total={
+              periodo==="temporada"
+                ?precipitacionTemporada
+                :metricas.precipitacionPeriodo
+            }
+            diasConLluvia={metricas.diasConLluvia}
+            maxima={metricas.maximaLluvia}
+            esTemporada={periodo==="temporada"}
+            formatearNumero={formatearNumero}
+            formatearFecha={formatearFecha}
+          />
 
-          <div className="rm-metricas rm-metricas-2">
-            <div><strong className="rm-amplitud">{numero(amplitudMedia)} °C</strong><span>Promedio del período</span></div>
-            <div><strong className="rm-amplitud">{numero(amplitudMax?.amplitudTermica)} °C</strong><span>Mayor amplitud</span><small>{fecha(amplitudMax?.fecha)}</small></div>
-          </div>
-
-          <div className="rm-grafico">
-            <MiniGraficoLinea datos={datos} series={[{campo:"amplitudTermica",nombre:"Amplitud térmica",unidad:" °C",color:"#C86D3B",grosor:2.3}]}/>
-          </div>
-        </article>
-
-        <article className="rm-card">
-          <div className="rm-card-top">
-            <div className="rm-card-titulo">
-              <div className="rm-icono rm-icono-lluvia"><CloudRain size={18}/></div>
-              <div><h2>Precipitación</h2><p>Lluvia observada durante el período</p></div>
-            </div>
-          </div>
-
-          <div className="rm-metricas rm-metricas-3">
-            <div><strong className="rm-lluvia">{numero(periodo==="temporada"?lluviaTemporada:lluviaPeriodo)} mm</strong><span>{periodo==="temporada"?"Total temporada":"Total del período"}</span></div>
-            <div><strong className="rm-lluvia">{diasLluvia}</strong><span>Días con lluvia</span></div>
-            <div><strong className="rm-lluvia">{numero(lluviaMax?.precipitacionMm)} mm</strong><span>Máxima diaria</span><small>{fecha(lluviaMax?.fecha)}</small></div>
-          </div>
-
-          <div className="rm-grafico">
-            <MiniGraficoLinea datos={datos} tipo="barras" series={[{campo:"precipitacionMm",nombre:"Precipitación",unidad:" mm",color:"#38BDF8"}]}/>
-          </div>
-        </article>
-
-        <article className={`rm-card rm-card-riesgo ${critico?"rm-riesgo-critico":riesgo?"rm-riesgo-atencion":""}`}>
-          <div className="rm-card-top">
-            <div className="rm-card-titulo">
-              <div className="rm-icono rm-icono-riesgo"><Snowflake size={18}/></div>
-              <div><h2>Riesgo térmico</h2><p>Basado en temperatura mínima diaria</p></div>
-            </div>
-            {critico?<span className="rm-badge-critico"><TriangleAlert size={12}/>Helada crítica</span>
-              :riesgo?<span className="rm-badge-riesgo"><TriangleAlert size={12}/>Riesgo de helada</span>:null}
-          </div>
-
-          <div className="rm-metricas rm-metricas-3">
-            <div className={critico?"rm-metrica-roja":""}>
-              <strong className={critico?"rm-rojo":"rm-minima"}>{numero(minimo?.minima)} °C</strong>
-              <span>Mínima del período</span><small>{fecha(minimo?.fecha)}</small>
-            </div>
-            <div className="rm-metrica-ambar"><strong>{diasBajo2}</strong><span>Días con mínima ≤ 2 °C</span></div>
-            <div className="rm-metrica-roja"><strong>{diasBajo0}</strong><span>Días con mínima ≤ 0 °C</span></div>
-          </div>
-
-          <div className="rm-grafico">
-            <MiniGraficoLinea
-              datos={datos}
-              destacarRiesgo
-              campoRiesgo="minima"
-              lineasReferencia={[{valor:2,color:"#D99B26"},{valor:0,color:"#38BDF8"}]}
-              series={[{campo:"minima",nombre:"Mínima diaria",unidad:" °C",color:"#38BDF8",grosor:2.3}]}
-            />
-          </div>
-
-          <div className="rm-leyenda">
-            <span><i className="rm-dot rm-dot-min"/>Mínima diaria</span>
-            <span><i className="rm-line rm-line-2"/>Riesgo · 2 °C</span>
-            <span><i className="rm-line rm-line-0"/>Crítico · 0 °C</span>
-          </div>
-        </article>
-      </div>
+          <TarjetaRiesgo
+            datos={datosPeriodo}
+            registroMinimo={metricas.registroMinimo}
+            diasBajo2={metricas.diasBajo2}
+            diasBajo0={metricas.diasBajo0}
+            formatearNumero={formatearNumero}
+            formatearFecha={formatearFecha}
+          />
+        </div>
+      )}
     </section>
   );
 }

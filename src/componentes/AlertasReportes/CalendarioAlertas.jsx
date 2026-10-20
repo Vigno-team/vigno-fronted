@@ -1,68 +1,26 @@
+import{CalendarDays,CalendarRange,ChevronLeft,ChevronRight}from"lucide-react";
 import{
-  CalendarDays,
-  CalendarRange,
-  ChevronLeft,
-  ChevronRight,
-}from"lucide-react";
-
-import{
-  construirFecha,
-  DIAS_SEMANA,
-  estaDentroDelRango,
-  MESES,
-  MESES_CORTOS,
-  obtenerTiposRegistro,
-  PRIORIDAD,
+  construirFecha,DIAS_SEMANA,estaDentroDelRango,MESES,MESES_CORTOS,
+  obtenerTiposRegistro,PRIORIDAD,
 }from"./alertasConfig";
 
 const LEYENDA=[
-  {
-    clase:"critica",
-    titulo:"Alerta crítica",
-    descripcion:"Mínima ≤ 0 °C",
-  },
-  {
-    clase:"advertencia",
-    titulo:"Precaución",
-    descripcion:"0 °C < mínima ≤ 2 °C",
-  },
-  {
-    clase:"reporte",
-    titulo:"Reporte disponible",
-    descripcion:"Existe información observada",
-  },
-  {
-    clase:"sinDatos",
-    titulo:"Sin datos",
-    descripcion:"Registro no disponible",
-  },
+  {clase:"critica",titulo:"Alerta crítica",descripcion:"Mínima ≤ 0 °C"},
+  {clase:"advertencia",titulo:"Precaución",descripcion:"0 °C < mínima ≤ 2 °C"},
+  {clase:"reporte",titulo:"Reporte disponible",descripcion:"Existe información observada"},
+  {clase:"sinDatos",titulo:"Sin datos",descripcion:"Registro no disponible"},
 ];
 
 function CalendarioAlertas({
-  anio,
-  mes,
-  aniosDisponibles,
-  mesesDisponibles,
-  puedeAnterior,
-  puedeSiguiente,
-  cambiarPeriodo,
-  seleccionarAnio,
-  seleccionarMes,
-  dias,
-  registrosPorFecha,
-  rangoCobertura,
-  fechaSeleccionada,
-  seleccionarDia,
+  anio,mes,aniosDisponibles,mesesDisponibles,puedeAnterior,puedeSiguiente,
+  cambiarPeriodo,seleccionarAnio,seleccionarMes,dias,registrosPorFecha,
+  rangoCobertura,fechaSeleccionada,seleccionarDia,
 }){
   return(
     <div className="ar-calendario">
+
       <div className="ar-calendario-header">
-        <button
-          type="button"
-          className="ar-boton-mes"
-          disabled={!puedeAnterior}
-          onClick={()=>cambiarPeriodo(-1)}
-        >
+        <button type="button" className="ar-boton-mes" disabled={!puedeAnterior} onClick={()=>cambiarPeriodo(-1)}>
           <ChevronLeft size={20}/>
         </button>
 
@@ -74,20 +32,13 @@ function CalendarioAlertas({
 
           <label className="ar-selector-anio">
             <CalendarRange size={15}/>
-            <select value={anio} onChange={(e)=>seleccionarAnio(e.target.value)}>
-              {aniosDisponibles.map((valor)=>(
-                <option key={valor} value={valor}>{valor}</option>
-              ))}
+            <select value={anio} onChange={e=>seleccionarAnio(e.target.value)}>
+              {aniosDisponibles.map(valor=><option key={valor} value={valor}>{valor}</option>)}
             </select>
           </label>
         </div>
 
-        <button
-          type="button"
-          className="ar-boton-mes"
-          disabled={!puedeSiguiente}
-          onClick={()=>cambiarPeriodo(1)}
-        >
+        <button type="button" className="ar-boton-mes" disabled={!puedeSiguiente} onClick={()=>cambiarPeriodo(1)}>
           <ChevronRight size={20}/>
         </button>
       </div>
@@ -116,7 +67,7 @@ function CalendarioAlertas({
         </div>
 
         <div className="ar-resumen-estados-grid">
-          {LEYENDA.map((item)=>(
+          {LEYENDA.map(item=>(
             <div key={item.clase} className="ar-estado-item">
               <i className={`ar-estado-swatch ${item.clase}`}/>
               <div>
@@ -129,9 +80,7 @@ function CalendarioAlertas({
       </div>
 
       <div className="ar-semana">
-        {DIAS_SEMANA.map((dia)=>(
-          <span key={dia}>{dia}</span>
-        ))}
+        {DIAS_SEMANA.map(dia=><span key={dia}>{dia}</span>)}
       </div>
 
       <div className="ar-dias">
@@ -145,21 +94,10 @@ function CalendarioAlertas({
           }
 
           const fecha=construirFecha(anio,mes,celda.dia);
-          const dentroCobertura=estaDentroDelRango(
-            fecha,
-            rangoCobertura.inicio,
-            rangoCobertura.fin
-          );
-
+          const dentroCobertura=estaDentroDelRango(fecha,rangoCobertura.inicio,rangoCobertura.fin);
           const existeRegistro=registrosPorFecha.has(fecha);
           const registro=registrosPorFecha.get(fecha);
-
-          const tipos=obtenerTiposRegistro({
-            registro,
-            existeRegistro,
-            dentroCobertura,
-          });
-
+          const tipos=obtenerTiposRegistro({registro,existeRegistro,dentroCobertura});
           const tipoPrincipal=[...tipos].sort((a,b)=>PRIORIDAD[b]-PRIORIDAD[a])[0];
 
           return(
@@ -167,28 +105,21 @@ function CalendarioAlertas({
               key={fecha}
               type="button"
               disabled={!dentroCobertura}
-              className={`ar-dia ar-dia-activo ${
-                tipoPrincipal?`evento-${tipoPrincipal}`:""
-              } ${
-                fechaSeleccionada===fecha?"seleccionado":""
-              } ${
-                !dentroCobertura?"fuera-cobertura":""
-              }`}
+              className={`ar-dia ar-dia-activo ${tipoPrincipal?`evento-${tipoPrincipal}`:""} ${fechaSeleccionada===fecha?"seleccionado":""} ${!dentroCobertura?"fuera-cobertura":""}`}
               onClick={()=>seleccionarDia(celda.dia)}
             >
               <span className="ar-numero-dia">{celda.dia}</span>
 
               {!!tipos.length&&(
                 <div className="ar-puntos-dia">
-                  {tipos.map((tipo)=>(
-                    <i key={tipo} className={`ar-punto ${tipo}`}/>
-                  ))}
+                  {tipos.map(tipo=><i key={tipo} className={`ar-punto ${tipo}`}/>)}
                 </div>
               )}
             </button>
           );
         })}
       </div>
+
     </div>
   );
 }

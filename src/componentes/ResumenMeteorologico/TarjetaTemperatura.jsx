@@ -1,30 +1,22 @@
-import { ThermometerSun } from "lucide-react";
-import MiniGraficoLinea from "./MiniGraficoLinea";
+import{ThermometerSun}from"lucide-react";
+import MiniGraficoLinea from"./MiniGraficoLinea";
 
-const SERIES = [
-  ["maxima", "Máxima", "maxima"],
-  ["mediaDiaria", "Media", "media"],
-  ["minima", "Mínima", "minima"],
+const SERIES=[
+  ["maxima","Máxima","maxima"],
+  ["mediaDiaria","Media","media"],
+  ["minima","Mínima","minima"],
 ];
 
 function TarjetaTemperatura({
-  datos,
-  textoPeriodo,
-  maximo,
-  minimo,
-  media,
-  serie,
-  cambiarSerie,
-  configuracionSerie,
-  formatearNumero,
-  formatearFecha,
-}) {
-  return (
+  datos,textoPeriodo,maximo,minimo,media,serie,
+  cambiarSerie,configuracionSerie,formatearNumero,formatearFecha,
+}){
+  return(
     <article className="rm-card">
       <div className="rm-card-top">
         <div className="rm-card-titulo">
           <div className="rm-icono rm-icono-temperatura">
-            <ThermometerSun size={18} />
+            <ThermometerSun size={18}/>
           </div>
 
           <div>
@@ -60,14 +52,14 @@ function TarjetaTemperatura({
       </div>
 
       <div className="rm-selector-series">
-        {SERIES.map(([valor, texto, clase]) => (
+        {SERIES.map(([valor,texto,clase])=>(
           <button
             key={valor}
             type="button"
-            className={serie === valor ? `activo ${clase}` : ""}
-            onClick={() => cambiarSerie(valor)}
+            className={serie===valor?`activo ${clase}`:""}
+            onClick={()=>cambiarSerie(valor)}
           >
-            <i />
+            <i/>
             {texto}
           </button>
         ))}
@@ -76,16 +68,11 @@ function TarjetaTemperatura({
       <div className="rm-grafico">
         <MiniGraficoLinea
           datos={datos}
-          //seccion de tooltip
-          //esGraficoTemperatura={true}
-          //fin seccion de tooltip
-          series={[
-            {
-              ...configuracionSerie,
-              unidad: " °C",
-              grosor: 2.4,
-            },
-          ]}
+          series={[{
+            ...configuracionSerie,
+            unidad:" °C",
+            grosor:2.4,
+          }]}
         />
       </div>
     </article>

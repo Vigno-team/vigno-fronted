@@ -1,30 +1,23 @@
-import { CloudRain } from "lucide-react";
-import MiniGraficoLinea from "./MiniGraficoLinea";
+import{CloudRain}from"lucide-react";
+import MiniGraficoLinea from"./MiniGraficoLinea";
 
-const SERIE_PRECIPITACION = [
-  {
-    campo: "precipitacionMm",
-    nombre: "Precipitación",
-    unidad: " mm",
-    color: "#38a5ff",
-  },
-];
+const SERIE_PRECIPITACION=[{
+  campo:"precipitacionMm",
+  nombre:"Precipitación",
+  unidad:" mm",
+  color:"#38a5ff",
+}];
 
 function TarjetaPrecipitacion({
-  datos,
-  total,
-  diasConLluvia,
-  maxima,
-  esTemporada,
-  formatearNumero,
-  formatearFecha,
-}) {
-  return (
+  datos,total,diasConLluvia,maxima,esTemporada,
+  formatearNumero,formatearFecha,
+}){
+  return(
     <article className="rm-card">
       <div className="rm-card-top">
         <div className="rm-card-titulo">
           <div className="rm-icono rm-icono-lluvia">
-            <CloudRain size={18} />
+            <CloudRain size={18}/>
           </div>
 
           <div>
@@ -39,7 +32,7 @@ function TarjetaPrecipitacion({
           <strong className="rm-lluvia">
             {formatearNumero(total)} mm
           </strong>
-          <span>{esTemporada ? "Total temporada" : "Total del período"}</span>
+          <span>{esTemporada?"Total temporada":"Total del período"}</span>
         </div>
 
         <div>
