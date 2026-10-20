@@ -16,9 +16,11 @@ import HuglinCard from "./componentes/HuglinCard/HuglinCard";
 
 import LluviaInvernalCard from "./componentes/LluviaInvernalCard/LluviaInvernalCard";
 
-import LluviaFueraInvernalCard from "./componentes/LluviaFueraInvernalCard/LluviaFueraInvernalCard";
+import MapaSatelital from "./componentes/MapaSatelital/MapaSatelital";
 
-import CalorExtremoCard from "./componentes/CalorExtremo/CalorExtremoCard";
+import  CalorExtremoCard  from './componentes/CalorExtremo/CalorExtremoCard';
+
+import LluviaFueraInvernalCard from "./componentes/LluviaFueraInvernalCard/LluviaFueraInvernalCard";
 
 import Configuracion from "./componentes/Configuracion/Configuracion";
 
@@ -143,8 +145,19 @@ function App() {
           />
         );
 
-      case "Configuración":
-        return <Configuracion />;
+      case "Mapa Satelital":
+        return (
+          <MapaSatelital
+            estaciones={datos?.estaciones}
+            mapaCalor={datos?.mapa_calor}
+            temaOscuro={temaOscuro}
+          />
+        );
+
+      case"Configuración":
+        return(
+          <Configuracion/>
+        );
 
       default:
         return (
