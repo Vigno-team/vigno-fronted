@@ -1,0 +1,166 @@
+/* Overlay del Modal con oscurecimiento adaptable */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Suaviza la sombra exterior cuando está en Modo Claro */
+.tema-pagina-claro .modal-overlay,
+html[data-tema="claro"] .modal-overlay {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+/* Caja Principal del Modal - Estructura base */
+.modal-contenido {
+  padding: 28px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* ===================================================
+   1. MODO OSCURO (VALORES BASE POR DEFECTO DE VIGNO)
+   =================================================== */
+.modal-contenido {
+  background-color: #1e1e24 !important;
+  color: #ffffff !important;
+  border: 1px solid #33333e;
+}
+
+.modal-contenido h3 {
+  margin-top: 0;
+  color: #ffffff !important;
+  font-size: 1.1rem;
+}
+
+.modal-subtext {
+  font-size: 0.78rem;
+  color: #aaaaaa !important;
+  margin-bottom: 1.2rem;
+}
+
+.modal-contenido .form-group label {
+  color: #e0e0e0 !important;
+  font-weight: 600;
+}
+
+.modal-contenido .form-group input,
+.modal-contenido .form-group textarea {
+  background-color: #121215 !important;
+  color: #ffffff !important;
+  border: 1px solid #44444e;
+}
+
+.modal-contenido .btn-cancelar {
+  background: transparent;
+  color: #ffffff !important;
+  border: 1px solid #555560;
+}
+
+/* ===================================================
+   2. MODO CLARO (SELECTORES REALES DE TU APLICACIÓN)
+   =================================================== */
+.tema-pagina-claro .modal-contenido,
+html[data-tema="claro"] .modal-contenido {
+  background-color: #ffffff !important;
+  color: #1a1a1a !important;
+  border: 1px solid #e0e0e0 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12) !important;
+}
+
+.tema-pagina-claro .modal-contenido h3,
+html[data-tema="claro"] .modal-contenido h3 {
+  color: #1a1a1a !important;
+}
+
+.tema-pagina-claro .modal-subtext,
+html[data-tema="claro"] .modal-subtext {
+  color: #666666 !important;
+}
+
+.tema-pagina-claro .form-group label,
+html[data-tema="claro"] .form-group label {
+  color: #222222 !important;
+}
+
+.tema-pagina-claro .form-group input,
+.tema-pagina-claro .form-group textarea,
+html[data-tema="claro"] .form-group input,
+html[data-tema="claro"] .form-group textarea {
+  background-color: #f5f6f8 !important;
+  color: #1a1a1a !important;
+  border: 1px solid #cccccc !important;
+}
+
+.tema-pagina-claro .btn-cancelar,
+html[data-tema="claro"] .btn-cancelar {
+  border: 1px solid #cccccc !important;
+  color: #333333 !important;
+}
+
+/* ===================================================
+   3. REGLAS COMUNES DE ESTRUCTURA Y BOTONES
+   =================================================== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 14px;
+  font-size: 0.78rem;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 9px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  outline: none;
+}
+
+.form-group input:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 1.4rem;
+}
+
+.btn-cancelar {
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-guardar {
+  background: var(--vigno-accent, #e07a5f) !important;
+  color: #ffffff !important;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-guardar:hover {
+  opacity: 0.92;
+}
