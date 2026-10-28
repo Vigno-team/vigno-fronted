@@ -12,6 +12,7 @@ import HuglinCard from "./componentes/HuglinCard/HuglinCard";
 import LluviaInvernalCard from "./componentes/LluviaInvernalCard/LluviaInvernalCard";
 import LluviaFueraInvernalCard from "./componentes/LluviaFueraInvernalCard/LluviaFueraInvernalCard";
 import CalorExtremoCard from "./componentes/CalorExtremo/CalorExtremoCard";
+import PrediccionCosechaCard from "./componentes/PrediccionCosecha/PrediccionCosechaCard";
 
 import MapaSatelital from "./componentes/MapaSatelital/MapaSatelital";
 import Configuracion from "./componentes/Configuracion/Configuracion";
@@ -217,6 +218,7 @@ function App() {
               fichasTemporada={datos.fichasTemporada}
               temporadaEnCurso={datos.temporadaEnCurso}
             />
+            <PrediccionCosechaCard/>
 
           </div>
         );
@@ -246,6 +248,7 @@ function App() {
           <MapaSatelital
             estaciones={datos.estaciones}
             mapaCalor={datos.mapaCalor}
+            seriesTemperaturas={datos.seriesTemperaturas}
             temaOscuro={temaOscuro}
           />
         );

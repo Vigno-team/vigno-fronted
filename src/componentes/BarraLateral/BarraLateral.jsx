@@ -1,4 +1,4 @@
-import{Activity,Clock3,Home,Menu,Settings,TriangleAlert}from"lucide-react";
+import{Activity,Clock3,Home,Menu,Settings,TriangleAlert,Map}from"lucide-react";
 import"./BarraLateral.css";
 
 const opciones=[
@@ -6,6 +6,7 @@ const opciones=[
   {nombre:"Alertas y reportes",icono:TriangleAlert},
   {nombre:"Índices vitivinícolas",icono:Activity},
   {nombre:"Históricos",icono:Clock3},
+  {nombre:"Mapa Satelital",icono:Map},
   {nombre:"Configuración",icono:Settings},
 ];
 

@@ -1,0 +1,276 @@
+/* Estructura base heredada y alineada con LluviaInvernalCard.css */
+.prediccion-cosecha-card {
+  grid-column: 1 / -1; /* Ocupa todo el ancho disponible dentro de .indices-grid */
+  min-width: 0;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  color: #fff;
+  background: var(--vigno-surface-dark);
+  border: 1px solid var(--vigno-surface-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.prediccion-aviso-mandatorio {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  color: var(--vigno-status-alerta);
+  background: rgba(217, 155, 38, 0.12);
+  border: 1px solid rgba(217, 155, 38, 0.4);
+  border-left: 3px solid var(--vigno-status-alerta);
+  border-radius: 7px;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+/* Grilla central para Dispersión e Importancia de Variables */
+.prediccion-grid-dos-columnas {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 0.7rem;
+}
+
+.prediccion-panel {
+  justify-content: space-between;
+}
+
+.prediccion-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.prediccion-select-compacto {
+  min-width: 170px;
+  height: 30px;
+  font-size: 0.68rem;
+}
+
+/* Gráfico de dispersión SVG */
+.prediccion-scatter-wrapper {
+  width: 100%;
+  overflow: hidden;
+  padding: 4px 0;
+}
+
+.prediccion-scatter-svg {
+  width: 100%;
+  height: auto;
+  max-height: 260px;
+  display: block;
+}
+
+.scatter-grid-line {
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 1;
+}
+
+.scatter-diagonal-ideal {
+  stroke: var(--vigno-accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+  opacity: 0.75;
+}
+
+.scatter-axis-text {
+  fill: var(--vigno-text-secondary);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.scatter-axis-title {
+  fill: var(--vigno-text-secondary);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.scatter-point {
+  cursor: pointer;
+  transition: r 0.15s ease, opacity 0.15s ease;
+  opacity: 0.82;
+}
+
+.scatter-point:hover {
+  opacity: 1;
+}
+
+.scatter-point.point-red {
+  fill: var(--vigno-accent);
+  stroke: rgba(0, 0, 0, 0.45);
+  stroke-width: 1;
+}
+
+.scatter-point.point-white {
+  fill: #eab308;
+  stroke: rgba(0, 0, 0, 0.45);
+  stroke-width: 1;
+}
+
+.scatter-point.point-selected {
+  stroke: #fff;
+  stroke-width: 2;
+  opacity: 1;
+}
+
+/* Barras horizontales de importancia relativa */
+.importancia-barras-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin: 0.35rem 0;
+}
+
+.importancia-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.importancia-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.7rem;
+}
+
+.importancia-nombre {
+  color: var(--vigno-text-secondary);
+  font-weight: 500;
+}
+
+.importancia-valor {
+  color: #fff;
+  font-weight: 700;
+}
+
+.importancia-barra-fondo {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--vigno-surface-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.importancia-barra-relleno {
+  height: 100%;
+  background: var(--vigno-accent);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+/* Tabla comparativa de métricas MAE y RMSE */
+.prediccion-tabla-contenedor {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.prediccion-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+  text-align: left;
+}
+
+.prediccion-tabla th {
+  padding: 8px 10px;
+  color: var(--vigno-text-muted);
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--vigno-surface-border);
+}
+
+.prediccion-tabla td {
+  padding: 8px 10px;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.prediccion-tabla tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.metrica-destacada {
+  display: inline-block;
+  padding: 2px 7px;
+  color: var(--vigno-status-confiable);
+  background: rgba(46, 160, 67, 0.12);
+  border: 1px solid rgba(46, 160, 67, 0.35);
+  border-radius: 5px;
+  font-weight: 700;
+}
+
+/* Soporte Modo Claro (.tema-pagina-claro) idéntico a LluviaInvernalCard.css */
+.tema-pagina-claro .prediccion-cosecha-card {
+  color: var(--vigno-text-dark);
+  background: transparent;
+  border-color: var(--vigno-border-light);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.035);
+}
+
+.tema-pagina-claro .prediccion-aviso-mandatorio {
+  color: #9a6700;
+  background: #fff8e6;
+  border-color: rgba(217, 155, 38, 0.35);
+  border-left: 3px solid #d99b26;
+}
+
+.tema-pagina-claro .scatter-grid-line {
+  stroke: rgba(0, 0, 0, 0.07);
+}
+
+.tema-pagina-claro .scatter-axis-text,
+.tema-pagina-claro .scatter-axis-title,
+.tema-pagina-claro .importancia-nombre {
+  color: var(--vigno-text-muted);
+  fill: var(--vigno-text-muted);
+}
+
+.tema-pagina-claro .scatter-point.point-selected {
+  stroke: var(--vigno-text-dark);
+}
+
+.tema-pagina-claro .importancia-valor,
+.tema-pagina-claro .prediccion-tabla td {
+  color: var(--vigno-text-dark);
+}
+
+.tema-pagina-claro .importancia-barra-fondo {
+  background: #f3f4f6;
+  border-color: var(--vigno-border-light);
+}
+
+.tema-pagina-claro .prediccion-tabla th {
+  border-bottom-color: var(--vigno-border-light);
+}
+
+.tema-pagina-claro .prediccion-tabla td {
+  border-bottom-color: var(--vigno-border-light);
+}
+
+/* Responsividad alineada con LluviaInvernalCard.css */
+@media (max-width: 900px) {
+  .prediccion-grid-dos-columnas {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .prediccion-panel-header {
+    flex-direction: column;
+  }
+
+  .prediccion-select-compacto {
+    width: 100%;
+  }
+}
