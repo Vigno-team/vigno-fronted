@@ -4,7 +4,7 @@ import "./App.css";
 
 import BarraLateral from "./componentes/BarraLateral/BarraLateral";
 import ResumenMeteorologico from "./componentes/ResumenMeteorologico/ResumenMeteorologico";
-import Historicos from"./componentes/Historicos/Historicos";
+import Historicos from "./componentes/Historicos/Historicos";
 import AlertasReportes from "./componentes/AlertasReportes/AlertasReportes";
 
 import WinklerCard from "./componentes/WinklerCard/WinklerCard";
@@ -12,6 +12,7 @@ import HuglinCard from "./componentes/HuglinCard/HuglinCard";
 import LluviaInvernalCard from "./componentes/LluviaInvernalCard/LluviaInvernalCard";
 import LluviaFueraInvernalCard from "./componentes/LluviaFueraInvernalCard/LluviaFueraInvernalCard";
 import CalorExtremoCard from "./componentes/CalorExtremo/CalorExtremoCard";
+import DatosConFallaCard from "./componentes/DatosConFallaCard/DatosConFallaCard";
 
 import MapaSatelital from "./componentes/MapaSatelital/MapaSatelital";
 import Configuracion from "./componentes/Configuracion/Configuracion";
@@ -21,21 +22,13 @@ import { adaptarClimateData } from "./services/adaptarClimateData";
 import { useConfiguracion } from "./contexto/ConfiguracionContext";
 
 function App() {
-
   /* ===================================================
      DATOS
   =================================================== */
 
-  const {
-    data,
-    loading,
-    error,
-  } = useClimateData();
+  const { data, loading, error } = useClimateData();
 
-  const datos = useMemo(
-    () => adaptarClimateData(data),
-    [data]
-  );
+  const datos = useMemo(() => adaptarClimateData(data), [data]);
 
   /* ===================================================
      CONFIGURACIÓN GLOBAL
@@ -48,9 +41,7 @@ function App() {
   =================================================== */
 
   const [barraExpandida, setBarraExpandida] = useState(() => {
-
-    const guardado =
-      localStorage.getItem("barra-expandida");
+    const guardado = localStorage.getItem("barra-expandida");
 
     if (guardado === null) {
       return true;
@@ -59,16 +50,10 @@ function App() {
     return guardado === "true";
   });
 
-  const [opcionActiva, setOpcionActiva] =
-    useState("Resumen");
+  const [opcionActiva, setOpcionActiva] = useState("Resumen");
 
   useEffect(() => {
-
-    localStorage.setItem(
-      "barra-expandida",
-      String(barraExpandida)
-    );
-
+    localStorage.setItem("barra-expandida", String(barraExpandida));
   }, [barraExpandida]);
 
   /* ===================================================
@@ -77,23 +62,11 @@ function App() {
 
   if (error) {
     return (
-      <div
-        className={
-          temaOscuro
-            ? "tema-pagina-oscuro"
-            : "tema-pagina-claro"
-        }
-      >
+      <div className={temaOscuro ? "tema-pagina-oscuro" : "tema-pagina-claro"}>
         <div className="app-cargando">
+          <strong>No se pudieron cargar los datos meteorológicos.</strong>
 
-          <strong>
-            No se pudieron cargar los datos meteorológicos.
-          </strong>
-
-          <span>
-            {String(error)}
-          </span>
-
+          <span>{String(error)}</span>
         </div>
       </div>
     );
@@ -105,16 +78,8 @@ function App() {
 
   if (loading) {
     return (
-      <div
-        className={
-          temaOscuro
-            ? "tema-pagina-oscuro"
-            : "tema-pagina-claro"
-        }
-      >
-        <div className="app-cargando">
-          Cargando datos meteorológicos...
-        </div>
+      <div className={temaOscuro ? "tema-pagina-oscuro" : "tema-pagina-claro"}>
+        <div className="app-cargando">Cargando datos meteorológicos...</div>
       </div>
     );
   }
@@ -125,17 +90,9 @@ function App() {
 
   if (!datos) {
     return (
-      <div
-        className={
-          temaOscuro
-            ? "tema-pagina-oscuro"
-            : "tema-pagina-claro"
-        }
-      >
+      <div className={temaOscuro ? "tema-pagina-oscuro" : "tema-pagina-claro"}>
         <div className="app-cargando">
-
           No existen datos meteorológicos disponibles.
-
         </div>
       </div>
     );
@@ -146,15 +103,12 @@ function App() {
   =================================================== */
 
   const renderizarContenido = () => {
-
     switch (opcionActiva) {
-
       /* =================================================
          RESUMEN
       ================================================= */
 
       case "Resumen":
-
         return (
           <ResumenMeteorologico
             estaciones={datos.estaciones}
@@ -170,7 +124,6 @@ function App() {
       ================================================= */
 
       case "Alertas y reportes":
-
         return (
           <AlertasReportes
             estaciones={datos.estaciones}
@@ -184,10 +137,8 @@ function App() {
       ================================================= */
 
       case "Índices vitivinícolas":
-
         return (
           <div className="indices-grid">
-
             <WinklerCard
               estaciones={datos.estaciones}
               fichasTemporada={datos.fichasTemporada}
@@ -218,6 +169,13 @@ function App() {
               temporadaEnCurso={datos.temporadaEnCurso}
             />
 
+            <DatosConFallaCard
+              estaciones={datos.estaciones}
+              fichasTemporada={
+                datos.completitudPorTemporada ?? datos.completitud_por_temporada
+              }
+              temporadaEnCurso={datos.temporadaEnCurso}
+            />
           </div>
         );
 
@@ -225,23 +183,22 @@ function App() {
          HISTÓRICOS
       ================================================= */
 
-      case"Históricos":
-  return(
-    <Historicos
-      estaciones={datos.estaciones}
-      datosTemperatura={datos.seriesTemperaturas}
-      fichasTemporada={datos.fichasTemporada}
-      temporadaEnCurso={datos.temporadaEnCurso}
-      temaOscuro={temaOscuro}
-    />
-  );
+      case "Históricos":
+        return (
+          <Historicos
+            estaciones={datos.estaciones}
+            datosTemperatura={datos.seriesTemperaturas}
+            fichasTemporada={datos.fichasTemporada}
+            temporadaEnCurso={datos.temporadaEnCurso}
+            temaOscuro={temaOscuro}
+          />
+        );
 
       /* =================================================
          MAPA SATELITAL
       ================================================= */
 
       case "Mapa Satelital":
-
         return (
           <MapaSatelital
             estaciones={datos.estaciones}
@@ -255,17 +212,13 @@ function App() {
       ================================================= */
 
       case "Configuración":
-
-        return (
-          <Configuracion />
-        );
+        return <Configuracion />;
 
       /* =================================================
          DEFAULT
       ================================================= */
 
       default:
-
         return (
           <ResumenMeteorologico
             estaciones={datos.estaciones}
@@ -285,12 +238,9 @@ function App() {
   return (
     <div
       className={`app ${
-        temaOscuro
-          ? "tema-pagina-oscuro"
-          : "tema-pagina-claro"
+        temaOscuro ? "tema-pagina-oscuro" : "tema-pagina-claro"
       }`}
     >
-
       <BarraLateral
         expandida={barraExpandida}
         setExpandida={setBarraExpandida}
@@ -300,30 +250,16 @@ function App() {
 
       <main
         className={`contenido ${
-          barraExpandida
-            ? "contenido-expandido"
-            : "contenido-contraido"
+          barraExpandida ? "contenido-expandido" : "contenido-contraido"
         }`}
       >
-
-        <div className="contenido-vista">
-
-          {renderizarContenido()}
-
-        </div>
+        <div className="contenido-vista">{renderizarContenido()}</div>
 
         <footer className="footer-vigno">
-
           Este proyecto fue potenciado por la{" "}
-
-          <strong>
-            Universidad Autónoma de Chile
-          </strong>
-
+          <strong>Universidad Autónoma de Chile</strong>
         </footer>
-
       </main>
-
     </div>
   );
 }
