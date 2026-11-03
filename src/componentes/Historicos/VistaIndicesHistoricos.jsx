@@ -1,3 +1,4 @@
+import SelectorVigno from "../SelectorVigno/SelectorVigno";
 import{useEffect,useMemo,useState}from"react";
 import{ArrowLeftRight,CalendarDays,Grape,MapPin,Sprout}from"lucide-react";
 import{crearSerieIndiceReal}from"./seriesIndicesReales";
@@ -85,9 +86,9 @@ function Selector({titulo,Icono,valor,onChange,temporada=false,children}){
       <span>{titulo}</span>
       <div className={`vih-select ${temporada?"vih-select-temporada":""}`}>
         <Icono size={14}/>
-        <select value={valor} onChange={e=>onChange(e.target.value)}>
+        <SelectorVigno value={valor} onChange={e=>onChange(e.target.value)}>
           {children}
-        </select>
+        </SelectorVigno>
       </div>
     </label>
   );

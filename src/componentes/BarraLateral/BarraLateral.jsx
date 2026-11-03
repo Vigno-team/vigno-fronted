@@ -1,18 +1,19 @@
-import{Activity,Clock3,Home,Menu,Settings,TriangleAlert}from"lucide-react";
-import"./BarraLateral.css";
+
+import {Activity,Clock3,Home,Map,Menu,Settings,TriangleAlert} from "lucide-react";
+import "./BarraLateral.css";
 
 const opciones=[
   {nombre:"Resumen",icono:Home},
   {nombre:"Alertas y reportes",icono:TriangleAlert},
   {nombre:"Índices vitivinícolas",icono:Activity},
   {nombre:"Históricos",icono:Clock3},
+  {nombre:"Mapa Satelital",icono:Map},
   {nombre:"Configuración",icono:Settings},
 ];
 
 function BarraLateral({expandida,setExpandida,opcionActiva,setOpcionActiva}){
   return(
     <aside className={`barra-lateral ${expandida?"expandida":"contraida"}`}>
-
       <div className="barra-superior">
         <button
           type="button"
@@ -31,7 +32,6 @@ function BarraLateral({expandida,setExpandida,opcionActiva,setOpcionActiva}){
               <span className="barra-brand-linea"/>
               <span className="barra-brand-origen">MAULE · CHILE</span>
             </div>
-
             <strong className="barra-logo">VIGNO</strong>
             <span className="barra-submarca">Vignadores de Carignan</span>
             <div className="barra-brand-divisor"/>
@@ -44,7 +44,6 @@ function BarraLateral({expandida,setExpandida,opcionActiva,setOpcionActiva}){
       <nav className="barra-opciones">
         {opciones.map(({nombre,icono:Icono})=>{
           const activa=opcionActiva===nombre;
-
           return(
             <button
               key={nombre}
@@ -61,7 +60,6 @@ function BarraLateral({expandida,setExpandida,opcionActiva,setOpcionActiva}){
           );
         })}
       </nav>
-
     </aside>
   );
 }

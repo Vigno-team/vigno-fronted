@@ -1,3 +1,4 @@
+import SelectorVigno from "../SelectorVigno/SelectorVigno";
 import React, { useMemo, useState, useEffect } from "react";
 import "./LluviaFueraInvernalCard.css";
 
@@ -20,6 +21,9 @@ interface Props {
   fichasTemporada?: CompletitudTemporada[]; // Recibe completitud_por_temporada o completitudPorTemporada
   completitudPorTemporada?: CompletitudTemporada[];
   temporadaEnCurso?: string | null;
+  estacionSeleccionada?: string;
+  temporadaSeleccionada?: string;
+  ocultarSelectores?: boolean;
 }
 
 // Helper: Formato de lluvia con coma chilena
@@ -33,6 +37,9 @@ export function LluviaFueraInvernalCard({
   fichasTemporada = [],
   completitudPorTemporada,
   temporadaEnCurso = null,
+  estacionSeleccionada,
+  temporadaSeleccionada,
+  ocultarSelectores = false,
 }: Props) {
   const listaFichas = useMemo(
     () =>
@@ -46,11 +53,11 @@ export function LluviaFueraInvernalCard({
   const [temporada, setTemporada] = useState("");
 
   const estacionActiva =
-    estacionId ||
+    estacionSeleccionada ?? (estacionId ||
     estaciones[0]?.id ||
     listaFichas[0]?.estacion_id ||
     listaFichas[0]?.estacionId ||
-    "";
+    "");
 
   useEffect(() => {
     if (!estacionId && estacionActiva) {
@@ -86,15 +93,17 @@ export function LluviaFueraInvernalCard({
     }
   }, [temporadas, temporada, temporadaEnCurso]);
 
+  const temporadaActiva = temporadaSeleccionada ?? temporada;
+
   // Buscamos el registro exacto que hace match con estación y temporada
   const registroActual = useMemo(
     () =>
       listaFichas.find(
         (f) =>
           (f.estacion_id ?? f.estacionId) === estacionActiva &&
-          f.temporada === temporada
+          f.temporada === temporadaActiva
       ) ?? null,
-    [listaFichas, estacionActiva, temporada]
+    [listaFichas, estacionActiva, temporadaActiva]
   );
 
   const lluviaMm = registroActual?.lluvia_fuera_invierno_mm;
@@ -109,8 +118,8 @@ export function LluviaFueraInvernalCard({
             <h4>Lluvia Fuera de Invierno</h4>
           </div>
 
-          <div className="huglin-selectores">
-            <select
+          {!ocultarSelectores && <div className="huglin-selectores">
+            <SelectorVigno
               className="huglin-select"
               value={estacionActiva}
               onChange={(e) => setEstacionId(e.target.value)}
@@ -120,11 +129,11 @@ export function LluviaFueraInvernalCard({
                   {est.nombre ?? est.huerto ?? est.id}
                 </option>
               ))}
-            </select>
+            </SelectorVigno>
 
-            <select
+            <SelectorVigno
               className="huglin-select"
-              value={temporada}
+              value={temporadaActiva}
               onChange={(e) => setTemporada(e.target.value)}
               disabled={temporadas.length === 0}
             >
@@ -137,8 +146,8 @@ export function LluviaFueraInvernalCard({
                   </option>
                 ))
               )}
-            </select>
-          </div>
+            </SelectorVigno>
+          </div>}
         </div>
       </header>
 

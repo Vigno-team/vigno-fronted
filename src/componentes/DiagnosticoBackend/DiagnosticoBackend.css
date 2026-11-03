@@ -1,0 +1,103 @@
+/* Diagnóstico de la API. Compatible con el tema y la accesibilidad de Vigno. */
+.db-panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: calc(18px * var(--factor-texto, 1));
+  color: var(--app-texto);
+}
+.db-panel * { box-sizing: border-box; }
+.db-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: calc(16px * var(--factor-texto, 1));
+}
+.db-eyebrow {
+  color: var(--vigno-accent);
+  text-transform: uppercase;
+  font-size: calc(10px * var(--factor-texto, 1));
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+.db-cabecera h1 {
+  margin: 3px 0 0;
+  font-size: calc(25px * var(--factor-texto, 1));
+}
+.db-cabecera p {
+  color: var(--app-secundario);
+  font-size: calc(11px * var(--factor-texto, 1));
+}
+.db-panel button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: calc(40px * var(--factor-texto, 1));
+  border: none;
+  border-radius: 9px;
+  background: var(--vigno-accent);
+  color: #fff;
+  padding: 8px 14px;
+  font: inherit;
+  font-size: calc(11px * var(--factor-texto, 1));
+  font-weight: 700;
+  cursor: pointer;
+}
+.db-panel button:disabled { opacity: .5; cursor: not-allowed; }
+.db-estados, .db-detalles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.db-estados article, .db-detalles article {
+  min-width: 0;
+  display: flex;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--app-borde);
+  border-radius: 12px;
+  background: var(--app-superficie);
+}
+.db-estados article div { display: flex; flex-direction: column; gap: 3px; }
+.db-estados span { color: var(--app-secundario); font-size: calc(11px * var(--factor-texto, 1)); }
+.db-ok { color: var(--vigno-status-confiable, #3e8e58); }
+.db-filtros { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 10px; }
+.db-filtros label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: calc(10px * var(--factor-texto, 1));
+  color: var(--app-secundario);
+}
+.db-filtros :is(select,.vigno-select) {
+  min-width: min(220px, 100%);
+  max-width: 100%;
+  min-height: calc(40px * var(--factor-texto, 1));
+  padding: 8px;
+  background: var(--app-superficie);
+  border: 1px solid var(--app-borde);
+  border-radius: 9px;
+  color: var(--app-texto);
+  font-size: calc(11px * var(--factor-texto, 1));
+  color-scheme: normal;
+}
+.tema-pagina-oscuro .db-filtros :is(select,.vigno-select) { color-scheme: dark; }
+.tema-pagina-claro .db-filtros :is(select,.vigno-select) { color-scheme: light; }
+.db-detalles article { display: block; }
+.db-detalles h2 { font-size: calc(14px * var(--factor-texto, 1)); }
+.db-detalles pre {
+  margin-bottom: 0;
+  max-height: 350px;
+  overflow: auto;
+  color: var(--app-texto);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: calc(10px * var(--factor-texto, 1));
+}
+.db-error { color: var(--vigno-status-critico, #e57373); }
+@media (max-width: 760px) {
+  .db-estados, .db-detalles { grid-template-columns: 1fr; }
+  .db-filtros, .db-filtros label, .db-filtros :is(select,.vigno-select) { width: 100%; }
+}

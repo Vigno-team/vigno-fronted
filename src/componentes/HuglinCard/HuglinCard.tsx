@@ -1,3 +1,4 @@
+import SelectorVigno from "../SelectorVigno/SelectorVigno";
 import{useEffect,useMemo,useState}from"react";
 import"./HuglinCard.css";
 
@@ -27,6 +28,9 @@ interface Props{
   estaciones?:Estacion[];
   fichasTemporada?:FichaTemporada[];
   temporadaEnCurso?:string|null;
+  estacionSeleccionada?: string;
+  temporadaSeleccionada?: string;
+  ocultarSelectores?: boolean;
 }
 
 const idEstacion=(f?:FichaTemporada)=>f?.estacionId??f?.estacion_id??"";
@@ -43,14 +47,17 @@ function HuglinCard({
   estaciones=[],
   fichasTemporada=[],
   temporadaEnCurso=null,
+  estacionSeleccionada,
+  temporadaSeleccionada,
+  ocultarSelectores=false,
 }:Props){
   const[estacionId,setEstacionId]=useState("");
   const[temporada,setTemporada]=useState("");
 
   const estacionActiva=
-    estacionId||
+    estacionSeleccionada??(estacionId||
     estaciones[0]?.id||
-    idEstacion(fichasTemporada[0]);
+    idEstacion(fichasTemporada[0]));
 
   useEffect(()=>{
     if(!estacionId&&estacionActiva)setEstacionId(estacionActiva);
@@ -79,11 +86,13 @@ function HuglinCard({
     }
   },[temporadas,temporada,temporadaEnCurso]);
 
+  const temporadaActiva=temporadaSeleccionada??temporada;
+
   const ficha=useMemo(
     ()=>fichasTemporada.find(f=>
-      idEstacion(f)===estacionActiva&&f.temporada===temporada
+      idEstacion(f)===estacionActiva&&f.temporada===temporadaActiva
     )??null,
-    [fichasTemporada,estacionActiva,temporada]
+    [fichasTemporada,estacionActiva,temporadaActiva]
   );
 
   const huglin=ficha?.indices?.huglin??ficha?.huglin??null;
@@ -110,8 +119,8 @@ function HuglinCard({
             <h4>Índice Heliotérmico de Huglin (IH)</h4>
           </div>
 
-          <div className="huglin-selectores">
-            <select
+          {!ocultarSelectores&&<div className="huglin-selectores">
+            <SelectorVigno
               className="huglin-select"
               value={estacionActiva}
               onChange={e=>setEstacionId(e.target.value)}
@@ -121,18 +130,18 @@ function HuglinCard({
                   {est.nombre??est.huerto??est.id}
                 </option>
               ))}
-            </select>
+            </SelectorVigno>
 
-            <select
+            <SelectorVigno
               className="huglin-select"
-              value={temporada}
+              value={temporadaActiva}
               onChange={e=>setTemporada(e.target.value)}
             >
               {temporadas.map(t=>(
                 <option key={t} value={t}>Temporada {t}</option>
               ))}
-            </select>
-          </div>
+            </SelectorVigno>
+          </div>}
 
         </div>
       </header>

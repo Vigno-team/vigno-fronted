@@ -1,3 +1,4 @@
+import AlertaCritica from "./AlertaCritica";
 import{ThermometerSun}from"lucide-react";
 import MiniGraficoLinea from"./MiniGraficoLinea";
 
@@ -10,9 +11,10 @@ const SERIES=[
 function TarjetaTemperatura({
   datos,textoPeriodo,maximo,minimo,media,serie,
   cambiarSerie,configuracionSerie,formatearNumero,formatearFecha,
+  alertaCritica=null,
 }){
   return(
-    <article className="rm-card">
+    <article className={`rm-card ${alertaCritica ? "rm-card-critica" : ""}`}>
       <div className="rm-card-top">
         <div className="rm-card-titulo">
           <div className="rm-icono rm-icono-temperatura">
@@ -24,6 +26,7 @@ function TarjetaTemperatura({
             <p>{textoPeriodo}</p>
           </div>
         </div>
+        <AlertaCritica mensaje={alertaCritica} />
       </div>
 
       <div className="rm-metricas rm-metricas-3">

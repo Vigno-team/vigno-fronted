@@ -1,3 +1,4 @@
+import SelectorVigno from "../SelectorVigno/SelectorVigno";
 import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, ImageOverlay, Marker, Popup, useMap } from "react-leaflet";
 import { MapPin, ChevronDown, ChevronUp, Layers, AlertTriangle } from "lucide-react";
@@ -204,7 +205,7 @@ function MapaSatelital({ estaciones, mapaCalor, temaOscuro }) {
               <span className="control-etiqueta-sup">estación / predio</span>
               <div className="caja-control-vigno select-wrapper">
                 <MapPin size={16} className="icono-pin-naranja" />
-                <select
+                <SelectorVigno
                   value={predioSeleccionado}
                   onChange={(e) => setPredioSeleccionado(Number(e.target.value))}
                   aria-label="Seleccionar predio"
@@ -214,7 +215,7 @@ function MapaSatelital({ estaciones, mapaCalor, temaOscuro }) {
                       {p.nombre || `Predio ${idx + 1}`}
                     </option>
                   ))}
-                </select>
+                </SelectorVigno>
                 <ChevronDown size={16} className="icono-chevron" />
               </div>
             </div>

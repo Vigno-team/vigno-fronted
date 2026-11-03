@@ -1,3 +1,4 @@
+import AlertaCritica from "./AlertaCritica";
 import{ArrowUpDown}from"lucide-react";
 import MiniGraficoLinea from"./MiniGraficoLinea";
 
@@ -9,9 +10,9 @@ const SERIE_AMPLITUD=[{
   grosor:2.3,
 }];
 
-function TarjetaAmplitud({datos,promedio,maxima,formatearNumero,formatearFecha}){
+function TarjetaAmplitud({datos,promedio,maxima,formatearNumero,formatearFecha,alertaCritica=null}){
   return(
-    <article className="rm-card">
+    <article className={`rm-card ${alertaCritica ? "rm-card-critica" : ""}`}>
       <div className="rm-card-top">
         <div className="rm-card-titulo">
           <div className="rm-icono rm-icono-amplitud">
@@ -23,6 +24,7 @@ function TarjetaAmplitud({datos,promedio,maxima,formatearNumero,formatearFecha})
             <p>Diferencia entre máxima y mínima diaria</p>
           </div>
         </div>
+        <AlertaCritica mensaje={alertaCritica} />
       </div>
 
       <div className="rm-metricas rm-metricas-2">

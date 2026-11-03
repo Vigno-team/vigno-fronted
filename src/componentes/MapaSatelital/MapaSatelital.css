@@ -145,7 +145,7 @@
   flex-shrink: 0;
 }
 
-.select-wrapper select {
+.select-wrapper :is(select,.vigno-select) {
   appearance: none;
   -webkit-appearance: none;
   background: transparent;
@@ -159,12 +159,12 @@
   outline: none;
 }
 
-.select-wrapper select option {
+.select-wrapper :is(select,.vigno-select) option {
   background-color: #161920;
   color: #f3f4f6;
 }
 
-.modo-claro .select-wrapper select option {
+.modo-claro .select-wrapper :is(select,.vigno-select) option {
   background-color: #ffffff;
   color: #111827;
 }

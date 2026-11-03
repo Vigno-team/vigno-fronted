@@ -1,3 +1,4 @@
+import SelectorVigno from "../SelectorVigno/SelectorVigno";
 import { useEffect, useMemo, useState } from "react";
 import "./LluviaInvernalCard.css";
 
@@ -55,6 +56,9 @@ interface Props {
   estaciones?: Estacion[];
   fichasTemporada?: FichaTemporada[];
   temporadaEnCurso?: string | null;
+  estacionSeleccionada?: string;
+  temporadaSeleccionada?: string;
+  ocultarSelectores?: boolean;
 }
 
 const TEXTO_SIN_DATOS = "Sin datos suficientes";
@@ -107,16 +111,19 @@ function LluviaInvernalCard({
   estaciones = [],
   fichasTemporada = [],
   temporadaEnCurso = null,
+  estacionSeleccionada,
+  temporadaSeleccionada,
+  ocultarSelectores = false,
 }: Props) {
   const [estacionId, setEstacionId] = useState("");
   const [temporada, setTemporada] = useState("");
 
   const estacionActiva =
-    estacionId ||
+    estacionSeleccionada ?? (estacionId ||
     estaciones[0]?.id ||
     fichasTemporada[0]?.estacionId ||
     fichasTemporada[0]?.estacion_id ||
-    "";
+    "");
 
   useEffect(() => {
     if (!estacionId && estacionActiva) {
@@ -151,14 +158,16 @@ function LluviaInvernalCard({
     }
   }, [temporadas, temporada, temporadaEnCurso]);
 
+  const temporadaActiva = temporadaSeleccionada ?? temporada;
+
   const ficha = useMemo(
     () =>
       fichasTemporada.find(
         f =>
           (f.estacionId ?? f.estacion_id) === estacionActiva &&
-          f.temporada === temporada
+          f.temporada === temporadaActiva
       ) ?? null,
-    [fichasTemporada, estacionActiva, temporada]
+    [fichasTemporada, estacionActiva, temporadaActiva]
   );
 
   const lluvia = ficha?.indices?.lluvia_invernal ?? ficha?.lluvia_invernal ?? null;
@@ -231,8 +240,8 @@ function LluviaInvernalCard({
             <h4>Lluvia Invernal (Mayo – Agosto)</h4>
           </div>
 
-          <div className="winkler-selectores">
-            <select
+          {!ocultarSelectores && <div className="winkler-selectores">
+            <SelectorVigno
               className="winkler-select"
               value={estacionActiva}
               onChange={e => setEstacionId(e.target.value)}
@@ -242,11 +251,11 @@ function LluviaInvernalCard({
                   {est.nombre ?? est.huerto ?? est.id}
                 </option>
               ))}
-            </select>
+            </SelectorVigno>
 
-            <select
+            <SelectorVigno
               className="winkler-select"
-              value={temporada}
+              value={temporadaActiva}
               onChange={e => setTemporada(e.target.value)}
             >
               {temporadas.map(t => (
@@ -254,8 +263,8 @@ function LluviaInvernalCard({
                   Temporada {t}
                 </option>
               ))}
-            </select>
-          </div>
+            </SelectorVigno>
+          </div>}
         </div>
       </header>
 
