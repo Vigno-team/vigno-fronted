@@ -1,0 +1,122 @@
+.tabla-fallas-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.tabla-fallas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-exportar-csv {
+  background: var(--vigno-accent, #e07a5f);
+  color: #ffffff !important;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-exportar-csv:hover {
+  opacity: 0.9;
+}
+
+.tabla-responsive {
+  overflow-x: auto;
+}
+
+.tabla-vigno {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  text-align: left;
+}
+
+.tabla-vigno th,
+.tabla-vigno td {
+  padding: 10px;
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  color: var(--text-color, currentColor) !important;
+}
+
+.tabla-vigno th {
+  color: var(--text-muted, #888888) !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+}
+
+.col-variable {
+  font-weight: 700;
+  color: var(--text-color, currentColor) !important;
+}
+
+.col-archivo {
+  font-family: monospace;
+  color: var(--text-muted, #777777) !important;
+}
+
+.col-motivo {
+  max-width: 220px;
+  color: var(--text-color, currentColor) !important;
+}
+
+/* Badges de Estado */
+.badge-estado {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.badge-pendiente {
+  background: rgba(217, 155, 38, 0.15);
+  border: 1px solid #d99b26;
+  color: #d99b26 !important;
+}
+
+.badge-corregido {
+  background: rgba(46, 204, 113, 0.15);
+  border: 1px solid #2ecc71;
+  color: #2ecc71 !important;
+}
+
+.badge-descartado {
+  background: rgba(149, 165, 166, 0.15);
+  border: 1px solid #95a5a6;
+  color: #95a5a6 !important;
+}
+
+/* Chips de Tipo de Falla */
+.chip-falla {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.chip-fuera_de_rango { background: rgba(231, 76, 60, 0.2); color: #e74c3c !important; }
+.chip-nulo { background: rgba(155, 89, 182, 0.2); color: #9b59b6 !important; }
+.chip-rechazado { background: rgba(230, 126, 34, 0.2); color: #e67e22 !important; }
+.chip-sin_registro { background: rgba(52, 152, 219, 0.2); color: #3498db !important; }
+
+/* Botón Corregir adaptativo */
+.btn-accion-corregir {
+  background: transparent;
+  border: 1px solid var(--border-color, #444);
+  color: var(--text-color, currentColor) !important;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-accion-corregir:hover {
+  background: var(--hover-bg, rgba(0, 0, 0, 0.05));
+}
