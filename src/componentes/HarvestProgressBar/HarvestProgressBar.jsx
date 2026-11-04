@@ -1,22 +1,20 @@
-import React from 'react';
-import './HarvestProgressBar.css';
+import React from "react";
+import "./HarvestProgressBar.css";
 
 export const HarvestProgressBar = ({
   avance = 0,
   diasEstimados = 0,
   temperaturas = [0, 0, 0, 0, 0],
-  rachaCalor = false, // <-- Recibe la bandera directa del backend (calor.rachas.con_incidencia)
+  rachaCalor = false,
 }) => {
-  // Sección variables
-  let progreso = avance;
+  const progresoNumerico = Number.isFinite(Number(avance)) ? Number(avance) : 0;
+  const progreso = Math.min(Math.max(progresoNumerico, 0), 100);
+  const dias = Number.isFinite(Number(diasEstimados)) ? Number(diasEstimados) : 0;
+  const listaTemperaturas =
+    Array.isArray(temperaturas) && temperaturas.length > 0
+      ? temperaturas
+      : [0, 0, 0, 0, 0];
 
-  if (progreso < 0) {
-    progreso = 0;
-  } else if (progreso > 100) {
-    progreso = 100;
-  }
-
-  // Sección alerta usando el estado que viene del backend
   const estado = rachaCalor ? "alerta" : "normal";
   const mensajeEstado = rachaCalor
     ? "Alerta de ola de calor detectada por el sistema"
@@ -24,27 +22,56 @@ export const HarvestProgressBar = ({
 
   return (
     <div className="vigno-card">
-      <div className="vigno-tiempo-estimado">
-        Aproximadamente a {diasEstimados} días de ventana óptima
+      <div className="vigno-header-top">
+        <div>
+          <span className="winkler-badge">
+            ESTADO FENOLÓGICO Y PROGRESO DE VENDIMIA
+          </span>
+          <p className="winkler-desc">
+            Seguimiento de madurez y comportamiento térmico reciente.
+          </p>
+        </div>
+
+        <p className="winkler-desc vigno-tiempo-estimado">
+          A <strong>{dias} días</strong> de ventana óptima
+        </p>
       </div>
 
-      <div className="vigno-barra">
-        <div className="vigno-barra-avance" style={{ width: `${progreso}%` }} />
-        <div className="vigno-circulo" style={{ left: `calc(${progreso}% - 18px)` }}>
-          {Math.round(progreso)}%
+      <div className="vigno-barra-contenedor">
+        <div
+          className="vigno-barra"
+          role="progressbar"
+          aria-valuenow={Math.round(progreso)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
+          <div
+            className="vigno-barra-avance"
+            style={{ width: `${progreso}%` }}
+          />
+          <div
+            className="winkler-desc vigno-circulo"
+            style={{
+              left: `clamp(0px, calc(${progreso}% - 17px), calc(100% - 34px))`,
+            }}
+          >
+            {Math.round(progreso)}%
+          </div>
         </div>
       </div>
 
       <div className={`vigno-panel-estado ${estado}`}>
-        <div className="vigno-texto-estado">
-          {mensajeEstado}
-        </div>
+        <p className="winkler-desc vigno-texto-estado">{mensajeEstado}</p>
 
         <div className="vigno-lista-temperaturas">
-          {temperaturas.map((temp, index) => (
-            <div key={index} className="vigno-temp">
-              {temp}°
-            </div>
+          {listaTemperaturas.map((temp, index) => (
+            <span
+              key={index}
+              className="winkler-desc vigno-temp"
+              title={`Día ${index + 1}`}
+            >
+              {Number.isFinite(Number(temp)) ? Number(temp) : 0}°
+            </span>
           ))}
         </div>
       </div>

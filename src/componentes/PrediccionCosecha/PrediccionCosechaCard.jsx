@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import mockData from "./prediccion_ficticia.json";
 import "./PrediccionCosechaCard.css";
-
-// DoD 8: Mantener HarvestProgressBar desconectado de la API hasta que el backend exponga datos reales de fenología
-// import HarvestProgressBar from "../HarvestProgressBar/HarvestProgressBar";
+import HarvestProgressBar from "../HarvestProgressBar/HarvestProgressBar";
 
 const ETIQUETAS_VARIABLES = {
   Huglin: "Índice de Huglin (Heliotérmico)",
@@ -19,14 +16,22 @@ const ETIQUETAS_METODOS = {
   regresion_lineal: "Regresión Lineal",
 };
 
-// Convierte el número de día del año (doy) a fecha calendario YYYY-MM-DD
 const doyAFechaISO = (doy, anio = 1941) => {
   if (doy === null || doy === undefined || Number.isNaN(Number(doy))) return "—";
   const fecha = new Date(Date.UTC(anio, 0, Math.round(Number(doy))));
   const yyyy = fecha.getUTCFullYear();
   const mm = String(fecha.getUTCMonth() + 1).padStart(2, "0");
   const dd = String(fecha.getUTCDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
+  return `${dd}-${mm}-${yyyy}`;
+};
+
+const formatearFechaES = (fechaISO) => {
+  if (!fechaISO || typeof fechaISO !== "string" || !fechaISO.includes("-")) {
+    return fechaISO || "—";
+  }
+  const partes = fechaISO.split("-");
+  if (partes.length !== 3) return fechaISO;
+  return `${partes[2]}-${partes[1]}-${partes[0]}`;
 };
 
 const formatearNombreCultivar = (cultivar) => {
@@ -36,72 +41,23 @@ const formatearNombreCultivar = (cultivar) => {
   return cultivar;
 };
 
-export default function PrediccionCosechaCard() {
-  const [datos, setDatos] = useState(null);
-  const [cargando, setCargando] = useState(true);
-  const [sinDatoAlerta, setSinDatoAlerta] = useState(null);
-
-  // DoD 7: Filtros interactivos por Región, Color y Cultivar
+export default function PrediccionCosechaCard({
+  datos = null,
+  cargando = false,
+  error = null,
+}) {
+  // Filtros
   const [filtroRegion, setFiltroRegion] = useState("TODAS");
   const [filtroColor, setFiltroColor] = useState("TODOS");
   const [filtroCultivar, setFiltroCultivar] = useState("Carigne");
   const [algoritmoActivo, setAlgoritmoActivo] = useState("random_forest");
   const [registroSeleccionado, setRegistroSeleccionado] = useState(null);
 
-  // DoD 1: Conectar a GET /api/v1/prediccion-ficticia (manejando 404 con motivo_nulo y fallback a prediccion_ficticia.json)
-  useEffect(() => {
-    let cancelado = false;
-
-    const cargarPredicciones = async () => {
-      setCargando(true);
-      try {
-        const respuesta = await fetch("/api/v1/prediccion-ficticia", {
-          headers: { Accept: "application/json" },
-        });
-
-        const contentType = respuesta.headers.get("content-type") || "";
-
-        if (respuesta.status === 404 && contentType.includes("application/json")) {
-          const errorJson = await respuesta.json();
-          if (!cancelado && errorJson?.motivo_nulo) {
-            setSinDatoAlerta(`Sin dato: ${errorJson.motivo_nulo}`);
-            setDatos(null);
-            setCargando(false);
-            return;
-          }
-        }
-
-        if (!respuesta.ok || !contentType.includes("application/json")) {
-          throw new Error("Usando respaldo local prediccion_ficticia.json");
-        }
-
-        const jsonReal = await respuesta.json();
-        if (!cancelado) {
-          if (jsonReal?.motivo_nulo) {
-            setSinDatoAlerta(`Sin dato: ${jsonReal.motivo_nulo}`);
-            setDatos(null);
-          } else {
-            setDatos(jsonReal);
-            setSinDatoAlerta(null);
-          }
-        }
-      } catch {
-        if (!cancelado) {
-          setDatos(mockData);
-          setSinDatoAlerta(null);
-        }
-      } finally {
-        if (!cancelado) {
-          setCargando(false);
-        }
-      }
-    };
-
-    cargarPredicciones();
-    return () => {
-      cancelado = true;
-    };
-  }, []);
+  const sinDatoAlerta = datos?.motivo_nulo
+    ? `Sin dato: ${datos.motivo_nulo}`
+    : error
+    ? `Sin dato: ${error}`
+    : null;
 
   const predicciones = datos?.predicciones || [];
 
@@ -156,7 +112,7 @@ export default function PrediccionCosechaCard() {
     }
   }, [prediccionesFiltradas]);
 
-  // DoD 6: Importancia relativa de variables
+  // Importancia relativa de variables
   const importanciasOrdenadas = useMemo(() => {
     const imp = datos?.modelo?.importancias || {};
     return Object.entries(imp)
@@ -169,7 +125,7 @@ export default function PrediccionCosechaCard() {
       .sort((a, b) => b.valor - a.valor);
   }, [datos]);
 
-  // DoD 5: Tabla comparativa de métricas MAE y RMSE para los 3 métodos
+  // Tabla comparativa
   const metricasLista = useMemo(() => {
     const met = datos?.modelo?.metricas || {};
     const entradas = Object.entries(met).map(([clave, obj]) => ({
@@ -197,12 +153,12 @@ export default function PrediccionCosechaCard() {
 
   const minDoy = 220;
   const maxDoy = 315;
-  const anchoSvg = 460;
-  const altoSvg = 270;
-  const padIzq = 54;
-  const padDer = 20;
-  const padSup = 18;
-  const padInf = 38;
+  const anchoSvg = 560;
+  const altoSvg = 370;
+  const padIzq = 60;
+  const padDer = 24;
+  const padSup = 22;
+  const padInf = 44;
 
   const escalarX = (doy) =>
     padIzq +
@@ -217,7 +173,7 @@ export default function PrediccionCosechaCard() {
 
   return (
     <section className="winkler-card prediccion-cosecha-card">
-      {/* DoD 2 y 3: Aviso mandatorio permanente y destacado */}
+      {/* Aviso */}
       <div className="winkler-aviso prediccion-aviso-mandatorio" role="alert">
         <strong>
           «Aviso: Datos predictivos basados en modelo de calibración (California). No corresponden a mediciones reales de viñedos Casas Patronales».
@@ -236,7 +192,7 @@ export default function PrediccionCosechaCard() {
             </p>
           </div>
 
-          {/* DoD 7: Filtros interactivos por Región, Color y Cultivar */}
+          {/* Filtros  */}
           <div className="winkler-selectores">
             <select
               className="winkler-select"
@@ -304,7 +260,7 @@ export default function PrediccionCosechaCard() {
               <div className="winkler-card-body">
                 <div className="winkler-metric">
                   <span className="winkler-value">
-                    {registroSeleccionado.prediccion?.centro || "—"}
+                    {formatearFechaES(registroSeleccionado.prediccion?.centro)}
                   </span>
                   <span className="winkler-unit">
                     Fecha estimada (Random Forest)
@@ -316,7 +272,7 @@ export default function PrediccionCosechaCard() {
                     {formatearNombreCultivar(registroSeleccionado.cultivar)} · Región {registroSeleccionado.region}
                   </span>
                   <span className="winkler-desc">
-                    Fecha real de cosecha: <strong>{registroSeleccionado.fecha_real}</strong> · Desfase del modelo:{" "}
+                    Fecha real de cosecha: <strong>{formatearFechaES(registroSeleccionado.fecha_real)}</strong> · Desfase del modelo:{" "}
                     <strong>
                       {registroSeleccionado.diferencia_dias > 0 ? "+" : ""}
                       {registroSeleccionado.diferencia_dias.toFixed(1)} días
@@ -325,15 +281,14 @@ export default function PrediccionCosechaCard() {
                 </div>
               </div>
 
-              {/* DoD 4: Rotulación agronómica obligatoria ("Dispersión estadística del modelo") */}
               <div className="winkler-temporada-info">
                 <div>
                   <span>Dispersión estadística del modelo (Desde)</span>
-                  <strong>{registroSeleccionado.prediccion?.desde || "—"}</strong>
+                  <strong>{formatearFechaES(registroSeleccionado.prediccion?.desde)}</strong>
                 </div>
                 <div>
                   <span>Dispersión estadística del modelo (Hasta)</span>
-                  <strong>{registroSeleccionado.prediccion?.hasta || "—"}</strong>
+                  <strong>{formatearFechaES(registroSeleccionado.prediccion?.hasta)}</strong>
                 </div>
                 <div>
                   <span>Dispersión estadística (± días)</span>
@@ -358,7 +313,7 @@ export default function PrediccionCosechaCard() {
           )}
 
           <div className="prediccion-grid-dos-columnas">
-            {/* DoD 7: Gráfico de dispersión Fecha Real vs. Fecha Estimada */}
+            {/* Gráfico de dispersión Fecha Real vs. Fecha Estimada */}
             <div className="lluvia-criterio-box prediccion-panel">
               <div className="prediccion-panel-header">
                 <div>
@@ -381,154 +336,205 @@ export default function PrediccionCosechaCard() {
                 </select>
               </div>
 
-              <div className="prediccion-scatter-wrapper">
-                <svg
-                  viewBox={`0 0 ${anchoSvg} ${altoSvg}`}
-                  className="prediccion-scatter-svg"
-                  role="img"
-                  aria-label="Gráfico de dispersión Fecha Real versus Fecha Estimada"
-                >
-                  {ticksDoy.map((t) => (
-                    <g key={t}>
-                      <line
-                        x1={escalarX(t)}
-                        y1={padSup}
-                        x2={escalarX(t)}
-                        y2={altoSvg - padInf}
-                        className="scatter-grid-line"
-                      />
-                      <line
-                        x1={padIzq}
-                        y1={escalarY(t)}
-                        x2={anchoSvg - padDer}
-                        y2={escalarY(t)}
-                        className="scatter-grid-line"
-                      />
-                      <text
-                        x={escalarX(t)}
-                        y={altoSvg - padInf + 14}
-                        textAnchor="middle"
-                        className="scatter-axis-text"
-                      >
-                        {doyAFechaISO(t).slice(5)}
-                      </text>
-                      <text
-                        x={padIzq - 6}
-                        y={escalarY(t) + 3}
-                        textAnchor="end"
-                        className="scatter-axis-text"
-                      >
-                        {doyAFechaISO(t).slice(5)}
-                      </text>
-                    </g>
-                  ))}
-
-                  <line
-                    x1={escalarX(minDoy)}
-                    y1={escalarY(minDoy)}
-                    x2={escalarX(maxDoy)}
-                    y2={escalarY(maxDoy)}
-                    className="scatter-diagonal-ideal"
-                  />
-
-                  {prediccionesFiltradas.map((item, idx) => {
-                    const x = escalarX(item.doy_real);
-                    const doyY = obtenerDoySegunAlgoritmo(item);
-                    const y = escalarY(doyY);
-                    const esSeleccionado =
-                      registroSeleccionado &&
-                      registroSeleccionado.cultivar === item.cultivar &&
-                      registroSeleccionado.region === item.region;
-                    const esCarignan = item.cultivar === "Carigne";
-
-                    return (
-                      <circle
-                        key={`${item.cultivar}-${item.region}-${idx}`}
-                        cx={x}
-                        cy={y}
-                        r={esSeleccionado ? 6 : esCarignan ? 5 : 4}
-                        className={`scatter-point ${
-                          item.color === "Red" ? "point-red" : "point-white"
-                        } ${esSeleccionado ? "point-selected" : ""}`}
-                        onClick={() => setRegistroSeleccionado(item)}
-                      >
-                        <title>
-                          {`${formatearNombreCultivar(item.cultivar)} (Región ${item.region})\nFecha Real: ${item.fecha_real}\nFecha Estimada: ${doyAFechaISO(doyY, item.anio)}`}
-                        </title>
-                      </circle>
-                    );
-                  })}
-
-                  <text
-                    x={(padIzq + anchoSvg - padDer) / 2}
-                    y={altoSvg - 6}
-                    textAnchor="middle"
-                    className="scatter-axis-title"
+              <div className="prediccion-scatter-layout">
+                <div className="prediccion-scatter-wrapper">
+                  <svg
+                    viewBox={`0 0 ${anchoSvg} ${altoSvg}`}
+                    className="prediccion-scatter-svg"
+                    role="img"
+                    aria-label="Gráfico de dispersión Fecha Real versus Fecha Estimada"
                   >
-                    Fecha Real de Cosecha (Mes-Día)
-                  </text>
-                  <text
-                    x={12}
-                    y={(padSup + altoSvg - padInf) / 2}
-                    textAnchor="middle"
-                    transform={`rotate(-90 12 ${(padSup + altoSvg - padInf) / 2})`}
-                    className="scatter-axis-title"
-                  >
-                    Fecha Estimada (Mes-Día)
-                  </text>
-                </svg>
-              </div>
+                    {ticksDoy.map((t) => (
+                      <g key={t}>
+                        <line
+                          x1={escalarX(t)}
+                          y1={padSup}
+                          x2={escalarX(t)}
+                          y2={altoSvg - padInf}
+                          className="scatter-grid-line"
+                        />
+                        <line
+                          x1={padIzq}
+                          y1={escalarY(t)}
+                          x2={anchoSvg - padDer}
+                          y2={escalarY(t)}
+                          className="scatter-grid-line"
+                        />
+                        <text
+                          x={escalarX(t)}
+                          y={altoSvg - padInf + 18}
+                          textAnchor="middle"
+                          className="scatter-axis-text"
+                        >
+                          {doyAFechaISO(t).slice(0, 5)}
+                        </text>
+                        <text
+                          x={padIzq - 8}
+                          y={escalarY(t) + 4}
+                          textAnchor="end"
+                          className="scatter-axis-text"
+                        >
+                          {doyAFechaISO(t).slice(0, 5)}
+                        </text>
+                      </g>
+                    ))}
 
-              <div className="lluvia-ejes">
-                <span className="winkler-desc">
-                  Línea diagonal: <strong>Predicción exacta (Real = Estimada)</strong>
-                </span>
-                <span className="winkler-desc">
-                  Naranjo: <strong>Cepas Tintas</strong>
-                </span>
-                <span className="winkler-desc">
-                  Amarillo: <strong>Cepas Blancas</strong>
-                </span>
+                    <line
+                      x1={escalarX(minDoy)}
+                      y1={escalarY(minDoy)}
+                      x2={escalarX(maxDoy)}
+                      y2={escalarY(maxDoy)}
+                      className="scatter-diagonal-ideal"
+                    />
+
+                    {prediccionesFiltradas.map((item, idx) => {
+                      const x = escalarX(item.doy_real);
+                      const doyY = obtenerDoySegunAlgoritmo(item);
+                      const y = escalarY(doyY);
+                      const esSeleccionado =
+                        registroSeleccionado &&
+                        registroSeleccionado.cultivar === item.cultivar &&
+                        registroSeleccionado.region === item.region;
+                      const esCarignan = item.cultivar === "Carigne";
+
+                      return (
+                        <circle
+                          key={`${item.cultivar}-${item.region}-${idx}`}
+                          cx={x}
+                          cy={y}
+                          r={esSeleccionado ? 7.5 : esCarignan ? 6 : 5}
+                          className={`scatter-point ${
+                            item.color === "Red" ? "point-red" : "point-white"
+                          } ${esSeleccionado ? "point-selected" : ""}`}
+                          onClick={() => setRegistroSeleccionado(item)}
+                        >
+                          <title>
+                            {`${formatearNombreCultivar(item.cultivar)} (Región ${item.region})\nFecha Real: ${formatearFechaES(item.fecha_real)}\nFecha Estimada: ${doyAFechaISO(doyY, item.anio)}`}
+                          </title>
+                        </circle>
+                      );
+                    })}
+
+                    <text
+                      x={(padIzq + anchoSvg - padDer) / 2}
+                      y={altoSvg - 8}
+                      textAnchor="middle"
+                      className="scatter-axis-title"
+                    >
+                      Fecha Real de Cosecha (Día-Mes)
+                    </text>
+                    <text
+                      x={15}
+                      y={(padSup + altoSvg - padInf) / 2}
+                      textAnchor="middle"
+                      transform={`rotate(-90 15 ${(padSup + altoSvg - padInf) / 2})`}
+                      className="scatter-axis-title"
+                    >
+                      Fecha Estimada (Día-Mes)
+                    </text>
+                  </svg>
+                </div>
+
+                <aside className="scatter-info-cuadro">
+                  <span className="winkler-badge">SIMBOLOGÍA</span>
+
+                  <div className="scatter-leyenda-lista">
+                    <div className="scatter-leyenda-item">
+                      <span className="scatter-icono-linea" />
+                      <span className="winkler-desc">
+                        Diagonal: <strong>Real = Estimada</strong>
+                      </span>
+                    </div>
+
+                    <div className="scatter-leyenda-item">
+                      <span className="scatter-icono-punto punto-tinto" />
+                      <span className="winkler-desc">
+                        Naranjo: <strong>Cepas Tintas</strong>
+                      </span>
+                    </div>
+
+                    <div className="scatter-leyenda-item">
+                      <span className="scatter-icono-punto punto-blanco" />
+                      <span className="winkler-desc">
+                        Amarillo: <strong>Cepas Blancas</strong>
+                      </span>
+                    </div>
+                  </div>
+
+                  {registroSeleccionado && (
+                    <div className="scatter-seleccion-box">
+                      <span className="winkler-badge">MUESTRA ACTIVA</span>
+                      <p className="winkler-desc">
+                        <strong>{formatearNombreCultivar(registroSeleccionado.cultivar)}</strong> (Región {registroSeleccionado.region})
+                      </p>
+                      <p className="winkler-desc">
+                        Real: <strong>{formatearFechaES(registroSeleccionado.fecha_real).slice(0, 5)}</strong> · Est:{" "}
+                        <strong>
+                          {doyAFechaISO(
+                            obtenerDoySegunAlgoritmo(registroSeleccionado),
+                            registroSeleccionado.anio
+                          ).slice(0, 5)}
+                        </strong>
+                      </p>
+                    </div>
+                  )}
+                </aside>
               </div>
             </div>
 
-            {/* DoD 6: Gráfico de barras horizontales con importancia relativa de variables */}
-            <div className="lluvia-criterio-box prediccion-panel">
-              <div>
-                <span className="winkler-badge">
-                  IMPORTANCIA RELATIVA DE VARIABLES
-                </span>
-                <p className="winkler-desc">
-                  Peso porcentual de cada índice climático y variable en la predicción de cosecha.
-                </p>
+            <div className="prediccion-columna-derecha">
+              {/* Gráfico de barras */}
+              <div className="lluvia-criterio-box prediccion-panel importancia-panel">
+                <div>
+                  <span className="winkler-badge">
+                    IMPORTANCIA RELATIVA DE VARIABLES
+                  </span>
+                  <p className="winkler-desc">
+                    Peso porcentual de cada índice climático y variable en la predicción de cosecha.
+                  </p>
+                </div>
+
+                <div className="importancia-barras-lista">
+                  {importanciasOrdenadas.map((item, index) => (
+                    <div key={item.clave} className="importancia-item">
+                      <div className="importancia-item-top">
+                        <span className="winkler-desc importancia-nombre">
+                          <span className="importancia-ranking">#{index + 1}</span>
+                          {item.etiqueta}
+                        </span>
+                        <strong className="winkler-desc importancia-valor">
+                          {item.porcentaje}%
+                        </strong>
+                      </div>
+                      <div className="importancia-barra-fondo">
+                        <div
+                          className="importancia-barra-relleno"
+                          style={{ width: `${Math.max(item.valor * 100, 3)}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="lluvia-criterio-lista">
+                  <p className="winkler-desc">
+                    <strong>Interpretación agronómica:</strong> La acumulación térmica (Índices de Huglin y Winkler) junto a la temperatura media (GST) concentran el <strong>88.9%</strong> del peso predictivo sobre la fecha de vendimia.
+                  </p>
+                </div>
               </div>
 
-              <div className="importancia-barras-lista">
-                {importanciasOrdenadas.map((item) => (
-                  <div key={item.clave} className="importancia-item">
-                    <div className="importancia-item-top">
-                      <span className="importancia-nombre">{item.etiqueta}</span>
-                      <strong className="importancia-valor">{item.porcentaje}%</strong>
-                    </div>
-                    <div className="importancia-barra-fondo">
-                      <div
-                        className="importancia-barra-relleno"
-                        style={{ width: `${Math.max(item.valor * 100, 2)}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="lluvia-criterio-lista">
-                <p className="winkler-desc">
-                  <strong>Interpretación agronómica:</strong> La acumulación térmica (Índices de Huglin y Winkler) junto a la temperatura media (GST) concentran el <strong>88.9%</strong> del peso predictivo sobre la fecha de vendimia.
-                </p>
+              <div className="lluvia-criterio-box harvest-progress-wrapper">
+                <HarvestProgressBar
+                  avance={datos?.fenologia?.avance ?? datos?.avance}
+                  diasEstimados={datos?.fenologia?.dias_estimados ?? datos?.diasEstimados}
+                  temperaturas={datos?.fenologia?.temperaturas ?? datos?.temperaturas}
+                  rachaCalor={datos?.calor?.rachas?.con_incidencia ?? datos?.rachaCalor}
+                />
               </div>
             </div>
           </div>
 
-          {/* DoD 5: Tabla comparativa de métricas de desempeño (MAE y RMSE para los 3 métodos) */}
+          {/*  Tabla comparativa */}
           <div className="lluvia-criterio-box">
             <span className="winkler-badge">
               DESEMPEÑO COMPARATIVO DE ALGORITMOS (MAE Y RMSE)
@@ -572,22 +578,6 @@ export default function PrediccionCosechaCard() {
               </table>
             </div>
           </div>
-
-          {/*
-            ==========================================================================
-            DoD 8: Mantener el componente HarvestProgressBar desconectado de la API
-            hasta que el backend exponga datos reales de fenología.
-            ==========================================================================
-          */}
-          {/*
-          <div className="lluvia-criterio-box harvest-progress-wrapper">
-            <HarvestProgressBar
-              etapaActual="Envero a Madurez"
-              porcentaje={0}
-              desconectado={true}
-            />
-          </div>
-          */}
         </>
       )}
     </section>

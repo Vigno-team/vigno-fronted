@@ -19,24 +19,40 @@ import Configuracion from "./componentes/Configuracion/Configuracion";
 
 import { useClimateData } from "./hooks/useClimateData";
 import { adaptarClimateData } from "./services/adaptarClimateData";
+import { adaptarPrediccionData } from "./services/adaptarPrediccionData";
 import { useConfiguracion } from "./contexto/ConfiguracionContext";
 
 function App() {
 
   /* ===================================================
-     DATOS
+     DATOS Parte 1
   =================================================== */
 
   const {
     data,
     loading,
     error,
-  } = useClimateData();
+  } = useClimateData("/data/climateData.json");
 
   const datos = useMemo(
     () => adaptarClimateData(data),
     [data]
   );
+
+  /* ===================================================
+     Datos Parte2
+  =================================================== */
+  const {
+    data: dataPrediccion,
+    loading: loadingPrediccion,
+    error: errorPrediccion,
+  } = useClimateData("/data/prediccion_ficticia.json");
+
+  const datosPrediccion = useMemo(
+    () => adaptarPrediccionData(dataPrediccion),
+    [dataPrediccion]
+  );
+
 
   /* ===================================================
      CONFIGURACIÓN GLOBAL
@@ -218,7 +234,11 @@ function App() {
               fichasTemporada={datos.fichasTemporada}
               temporadaEnCurso={datos.temporadaEnCurso}
             />
-            <PrediccionCosechaCard/>
+            <PrediccionCosechaCard
+              datos={datosPrediccion}
+              cargando={loadingPrediccion}
+              error={errorPrediccion}
+            />
 
           </div>
         );

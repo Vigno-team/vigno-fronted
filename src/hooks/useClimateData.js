@@ -1,37 +1,85 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { refreshAccessToken } from "../services/authService";
 
-export const useClimateData = () => {
-  // Los datos comienzan vacíos hasta que termina la petición.
+export function useClimateData(url) {
   const [data, setData] = useState(null);
-
-  // Indica si los datos todavía se están cargando.
   const [loading, setLoading] = useState(true);
-
-  // Almacena cualquier error que ocurra durante la carga.
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const cargarDatos = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("/data/climateData.json");
+    if (!url) {
+      setLoading(false);
+      return;
+    }
 
-        if (!response.ok) {
-          throw new Error(`Error al cargar los datos: ${response.status}`);
+    const controller = new AbortController();
+    setLoading(true);
+    setError(null);
+
+    async function fetchData() {
+      try {
+        const hacerPeticion = async (tokenActual) => {
+          const headers = {
+            Accept: "application/json",
+            ...(tokenActual ? { Authorization: `Bearer ${tokenActual}` } : {}),
+          };
+          return await fetch(url, {
+            method: "GET",
+            headers,
+            signal: controller.signal,
+          });
+        };
+
+        let access = sessionStorage.getItem("access");
+        let response = await hacerPeticion(access);
+
+        if (response.status === 401 && sessionStorage.getItem("refresh")) {
+          try {
+            access = await refreshAccessToken();
+            response = await hacerPeticion(access);
+          } catch {
+            window.location.href = "/login";
+            throw new Error("Sesión expirada");
+          }
         }
 
-        const jsonData = await response.json();
-        setData(jsonData);
-        setError(null);
-      } catch (err) {
-        setError(err.message || "Error al obtener los datos climáticos");
-      } finally {
-        setLoading(false);
-      }
-    };
+        if (response.status === 401 || response.status === 403) {
+          sessionStorage.removeItem("access");
+          sessionStorage.removeItem("refresh");
+          sessionStorage.removeItem("usuario");
+          window.location.href = "/login";
+          throw new Error("No autorizado");
+        }
 
-    cargarDatos();
-  }, []);
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Formato JSON inválido");
+        }
+
+        const json = await response.json();
+        setData(json);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          setError(err.message);
+          setData(null);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchData();
+
+    return () => {
+      controller.abort();
+    };
+  }, [url]);
 
   return { data, loading, error };
-};
+}
