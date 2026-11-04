@@ -1,4 +1,5 @@
 import React from "react";
+import { apiUrl } from "../../services/api";
 import { RegistroFalla, EstadoCorreccion, TipoFalla } from "../../types/fallas";
 import "./TablaFallas.css";
 
@@ -38,9 +39,9 @@ export const TablaFallas: React.FC<Props> = ({
 }) => {
   // Invocación a la URL oficial según requerimiento de la API
   const handleDescargarCSV = () => {
-    const url = `/api/v1/calidad/fallas?estacion=${encodeURIComponent(
+    const url = apiUrl(`/v1/calidad/fallas?estacion=${encodeURIComponent(
       estacionId
-    )}&temporada=${encodeURIComponent(temporada)}&formato=csv`;
+    )}&temporada=${encodeURIComponent(temporada)}&formato=csv`);
 
     window.open(url, "_blank");
   };
@@ -75,8 +76,8 @@ export const TablaFallas: React.FC<Props> = ({
             <tbody>
               {fallas.map((falla) => (
                 <tr key={falla.id}>
-                  <td>{falla.fecha}</td>
-                  <td className="col-variable">{falla.variable.toUpperCase()}</td>
+                  <td>{falla.fecha || "Sin fecha"}</td>
+                  <td className="col-variable">{(falla.variable || "—").toUpperCase()}</td>
                   <td>{formatTipoFalla(falla.tipoFalla)}</td>
                   <td>{falla.valorOriginal ?? "N/A"}</td>
                   <td className="col-archivo">{falla.archivoOrigen}</td>
@@ -86,9 +87,10 @@ export const TablaFallas: React.FC<Props> = ({
                   <td>
                     <button
                       className="btn-accion-corregir"
+                      disabled={falla.estadoCorreccion === "corregido"}
                       onClick={() => onAbrirModal(falla)}
                     >
-                      Corregir
+                      {falla.estadoCorreccion === "corregido" ? "Corregido" : "Corregir"}
                     </button>
                   </td>
                 </tr>

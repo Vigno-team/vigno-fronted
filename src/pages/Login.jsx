@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { MODO_DEMO } from '../services/authService';
 import { useAuth } from '../contexto/AuthContext';
 import './Login.css';
 
 export function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -33,7 +35,7 @@ export function Login() {
     setSubmitting(true);
     try {
       await login(email, password);
-      navigate('/dashboard', { replace: true });
+      navigate(location.state?.from?.pathname || '/dashboard', { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -44,7 +46,8 @@ export function Login() {
   return (
     <div className="login-container">
       <form onSubmit={handleSubmit} className="login-form">
-        <h1>Iniciar Sesión</h1>
+        <h1>Iniciar sesión</h1>
+        
 
         <div className="input-group">
           <input 
@@ -63,8 +66,6 @@ export function Login() {
             placeholder="Contraseña" 
           />
         </div>
-
-        {/* El aviso de error queda ubicado entre la contraseña y el botón */}
         {error && (
           <div className="auth-error-alert animate-fade">
             <p>{error}</p>

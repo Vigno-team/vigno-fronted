@@ -1,3 +1,4 @@
+import AlertaCritica from "./AlertaCritica";
 import{CloudRain}from"lucide-react";
 import MiniGraficoLinea from"./MiniGraficoLinea";
 
@@ -10,10 +11,10 @@ const SERIE_PRECIPITACION=[{
 
 function TarjetaPrecipitacion({
   datos,total,diasConLluvia,maxima,esTemporada,
-  formatearNumero,formatearFecha,
+  formatearNumero,formatearFecha,alertaCritica=null,
 }){
   return(
-    <article className="rm-card">
+    <article className={`rm-card ${alertaCritica ? "rm-card-critica" : ""}`}>
       <div className="rm-card-top">
         <div className="rm-card-titulo">
           <div className="rm-icono rm-icono-lluvia">
@@ -25,6 +26,7 @@ function TarjetaPrecipitacion({
             <p>Lluvia observada durante el período</p>
           </div>
         </div>
+        <AlertaCritica mensaje={alertaCritica} />
       </div>
 
       <div className="rm-metricas rm-metricas-3">

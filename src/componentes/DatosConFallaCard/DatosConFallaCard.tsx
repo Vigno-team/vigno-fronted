@@ -1,3 +1,4 @@
+import SelectorVigno from "../SelectorVigno/SelectorVigno";
 import React, { useState, useEffect, useMemo } from "react";
 import { useFallasData } from "../../hooks/useFallasData";
 import TablaFallas from "../TablaFallas/TablaFallas";
@@ -15,12 +16,14 @@ interface Props {
   estaciones?: Estacion[];
   fichasTemporada?: Array<{ estacion_id?: string; estacionId?: string; temporada: string }>;
   temporadaEnCurso?: string | null;
+  onDatosActualizados?: () => void;
 }
 
 export function DatosConFallaCard({
   estaciones = [],
   fichasTemporada = [],
   temporadaEnCurso = null,
+  onDatosActualizados,
 }: Props) {
   const [estacionId, setEstacionId] = useState("");
   const [temporada, setTemporada] = useState("");
@@ -67,7 +70,7 @@ export function DatosConFallaCard({
   }, [temporadas, temporada, temporadaEnCurso]);
 
   // Hook que consulta la API /api/v1/calidad/fallas?estacion={estacionActiva}&temporada={temporada}
-  const { data, loading, error } = useFallasData(estacionActiva, temporada);
+  const { data, loading, error, recargar } = useFallasData(estacionActiva, temporada);
 
   const resumen = data?.resumen;
   const fallas = data?.fallas ?? [];
@@ -82,7 +85,7 @@ export function DatosConFallaCard({
           </div>
 
           <div className="huglin-selectores">
-            <select
+            <SelectorVigno
               className="huglin-select"
               value={estacionActiva}
               onChange={(e) => setEstacionId(e.target.value)}
@@ -92,9 +95,9 @@ export function DatosConFallaCard({
                   {est.nombre ?? est.huerto ?? est.id}
                 </option>
               ))}
-            </select>
+            </SelectorVigno>
 
-            <select
+            <SelectorVigno
               className="huglin-select"
               value={temporada}
               onChange={(e) => setTemporada(e.target.value)}
@@ -104,11 +107,14 @@ export function DatosConFallaCard({
                   Temporada {t}
                 </option>
               ))}
-            </select>
+            </SelectorVigno>
           </div>
         </div>
       </header>
 
+      {error && <p className="huglin-aviso" role="alert">No se pudo consultar el reporte real de fallas: {error}</p>}
+
+      {!error && (<>
       {/* Métricas Resumen */}
       <div className="huglin-temporada-info fallas-metricas">
         <div>
@@ -134,17 +140,21 @@ export function DatosConFallaCard({
       </div>
 
       {/* Tabla con detalle */}
-      <TablaFallas
+      {!loading && <TablaFallas
         fallas={fallas}
         estacionId={estacionActiva}
         temporada={temporada}
         onAbrirModal={(falla) => setFallaParaCorregir(falla)}
-      />
+      />}
+
+      </>)}
 
       {/* Modal de Corrección Manual */}
       <ModalCorreccionFalla
         falla={fallaParaCorregir}
+        estacionId={estacionActiva}
         onCerrar={() => setFallaParaCorregir(null)}
+        onGuardado={() => { recargar(); onDatosActualizados?.(); }}
       />
     </article>
   );

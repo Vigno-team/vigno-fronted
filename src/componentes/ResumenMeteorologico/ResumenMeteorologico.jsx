@@ -1,10 +1,12 @@
-import{useEffect,useMemo,useState}from"react";
+import SelectorVigno from "../SelectorVigno/SelectorVigno";
+import{useMemo,useState}from"react";
 import{CalendarDays,CheckCircle2,MapPin,TriangleAlert}from"lucide-react";
 import TarjetaTemperatura from"./TarjetaTemperatura";
 import TarjetaAmplitud from"./TarjetaAmplitud";
 import TarjetaPrecipitacion from"./TarjetaPrecipitacion";
 import TarjetaRiesgo from"./TarjetaRiesgo";
 import"./ResumenMeteorologico.css";
+import { useConfiguracion } from "../../contexto/ConfiguracionContext";
 
 const PERIODOS=[
   {valor:"7",texto:"7 días"},
@@ -87,22 +89,22 @@ function ResumenMeteorologico({
   datosTemperatura=[],
   temaOscuro=true,
 }){
-  const[estacionId,setEstacionId]=useState("");
-  const[temporada,setTemporada]=useState("");
+  const { obtenerUmbralesEstacion } = useConfiguracion();
+  const[estacionElegida,setEstacionId]=useState("");
+  const[temporadaElegida,setTemporada]=useState("");
   const[periodo,setPeriodo]=useState("7");
-  const[mesSeleccionado,setMesSeleccionado]=useState("");
+  const[mesElegido,setMesSeleccionado]=useState("");
   const[serieTemperatura,setSerieTemperatura]=useState("maxima");
 
-  useEffect(()=>{
-    if(estaciones.length&&!estaciones.some(e=>e.id===estacionId)){
-      setEstacionId(estaciones[0].id);
-    }
-  },[estaciones,estacionId]);
+  const estacionId=estaciones.some(e=>e.id===estacionElegida)
+    ?estacionElegida : estaciones[0]?.id??"";
 
   const estacion=useMemo(
     ()=>estaciones.find(e=>e.id===estacionId)??null,
     [estaciones,estacionId]
   );
+
+  const umbrales = obtenerUmbralesEstacion(estacionId);
 
   const datosEstacion=useMemo(
     ()=>datosTemperatura
@@ -117,11 +119,8 @@ function ResumenMeteorologico({
     [datosEstacion]
   );
 
-  useEffect(()=>{
-    if(temporadas.length&&!temporadas.includes(temporada)){
-      setTemporada(temporadas[0]);
-    }
-  },[temporadas,temporada]);
+  const temporada=temporadas.includes(temporadaElegida)
+    ?temporadaElegida : temporadas[0]??"";
 
   const datosTemporada=useMemo(
     ()=>datosEstacion.filter(d=>d.fecha.startsWith(`${temporada}-`)),
@@ -133,9 +132,8 @@ function ResumenMeteorologico({
     [datosTemporada]
   );
 
-  useEffect(()=>{
-    setMesSeleccionado(mesesConRegistros.at(-1)??"01");
-  },[estacionId,temporada,mesesConRegistros]);
+  const mesSeleccionado=mesesConRegistros.includes(mesElegido)
+    ?mesElegido : mesesConRegistros.at(-1)??"01";
 
   const datosMes=useMemo(
     ()=>construirMesCompleto(
@@ -203,18 +201,42 @@ function ResumenMeteorologico({
     diasConLluvia:datosPeriodo.filter(
       d=>esNumero(d.precipitacionMm)&&d.precipitacionMm>0
     ).length,
-    diasBajo2:datosPeriodo.filter(
-      d=>esNumero(d.minima)&&d.minima<=2
+    diasRiesgo:datosPeriodo.filter(
+      d=>esNumero(d.minima)&&esNumero(umbrales.riesgoHelada)&&d.minima<=umbrales.riesgoHelada
     ).length,
-    diasBajo0:datosPeriodo.filter(
-      d=>esNumero(d.minima)&&d.minima<=0
+    diasCriticos:datosPeriodo.filter(
+      d=>esNumero(d.minima)&&esNumero(umbrales.helada)&&d.minima<=umbrales.helada
     ).length,
-  }),[datosPeriodo]);
+  }),[datosPeriodo,umbrales.helada,umbrales.riesgoHelada]);
+
+  // Solo se activan alertas cuando existen observaciones numéricas reales.
+  const supera = (campo, umbral, comparador = ">=") =>
+    esNumero(umbral) && datosPeriodo.some((dia) => esNumero(dia[campo]) && (
+      comparador === ">=" ? dia[campo] >= umbral : dia[campo] <= umbral
+    ));
+  const mensajesTemperatura = [
+    supera("maxima", umbrales.maxima) ? `Máxima ≥ ${umbrales.maxima} °C` : null,
+    supera("mediaDiaria", umbrales.media) ? `Media ≥ ${umbrales.media} °C` : null,
+    supera("minima", umbrales.minima, "<=") ? `Mínima ≤ ${umbrales.minima} °C` : null,
+  ].filter(Boolean);
+  const alertaCalor = mensajesTemperatura.join(" · ") || null;
+  const alertaAmplitud = supera("amplitudTermica", umbrales.amplitud)
+    ? `Amplitud ≥ ${umbrales.amplitud} °C` : null;
 
   const precipitacionTemporada=useMemo(
     ()=>sumar(datosTemporada.map(d=>d.precipitacionMm)),
     [datosTemporada]
   );
+
+  const mensajesLluvia = [
+    supera("precipitacionMm", umbrales.lluviaDiaria)
+      ? `Lluvia diaria ≥ ${umbrales.lluviaDiaria} mm` : null,
+    esNumero(umbrales.lluviaPeriodo) &&
+    esNumero(periodo === "temporada" ? precipitacionTemporada : metricas.precipitacionPeriodo) &&
+    (periodo === "temporada" ? precipitacionTemporada : metricas.precipitacionPeriodo) >= umbrales.lluviaPeriodo
+      ? `Lluvia acumulada ≥ ${umbrales.lluviaPeriodo} mm` : null,
+  ].filter(Boolean);
+  const alertaLluvia = mensajesLluvia.join(" · ") || null;
 
   const rangoInicio=datosPeriodo[0]?.fecha;
   const rangoFin=datosPeriodo.at(-1)?.fecha;
@@ -278,16 +300,16 @@ function ResumenMeteorologico({
 
             <div className="rm-select">
               <MapPin size={14}/>
-              <select
+              <SelectorVigno
                 value={estacionId}
-                onChange={e=>setEstacionId(e.target.value)}
+                onChange={e=>{setEstacionId(e.target.value);setTemporada("");setMesSeleccionado("");}}
               >
                 {estaciones.map(e=>(
                   <option key={e.id} value={e.id}>
                     {e.nombre??e.huerto??e.id}
                   </option>
                 ))}
-              </select>
+              </SelectorVigno>
             </div>
           </label>
 
@@ -296,14 +318,14 @@ function ResumenMeteorologico({
 
             <div className="rm-select">
               <CalendarDays size={14}/>
-              <select
+              <SelectorVigno
                 value={temporada}
-                onChange={e=>setTemporada(e.target.value)}
+                onChange={e=>{setTemporada(e.target.value);setMesSeleccionado("");}}
               >
                 {temporadas.map(anio=>(
                   <option key={anio} value={anio}>{anio}</option>
                 ))}
-              </select>
+              </SelectorVigno>
             </div>
           </label>
 
@@ -328,7 +350,7 @@ function ResumenMeteorologico({
                 <div className="rm-mes-select">
                   <CalendarDays size={13}/>
 
-                  <select
+                  <SelectorVigno
                     value={mesSeleccionado}
                     onChange={e=>setMesSeleccionado(e.target.value)}
                     aria-label="Seleccionar mes"
@@ -338,7 +360,7 @@ function ResumenMeteorologico({
                         {mes.texto}
                       </option>
                     ))}
-                  </select>
+                  </SelectorVigno>
                 </div>
               )}
             </div>
@@ -370,6 +392,7 @@ function ResumenMeteorologico({
         <div className="rm-grid">
           <TarjetaTemperatura
             datos={datosPeriodo}
+            alertaCritica={alertaCalor}
             textoPeriodo={textoPeriodo}
             maximo={metricas.registroMaximo}
             minimo={metricas.registroMinimo}
@@ -382,6 +405,7 @@ function ResumenMeteorologico({
           />
 
           <TarjetaAmplitud
+            alertaCritica={alertaAmplitud}
             datos={datosPeriodo}
             promedio={metricas.amplitudPromedio}
             maxima={metricas.amplitudMaxima}
@@ -390,6 +414,7 @@ function ResumenMeteorologico({
           />
 
           <TarjetaPrecipitacion
+            alertaCritica={alertaLluvia}
             datos={datosPeriodo}
             total={
               periodo==="temporada"
@@ -406,8 +431,10 @@ function ResumenMeteorologico({
           <TarjetaRiesgo
             datos={datosPeriodo}
             registroMinimo={metricas.registroMinimo}
-            diasBajo2={metricas.diasBajo2}
-            diasBajo0={metricas.diasBajo0}
+            diasRiesgo={metricas.diasRiesgo}
+            diasCriticos={metricas.diasCriticos}
+            umbralRiesgo={umbrales.riesgoHelada}
+            umbralHelada={umbrales.helada}
             formatearNumero={formatearNumero}
             formatearFecha={formatearFecha}
           />

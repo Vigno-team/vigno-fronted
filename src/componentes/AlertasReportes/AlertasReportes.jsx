@@ -1,9 +1,9 @@
+import SelectorVigno from "../SelectorVigno/SelectorVigno";
 import{useEffect,useMemo,useState}from"react";
-import{CalendarDays,CalendarRange,CheckCircle2,ChevronDown,ChevronLeft,ChevronRight,Database,FileText,MapPin,Snowflake,Thermometer,X}from"lucide-react";
+import{CalendarDays,CalendarRange,CheckCircle2,ChevronDown,Database,FileText,MapPin,Snowflake,Thermometer,X}from"lucide-react";
 import"./AlertasReportes.css";
 
 const MESES=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-const MESES_CORTOS=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
 const DIAS_SEMANA=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
 const TIPOS={critica:{texto:"Crítica",Icono:Snowflake},advertencia:{texto:"Precaución",Icono:Thermometer},reporte:{texto:"Reporte",Icono:FileText},sinDatos:{texto:"Sin datos",Icono:Database}};
 const PRIORIDAD={critica:4,advertencia:3,reporte:2,sinDatos:1};
@@ -96,11 +96,6 @@ function AlertasReportes({estaciones=[],datosTemperatura=[],temaOscuro=true}){
   const seleccionarAnio=anio=>{const ps=periodosDisponibles.filter(p=>p.startsWith(`${anio}-`));if(ps.length)aplicarPeriodo(ps[ps.length-1])};
   const seleccionarMes=mes=>{const p=`${anioActual}-${String(mes+1).padStart(2,"0")}`;if(periodosDisponibles.includes(p))aplicarPeriodo(p)};
 
-  const indicePeriodo=periodosDisponibles.indexOf(periodoActual);
-  const puedeAnterior=indicePeriodo>0;
-  const puedeSiguiente=indicePeriodo>=0&&indicePeriodo<periodosDisponibles.length-1;
-  const cambiarPeriodo=direccion=>{const i=indicePeriodo+direccion;if(i>=0&&i<periodosDisponibles.length)aplicarPeriodo(periodosDisponibles[i])};
-
   const diasCalendario=useMemo(()=>{
     if(!anioActual)return[];
     const anio=Number(anioActual),primerDia=new Date(anio,mesActual,1).getDay(),desplazamiento=primerDia===0?6:primerDia-1;
@@ -134,31 +129,40 @@ function AlertasReportes({estaciones=[],datosTemperatura=[],temaOscuro=true}){
               <span>Estación</span>
               <div className="ar-estacion-select">
                 <MapPin size={14}/>
-                <select value={estacionSeleccionada} onChange={e=>cambiarEstacion(e.target.value)}>
+                <SelectorVigno value={estacionSeleccionada} onChange={e=>cambiarEstacion(e.target.value)}>
                   {estaciones.map(e=><option key={e.id} value={e.id}>{nombreEstacion(e)}</option>)}
-                </select>
+                </SelectorVigno>
               </div>
             </label>
 
             <div className="ar-navegacion-periodo">
-              <button type="button" className="ar-boton-mes" disabled={!puedeAnterior} onClick={()=>cambiarPeriodo(-1)} aria-label="Período anterior" title="Mes anterior"><ChevronLeft size={20}/></button>
               <div className="ar-periodo-principal">
-                <div className="ar-mes-titulo"><CalendarDays size={18}/><strong>{MESES[mesActual]}</strong></div>
+                <label className="ar-selector-mes">
+                  <CalendarDays size={14}/>
+                  <SelectorVigno
+                    aria-label="Seleccionar mes"
+                    value={mesActual}
+                    disabled={!mesesDisponibles.length}
+                    onChange={e=>seleccionarMes(Number(e.target.value))}
+                  >
+                    {!mesesDisponibles.length&&<option value={mesActual}>Sin meses</option>}
+                    {MESES.map((nombre,i)=>mesesDisponibles.includes(i)
+                      ?<option key={nombre} value={i}>{nombre}</option>
+                      :null
+                    )}
+                  </SelectorVigno>
+                </label>
+
                 <label className="ar-selector-anio">
                   <CalendarRange size={14}/>
-                  <select value={anioActual} disabled={!aniosDisponibles.length} onChange={e=>seleccionarAnio(e.target.value)}>
+                  <SelectorVigno aria-label="Seleccionar año" value={anioActual} disabled={!aniosDisponibles.length} onChange={e=>seleccionarAnio(e.target.value)}>
                     {!aniosDisponibles.length&&<option value="">Sin datos</option>}
                     {aniosDisponibles.map(anio=><option key={anio} value={anio}>{anio}</option>)}
-                  </select>
+                  </SelectorVigno>
                 </label>
               </div>
-              <button type="button" className="ar-boton-mes" disabled={!puedeSiguiente} onClick={()=>cambiarPeriodo(1)} aria-label="Período siguiente" title="Mes siguiente"><ChevronRight size={20}/></button>
             </div>
             <div className="ar-toolbar-equilibrio" aria-hidden="true"/>
-          </div>
-
-          <div className="ar-selector-meses">
-            {MESES_CORTOS.map((mes,i)=>{const disponible=mesesDisponibles.includes(i);return <button key={mes} type="button" disabled={!disponible} className={mesActual===i?"activo":""} title={disponible?MESES[i]:"Sin datos disponibles"} onClick={()=>seleccionarMes(i)}>{mes}</button>})}
           </div>
 
           <div className="ar-resumen-estados">

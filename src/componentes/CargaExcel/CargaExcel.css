@@ -1,0 +1,56 @@
+.ce-panel{display:grid;gap:1em;padding:0 1.3em 1.3em;font-size:inherit;color:var(--cfg-texto);min-width:0}
+.ce-bloque{min-width:0;border:1px solid var(--cfg-borde);border-radius:.8em;padding:1.2em;background:var(--cfg-superficie)}
+.ce-titulo{display:flex;align-items:center;gap:.6em;margin-bottom:1.1em;color:var(--vigno-accent)}
+.ce-titulo h3{font-size:1em;line-height:1.35;margin:0;color:var(--cfg-texto)}
+.ce-acceso{display:flex;align-items:flex-end;gap:.8em;flex-wrap:wrap}
+.ce-campo{min-width:0;display:grid;gap:.5em;font-size:.9em;color:var(--cfg-texto)}
+.ce-clave{flex:1 1 270px}
+.ce-campo>span{font-size:.92em;font-weight:650}
+.ce-campo input,.ce-campo :is(select,.vigno-select){
+  width:100%;min-height:2.9em;padding:.65em .85em;font:inherit;font-size:1em!important;
+  border:1px solid var(--cfg-borde);border-radius:.6em;
+  background:var(--cfg-control);color:var(--cfg-texto);
+}
+.ce-campo input:focus-visible,.ce-campo :is(select,.vigno-select):focus-visible,.ce-dropzone:focus-visible{
+  outline:2px solid var(--vigno-accent);outline-offset:2px;
+}
+.ce-boton{display:inline-flex;align-items:center;justify-content:center;gap:.5em;min-height:2.9em;
+  padding:.7em 1em;border-radius:.6em;font:inherit;font-size:.85em!important;
+  font-weight:680;cursor:pointer;border:1px solid transparent;white-space:normal;text-align:center}
+.ce-primario{background:var(--vigno-accent);color:#fff;border-color:var(--vigno-accent)}
+.ce-primario:hover{background:var(--vigno-accent-hover)}
+.ce-secundario{background:var(--cfg-control);color:var(--cfg-texto);border-color:var(--cfg-borde)}
+.ce-secundario:hover{border-color:var(--vigno-accent)}
+.ce-boton:disabled{opacity:.48;cursor:not-allowed}
+.ce-ayuda,.ce-mensaje{color:var(--cfg-secundario);font-size:.84em;line-height:1.5}
+.ce-formulario{margin:1em 0;padding:1em;border:1px dashed var(--vigno-terracota-borde);border-radius:.7em}
+.ce-formulario h4{display:flex;align-items:center;gap:.5em;font-size:.95em;margin:0 0 .85em}
+.ce-campos-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1em;margin-bottom:1em}
+.ce-dropzone{margin:1.1em 0;padding:2em 1.2em;border:2px dashed var(--vigno-terracota-borde);
+  background:var(--vigno-terracota-suave);border-radius:.9em;text-align:center;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5em;min-height:9em}
+.ce-dropzone svg{color:var(--vigno-accent)}
+.ce-dropzone strong{font-size:.94em;max-width:100%;overflow-wrap:anywhere}
+.ce-dropzone span{font-size:.8em;color:var(--cfg-secundario);line-height:1.5}
+.ce-arrastrando{border-color:var(--vigno-accent);background:rgba(200,109,59,.23)}
+.ce-archivo-oculto{display:none}
+.ce-error,.ce-validacion,.ce-exito{margin-top:1em;padding:1em;border-radius:.7em;line-height:1.5;overflow-wrap:anywhere;font-size:.9em}
+.ce-error{color:#fecaca;border:1px solid rgba(220,38,38,.65);background:rgba(185,28,28,.15)}
+.tema-pagina-claro .ce-error{color:#991b1b;background:#fef2f2}
+.ce-error strong,.ce-validacion strong{display:flex;align-items:center;gap:.5em}
+.ce-error ul,.ce-validacion ul{padding-left:1.5em;max-height:260px;overflow:auto}
+.ce-validacion{border:1px solid rgba(62,142,88,.45);background:rgba(62,142,88,.08)}
+.ce-validacion strong,.ce-exito{color:var(--vigno-status-confiable)}
+.ce-validacion table{width:100%;border-collapse:collapse;margin:.8em 0;table-layout:fixed}
+.ce-validacion th,.ce-validacion td{padding:.65em;text-align:left;border-bottom:1px solid var(--cfg-borde);overflow-wrap:anywhere}
+.ce-validacion th{font-size:.85em;color:var(--cfg-secundario)}
+.ce-validacion details{margin:.8em 0}
+.ce-validacion summary{cursor:pointer}
+.ce-exito{display:flex;align-items:center;gap:.5em;flex-wrap:wrap;border:1px solid rgba(62,142,88,.45)}
+.ce-historial-titulo{flex-wrap:wrap}
+.ce-historial-titulo h3{flex:1}
+.ce-tabla-contenedor{width:100%;overflow-x:auto}
+.ce-historial{width:100%;border-collapse:collapse;font-size:.85em;min-width:630px}
+.ce-historial th,.ce-historial td{padding:.8em;text-align:left;border-bottom:1px solid var(--cfg-borde);overflow-wrap:anywhere}
+.ce-historial th{color:var(--cfg-secundario);font-weight:660}
+@media(max-width:700px){.ce-panel{padding:0 .9em .9em}.ce-bloque{padding:.9em}.ce-campos-grid{grid-template-columns:1fr}.ce-acceso .ce-boton{width:100%}}

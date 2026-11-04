@@ -1,3 +1,4 @@
+import SelectorVigno from "../SelectorVigno/SelectorVigno";
 import{ArrowLeftRight,CalendarDays,CalendarRange,ChartLine,MapPin,Snowflake,Thermometer,ThermometerSun}from"lucide-react";
 
 const VISTAS=[
@@ -32,9 +33,9 @@ function ControlesHistoricos({
         <div className="acciones-temperatura">
           <div className="selector-estacion">
             <MapPin size={15}/>
-            <select value={estacionId} onChange={e=>setEstacionId(e.target.value)}>
+            <SelectorVigno value={estacionId} onChange={e=>setEstacionId(e.target.value)}>
               {estaciones.map(e=><option key={e.id} value={e.id}>{e.nombre??e.huerto??e.id}</option>)}
-            </select>
+            </SelectorVigno>
           </div>
         </div>
       </header>
@@ -69,11 +70,11 @@ function ControlesHistoricos({
               {comparar?`${textoA} A`:textoA}
             </span>
 
-            <select value={valorA} onChange={e=>setA(e.target.value)}>
+            <SelectorVigno value={valorA} onChange={e=>setA(e.target.value)}>
               {opciones.map(v=>(
                 <option key={v} value={v}>{mostrar(v)}</option>
               ))}
-            </select>
+            </SelectorVigno>
           </label>
 
           {comparar&&(
@@ -82,11 +83,11 @@ function ControlesHistoricos({
                 <span className="punto-serie serie-b"/>{textoA} B
               </span>
 
-              <select value={valorB} onChange={e=>setB(e.target.value)}>
+              <SelectorVigno value={valorB} onChange={e=>setB(e.target.value)}>
                 {opciones.map(v=>(
                   <option key={v} value={v} disabled={v===valorA}>{mostrar(v)}</option>
                 ))}
-              </select>
+              </SelectorVigno>
             </label>
           )}
         </div>

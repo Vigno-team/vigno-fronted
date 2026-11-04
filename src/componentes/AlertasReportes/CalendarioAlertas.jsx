@@ -1,3 +1,4 @@
+import SelectorVigno from "../SelectorVigno/SelectorVigno";
 import{CalendarDays,CalendarRange,ChevronLeft,ChevronRight}from"lucide-react";
 import{
   construirFecha,DIAS_SEMANA,estaDentroDelRango,MESES,MESES_CORTOS,
@@ -32,9 +33,9 @@ function CalendarioAlertas({
 
           <label className="ar-selector-anio">
             <CalendarRange size={15}/>
-            <select value={anio} onChange={e=>seleccionarAnio(e.target.value)}>
+            <SelectorVigno value={anio} onChange={e=>seleccionarAnio(e.target.value)}>
               {aniosDisponibles.map(valor=><option key={valor} value={valor}>{valor}</option>)}
-            </select>
+            </SelectorVigno>
           </label>
         </div>
 

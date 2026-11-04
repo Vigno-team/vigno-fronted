@@ -65,6 +65,8 @@ function MiniGraficoLinea({
   lineasReferencia=[],
   destacarRiesgo=false,
   campoRiesgo="minima",
+  umbralRiesgo=2,
+  umbralCritico=0,
   // Inicio Seccion tooltip  ------------------
   esGraficoTemperatura = false,
   // Fin Seccion tooltip  ------------------
@@ -556,11 +558,11 @@ function MiniGraficoLinea({
 
                         const esRiesgo=
                           esCampoRiesgo&&
-                          valor<=2;
+                          esNumero(umbralRiesgo)&&valor<=umbralRiesgo;
 
                         const esCritico=
                           esCampoRiesgo&&
-                          valor<=0;
+                          esNumero(umbralCritico)&&valor<=umbralCritico;
 
                         const debeMostrar=
                           mostrarPuntos||

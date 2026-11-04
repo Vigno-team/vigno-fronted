@@ -1,3 +1,4 @@
+import SelectorVigno from "../SelectorVigno/SelectorVigno";
 import{useEffect,useMemo,useState}from"react";
 import{AxisBottom,AxisLeft}from"@visx/axis";
 import{GridRows}from"@visx/grid";
@@ -156,7 +157,7 @@ function SelectorPrincipal({
         {comparando?`${tipo} A`:tipo}
       </span>
 
-      <select value={valor} onChange={e=>onChange(e.target.value)}>
+      <SelectorVigno value={valor} onChange={e=>onChange(e.target.value)}>
         {opciones.map(opcion=>(
           <option
             key={opcion}
@@ -166,7 +167,7 @@ function SelectorPrincipal({
             {formatear(opcion)}
           </option>
         ))}
-      </select>
+      </SelectorVigno>
     </label>
   );
 }
@@ -183,7 +184,7 @@ function SelectorComparacion({
       </span>
 
       <div className="selector-eliminable">
-        <select value={valor} onChange={e=>onChange(e.target.value)}>
+        <SelectorVigno value={valor} onChange={e=>onChange(e.target.value)}>
           {opciones.map(opcion=>(
             <option
               key={opcion}
@@ -193,7 +194,7 @@ function SelectorComparacion({
               {formatear(opcion)}
             </option>
           ))}
-        </select>
+        </SelectorVigno>
 
         <button
           type="button"
@@ -892,7 +893,7 @@ function TemperatureChart({
           <div className="selector-estacion">
             <MapPin size={15}/>
 
-            <select
+            <SelectorVigno
               value={estacionSeleccionada}
               onChange={e=>setEstacionSeleccionada(e.target.value)}
             >
@@ -901,7 +902,7 @@ function TemperatureChart({
                   {estacion.nombre??estacion.huerto??estacion.id}
                 </option>
               ))}
-            </select>
+            </SelectorVigno>
           </div>
         </div>
       </header>

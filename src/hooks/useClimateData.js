@@ -1,85 +1,27 @@
-import { useState, useEffect } from "react";
-import { refreshAccessToken } from "../services/authService";
+import { useEffect, useState } from "react";
+import { pedirApi } from "../services/api";
 
-export function useClimateData(url) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+// Devuelve datos reales y permite reintentar sin usar JSON ficticios.
+export function useClimateData(ruta) {
+  const [intento, setIntento] = useState(0);
+  const [estado, setEstado] = useState({ clave: "", data: null, error: null });
+  const clave = `${ruta}-${intento}`;
 
   useEffect(() => {
-    if (!url) {
-      setLoading(false);
-      return;
-    }
+    const control = new AbortController();
+    pedirApi(ruta, { signal: control.signal })
+      .then(data => { if (!control.signal.aborted) setEstado({ clave, data, error: null }); })
+      .catch(error => {
+        if (!control.signal.aborted) setEstado({ clave, data: null, error: error.message });
+      });
+    return () => control.abort();
+  }, [ruta, clave]);
 
-    const controller = new AbortController();
-    setLoading(true);
-    setError(null);
-
-    async function fetchData() {
-      try {
-        const hacerPeticion = async (tokenActual) => {
-          const headers = {
-            Accept: "application/json",
-            ...(tokenActual ? { Authorization: `Bearer ${tokenActual}` } : {}),
-          };
-          return await fetch(url, {
-            method: "GET",
-            headers,
-            signal: controller.signal,
-          });
-        };
-
-        let access = sessionStorage.getItem("access");
-        let response = await hacerPeticion(access);
-
-        if (response.status === 401 && sessionStorage.getItem("refresh")) {
-          try {
-            access = await refreshAccessToken();
-            response = await hacerPeticion(access);
-          } catch {
-            window.location.href = "/login";
-            throw new Error("Sesión expirada");
-          }
-        }
-
-        if (response.status === 401 || response.status === 403) {
-          sessionStorage.removeItem("access");
-          sessionStorage.removeItem("refresh");
-          sessionStorage.removeItem("usuario");
-          window.location.href = "/login";
-          throw new Error("No autorizado");
-        }
-
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          throw new Error("Formato JSON inválido");
-        }
-
-        const json = await response.json();
-        setData(json);
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          setError(err.message);
-          setData(null);
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    fetchData();
-
-    return () => {
-      controller.abort();
-    };
-  }, [url]);
-
-  return { data, loading, error };
+  const actual = estado.clave === clave;
+  return {
+    data: actual ? estado.data : null,
+    error: actual ? estado.error : null,
+    loading: !actual,
+    recargar: () => setIntento(n => n + 1),
+  };
 }

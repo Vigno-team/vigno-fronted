@@ -1,520 +1,98 @@
-const numero=valor=>{
-  if(valor===null||valor===undefined||valor==="")return null;
+// Convierte nombres snake_case del backend a nombres usados por los componentes.
+// null significa "sin dato": no se reemplaza por cero.
+const numero = valor => valor === null || valor === undefined || valor === ""
+  ? null : (Number.isFinite(Number(valor)) ? Number(valor) : null);
+const lista = valor => Array.isArray(valor) ? valor : [];
+const idDe = objeto => String(objeto?.codigo ?? objeto?.estacion_id ?? objeto?.id ?? "");
 
-  const n=Number(valor);
+export function adaptarClimateData(data) {
+  if (!data || typeof data !== "object" || Array.isArray(data)) return null;
 
-  return Number.isFinite(n)
-    ?n
-    :null;
-};
-
-/* =====================================================
-   COMPLETITUD POR TEMPORADA
-===================================================== */
-
-const temporadasEstacion=(
-  estacionId,
-  completitud=[]
-)=>
-  Object.fromEntries(
-    completitud
-      .filter(
-        item=>
-          item.estacion_id===
-          estacionId
-      )
-      .map(
-        item=>[
-          item.temporada,
-          {
-            completitud:
-              item.variables
-                ?.tmedia??
-              null,
-
-            completitudVariables:{
-              maxima:
-                item.variables
-                  ?.tmax??
-                null,
-
-              minima:
-                item.variables
-                  ?.tmin??
-                null,
-
-              media:
-                item.variables
-                  ?.tmedia??
-                null,
-
-              precipitacion:
-                item.variables
-                  ?.precipitacion??
-                null,
-            },
-
-            confiable:
-              item.confiable??
-              false,
-
-            observacion:
-              item.observacion??
-              null,
-          }
-        ]
-      )
-  );
-
-/* =====================================================
-   ESTACIONES
-===================================================== */
-
-const adaptarEstaciones=(
-  estaciones=[],
-  completitud=[]
-)=>
-  estaciones.map(
-    estacion=>({
-
-      ...estacion,
-
-      fechaInicio:
-        estacion.fecha_inicio??
-        null,
-
-      fechaFin:
-        estacion.fecha_fin??
-        null,
-
-      temporadasDisponibles:
-        estacion.temporadas_disponibles??
-        0,
-
-      calidadDato:
-        estacion.calidad_dato??
-        null,
-
-      temporadas:
-        temporadasEstacion(
-          estacion.id,
-          completitud
-        ),
-
-    })
-  );
-
-/* =====================================================
-   RESUMEN DIARIO
-
-   JSON:
-   tmax
-   tmin
-   tmedia
-   amplitud
-   precipitacion
-
-   FRONT:
-   maxima
-   minima
-   mediaDiaria
-   amplitudTermica
-   precipitacionMm
-===================================================== */
-
-const adaptarResumenDiario=(
-  resumenDiario=[]
-)=>
-  Array.isArray(
-    resumenDiario
-  )
-    ?resumenDiario.flatMap(
-        resumen=>
-          (
-            resumen.dias??
-            []
-          ).map(
-            dia=>({
-
-              estacionId:
-                resumen.estacion_id,
-
-              fecha:
-                dia.fecha,
-
-              maxima:
-                numero(
-                  dia.tmax
-                ),
-
-              minima:
-                numero(
-                  dia.tmin
-                ),
-
-              mediaDiaria:
-                numero(
-                  dia.tmedia
-                ),
-
-              amplitudTermica:
-                numero(
-                  dia.amplitud
-                ),
-
-              precipitacionMm:
-                numero(
-                  dia.precipitacion
-                ),
-
-              motivoNulo:
-                dia.motivo_nulo??
-                null,
-
-            })
-          )
-      )
-    :[];
-
-/* =====================================================
-   RACHAS
-===================================================== */
-
-const adaptarEventoRacha=
-  evento=>({
-
-    ...evento,
-
-    /*
-      El JSON utiliza:
-      inicio / fin
-
-      CalorExtremo utiliza:
-      fecha_inicio / fecha_fin
-    */
-    fecha_inicio:
-      evento.fecha_inicio??
-      evento.inicio??
-      null,
-
-    fecha_fin:
-      evento.fecha_fin??
-      evento.fin??
-      null,
-
-    dias:
-      evento.dias??
-      0,
-
-    tmax_maxima:
-      numero(
-        evento.tmax_maxima
-      ),
-
-    con_incidencia:
-      evento.con_incidencia??
-      false,
-
-    interrumpida_por_dato_faltante:
-      evento.interrumpida_por_dato_faltante??
-      false,
-
+  const temporadaEnCurso = data.temporada_en_curso ?? null;
+  const completitudPorTemporada = lista(data.completitud_por_temporada);
+  const rachasOriginales = lista(data.rachas);
+  const adaptarEvento = r => ({
+    ...r,
+    fecha_inicio: r.fecha_inicio ?? r.inicio ?? null,
+    fecha_fin: r.fecha_fin ?? r.fin ?? null,
+    dias: r.dias ?? 0,
+    tmax_maxima: numero(r.tmax_maxima),
+    con_incidencia: r.con_incidencia ?? false,
+    interrumpida_por_dato_faltante: r.interrumpida_por_dato_faltante ?? false,
   });
 
-const adaptarRachas=(
-  rachas=[]
-)=>
-  Array.isArray(
-    rachas
-  )
-    ?rachas.map(
-        item=>({
+  const estaciones = lista(data.estaciones).map(e => {
+    const id = String(e.codigo ?? e.id ?? "");
+    const temporadas = Object.fromEntries(completitudPorTemporada
+      .filter(c => idDe(c) === id)
+      .map(c => [c.temporada, {
+        completitud: c.variables?.tmedia ?? null,
+        completitudVariables: {
+          maxima: c.variables?.tmax ?? null,
+          minima: c.variables?.tmin ?? null,
+          media: c.variables?.tmedia ?? null,
+          precipitacion: c.variables?.precipitacion ?? null,
+        },
+        confiable: c.confiable ?? false,
+        observacion: c.observacion ?? null,
+      }]));
+    return {
+      ...e, id, temporadas,
+      fechaInicio: e.fecha_inicio ?? null,
+      fechaFin: e.fecha_fin ?? null,
+      temporadasDisponibles: e.temporadas_disponibles ?? 0,
+      calidadDato: e.calidad_dato ?? null,
+    };
+  });
 
-          ...item,
+  const seriesTemperaturas = lista(data.resumen_diario).flatMap(registro =>
+    lista(registro.dias).map(dia => ({
+      estacionId: idDe(registro), fecha: dia.fecha,
+      maxima: numero(dia.tmax), minima: numero(dia.tmin),
+      mediaDiaria: numero(dia.tmedia), amplitudTermica: numero(dia.amplitud),
+      precipitacionMm: numero(dia.precipitacion), motivoNulo: dia.motivo_nulo ?? null,
+    }))
+  );
 
-          estacionId:
-            item.estacion_id,
+  const fichasTemporada = lista(data.ficha_temporada).map(ficha => {
+    const racha = rachasOriginales.find(r => idDe(r) === idDe(ficha) && r.temporada === ficha.temporada);
+    return {
+      ...ficha, estacionId: idDe(ficha), enCurso: ficha.temporada === temporadaEnCurso,
+      winkler: ficha.indices?.winkler ?? null,
+      huglin: ficha.indices?.huglin ?? null,
+      lluviaInvernal: ficha.lluvia_invernal ?? null,
+      lluviaFueraInvierno: ficha.lluvia_fuera_invierno ?? null,
+      lluvia_fuera_invierno_mm: numero(ficha.lluvia_fuera_invierno?.crecimiento_mm),
+      calor: ficha.calor ?? null,
+      clasificacion: ficha.clasificacion ?? null,
+      diasCriticos: ficha.dias_criticos ?? [],
+      rachas: lista(racha?.rachas).map(adaptarEvento),
+      calidadRachas: racha?.calidad_dato ?? null,
+    };
+  });
 
-          umbral:
-            numero(
-              item.umbral_c
-            ),
+  const rachas = rachasOriginales.map(r => ({
+    ...r, estacionId: idDe(r), umbral: numero(r.umbral_c),
+    minimoDiasIncidencia: r.minimo_dias_incidencia ?? null,
+    eventos: lista(r.rachas).map(adaptarEvento), calidadDato: r.calidad_dato ?? null,
+  }));
 
-          minimoDiasIncidencia:
-            item.minimo_dias_incidencia??
-            null,
-
-          eventos:
-            (
-              item.rachas??
-              []
-            ).map(
-              adaptarEventoRacha
-            ),
-
-          calidadDato:
-            item.calidad_dato??
-            null,
-
-        })
-      )
-    :[];
-
-/* =====================================================
-   FICHAS DE TEMPORADA
-===================================================== */
-
-const adaptarFichasTemporada=(
-  fichas=[],
-  temporadaEnCurso=null,
-  rachas=[]
-)=>
-  Array.isArray(
-    fichas
-  )
-    ?fichas.map(
-        ficha=>{
-
-          const registroRachas=
-            rachas.find(
-              item=>
-                item.estacion_id===
-                  ficha.estacion_id&&
-                item.temporada===
-                  ficha.temporada
-            );
-
-          const lluviaFueraInvierno=
-            ficha.lluvia_fuera_invierno??
-            null;
-
-          return{
-
-            /*
-              Conservamos también todos
-              los nombres originales.
-            */
-            ...ficha,
-
-            estacionId:
-              ficha.estacion_id,
-
-            enCurso:
-              ficha.temporada===
-              temporadaEnCurso,
-
-            winkler:
-              ficha.indices
-                ?.winkler??
-              null,
-
-            huglin:
-              ficha.indices
-                ?.huglin??
-              null,
-
-            lluviaInvernal:
-              ficha.lluvia_invernal??
-              null,
-
-            lluviaFueraInvierno,
-
-            /*
-              Compatibilidad con el componente
-              actual LluviaFueraInvernalCard.
-
-              crecimiento_mm corresponde al
-              período de crecimiento fuera
-              del invierno.
-            */
-            lluvia_fuera_invierno_mm:
-              numero(
-                lluviaFueraInvierno
-                  ?.crecimiento_mm
-              ),
-
-            calor:
-              ficha.calor??
-              null,
-
-            clasificacion:
-              ficha.clasificacion??
-              null,
-
-            diasCriticos:
-              ficha.dias_criticos??
-              [],
-
-            /*
-              CalorExtremoCard busca
-              ficha.rachas.
-            */
-            rachas:
-              (
-                registroRachas
-                  ?.rachas??
-                []
-              ).map(
-                adaptarEventoRacha
-              ),
-
-            calidadRachas:
-              registroRachas
-                ?.calidad_dato??
-              null,
-
-          };
-        }
-      )
-    :[];
-
-/* =====================================================
-   ADAPTADOR PRINCIPAL
-===================================================== */
-
-export const adaptarClimateData=data=>{
-
-  if(!data){
-    return null;
-  }
-
-  const temporadaEnCurso=
-    data.temporada_en_curso??
-    null;
-
-  const completitudPorTemporada=
-    Array.isArray(
-      data.completitud_por_temporada
-    )
-      ?data.completitud_por_temporada
-      :[];
-
-  const rachasAdaptadas=
-    adaptarRachas(
-      data.rachas
-    );
-
-  const fichasTemporada=
-    adaptarFichasTemporada(
-      data.ficha_temporada,
-      temporadaEnCurso,
-      data.rachas??
-      []
-    );
-
-  return{
-
-    generado:
-      data.generado??
-      null,
-
-    temporadaEnCurso,
-
-    temporadas:
-      Array.isArray(
-        data.temporadas
-      )
-        ?data.temporadas
-        :[],
-
-    estaciones:
-      adaptarEstaciones(
-        data.estaciones??
-        [],
-        completitudPorTemporada
-      ),
-
-    completitudPorTemporada,
-
-    /*
-      Se mantiene también este nombre
-      por compatibilidad.
-    */
-    completitud_por_temporada:
-      completitudPorTemporada,
-
-    seriesTemperaturas:
-      adaptarResumenDiario(
-        data.resumen_diario
-      ),
-
-    fichasTemporada,
-
-    rachas:
-      rachasAdaptadas,
-
-    /*
-      Si en el futuro el backend agrega
-      mapa_calor, la app ya estará preparada.
-    */
-    mapaCalor:
-      data.mapa_calor??
-      null,
-
-    mapa_calor:
-      data.mapa_calor??
-      null,
-
+  return {
+    generado: data.generado ?? null, temporadaEnCurso,
+    temporadas: lista(data.temporadas), estaciones, seriesTemperaturas,
+    completitudPorTemporada, completitud_por_temporada: completitudPorTemporada,
+    fichasTemporada, rachas,
+    mapaCalor: data.mapa_calor ?? null, mapa_calor: data.mapa_calor ?? null,
   };
-};
+}
 
-/* =====================================================
-   HELPERS
-===================================================== */
+export const obtenerFichaTemporada = (datos, estacionId, temporada) =>
+  datos?.fichasTemporada?.find(f => f.estacionId === estacionId && f.temporada === temporada) ?? null;
 
-export const obtenerFichaTemporada=(
-  datos,
-  estacionId,
-  temporada
-)=>
-  datos
-    ?.fichasTemporada
-    ?.find(
-      ficha=>
-        ficha.estacionId===
-          estacionId&&
-        ficha.temporada===
-          temporada
-    )??
-  null;
+export const obtenerRachasTemporada = (datos, estacionId, temporada) =>
+  datos?.rachas?.find(r => r.estacionId === estacionId && r.temporada === temporada) ?? null;
 
-export const obtenerRachasTemporada=(
-  datos,
-  estacionId,
-  temporada
-)=>
-  datos
-    ?.rachas
-    ?.find(
-      item=>
-        item.estacionId===
-          estacionId&&
-        item.temporada===
-          temporada
-    )??
-  null;
-
-export const formatearDato=(
-  valor,
-  decimales=1
-)=>{
-
-  if(
-    valor===null||
-    valor===undefined||
-    !Number.isFinite(
-      Number(valor)
-    )
-  ){
-    return"Sin dato";
-  }
-
-  return Number(valor)
-    .toFixed(
-      decimales
-    )
-    .replace(
-      ".",
-      ","
-    );
+export const formatearDato = (valor, decimales = 1) => {
+  const n = numero(valor);
+  return n === null ? "Sin dato" : n.toFixed(decimales).replace(".", ",");
 };

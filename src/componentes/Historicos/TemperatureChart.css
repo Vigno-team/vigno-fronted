@@ -9,9 +9,9 @@
   --texto-secundario:#6B7280;--sombra:rgba(15,23,42,.06);
 }
 
-.panel-temperatura.tema-oscuro select{color-scheme:dark}
-.panel-temperatura.tema-oscuro select option{color:#F8FAFC;background:#181C24}
-.panel-temperatura.tema-oscuro select option:disabled{color:#59616E;background:#14171D}
+.panel-temperatura.tema-oscuro :is(select,.vigno-select){color-scheme:dark}
+.panel-temperatura.tema-oscuro :is(select,.vigno-select) option{color:#F8FAFC;background:#181C24}
+.panel-temperatura.tema-oscuro :is(select,.vigno-select) option:disabled{color:#59616E;background:#14171D}
 
 /* Panel */
 .panel-temperatura{
@@ -39,7 +39,7 @@
   color:var(--vigno-accent);background:var(--superficie);
   border:1px solid var(--borde-control);border-radius:8px;
 }
-.selector-estacion select{
+.selector-estacion :is(select,.vigno-select){
   min-width:155px;color:var(--texto);background:transparent;border:0;outline:0;
   font-family:inherit;font-size:10px;font-weight:650;cursor:pointer;
 }
@@ -144,7 +144,7 @@
   letter-spacing:.5px;
 }
 
-.grupo-periodo>select{
+.grupo-periodo>:is(select,.vigno-select){
   width:100%;
   min-height:calc(40px * var(--factor-texto));
   min-width:calc(112px * var(--factor-texto));
@@ -161,8 +161,8 @@
   font-weight:650;
   cursor:pointer;
 }
-.grupo-periodo>select:hover{background:var(--superficie-hover)}
-.grupo-periodo>select:focus{border-color:var(--vigno-accent)}
+.grupo-periodo>:is(select,.vigno-select):hover{background:var(--superficie-hover)}
+.grupo-periodo>:is(select,.vigno-select):focus{border-color:var(--vigno-accent)}
 
 /* Select eliminable */
 .selector-eliminable{
@@ -179,7 +179,7 @@
 .selector-eliminable:hover{border-color:rgba(200,109,59,.55)}
 .selector-eliminable:focus-within{border-color:var(--vigno-accent)}
 
-.selector-eliminable select{
+.selector-eliminable :is(select,.vigno-select){
   width:calc(108px * var(--factor-texto));
   min-height:calc(38px * var(--factor-texto));
   min-width:0;
@@ -194,11 +194,11 @@
   cursor:pointer;
 }
 
-.grupo-periodo:not(.grupo-anio) .selector-eliminable select{
+.grupo-periodo:not(.grupo-anio) .selector-eliminable :is(select,.vigno-select){
   width:calc(130px * var(--factor-texto));
 }
 
-.grupo-estacion-comparada .selector-eliminable select{
+.grupo-estacion-comparada .selector-eliminable :is(select,.vigno-select){
   width:calc(145px * var(--factor-texto));
 }
 .boton-quitar-comparacion{
@@ -365,18 +365,18 @@
 
   .titulo-temperatura h2{font-size:18px}
   .selector-estacion{box-sizing:border-box}
-  .selector-estacion select{width:100%;min-width:0}
+  .selector-estacion :is(select,.vigno-select){width:100%;min-width:0}
 
   .barra-grafico{flex-direction:column;align-items:stretch;padding:8px}
   .selector-vista,.boton-vista,.boton-comparar{flex:1}
   .boton-vista{min-width:0}
 
   .grupo-periodo{flex:1 1 130px}
-  .grupo-periodo>select{max-width:none}
+  .grupo-periodo>:is(select,.vigno-select){max-width:none}
 
-  .selector-eliminable select,
-  .grupo-periodo:not(.grupo-anio) .selector-eliminable select,
-  .grupo-estacion-comparada .selector-eliminable select{
+  .selector-eliminable :is(select,.vigno-select),
+  .grupo-periodo:not(.grupo-anio) .selector-eliminable :is(select,.vigno-select),
+  .grupo-estacion-comparada .selector-eliminable :is(select,.vigno-select){
     flex:1;width:auto;
   }
 
@@ -390,10 +390,10 @@
   .controles-historicos{flex-direction:column;align-items:stretch}
 
   .selector-vista,.boton-comparar,.filtros-periodo,.comparadores-estacion,
-  .grupo-periodo,.grupo-periodo>select,.boton-agregar-comparacion{width:100%}
+  .grupo-periodo,.grupo-periodo>:is(select,.vigno-select),.boton-agregar-comparacion{width:100%}
 
   .filtros-periodo,.comparadores-estacion{flex-direction:column}
-  .grupo-periodo>select{max-width:none}
+  .grupo-periodo>:is(select,.vigno-select){max-width:none}
   .resumen-temperatura span{display:none}
   .area-temperatura{height:350px}
 }
