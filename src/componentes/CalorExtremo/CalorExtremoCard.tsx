@@ -1,3 +1,4 @@
+import SelectorVigno from "../SelectorVigno/SelectorVigno";
 import { useEffect, useMemo, useState } from "react";
 import "./CalorExtremoCard.css";
 import BadgeCompletitud from "../BadgeCompletitud/BadgeCompletitud";
@@ -46,6 +47,9 @@ interface Props {
   estaciones?: Estacion[];
   fichasTemporada?: FichaTemporada[];
   temporadaEnCurso?: string | null;
+  estacionSeleccionada?: string;
+  temporadaSeleccionada?: string;
+  ocultarSelectores?: boolean;
 }
 
 // Helper: Formato de número genérico
@@ -76,16 +80,19 @@ export function CalorExtremoCard({
   estaciones = [],
   fichasTemporada = [],
   temporadaEnCurso = null,
+  estacionSeleccionada,
+  temporadaSeleccionada,
+  ocultarSelectores = false,
 }: Props) {
   const [estacionId, setEstacionId] = useState("");
   const [temporada, setTemporada] = useState("");
 
   const estacionActiva =
-    estacionId ||
+    estacionSeleccionada ?? (estacionId ||
     estaciones[0]?.id ||
     fichasTemporada[0]?.estacionId ||
     fichasTemporada[0]?.estacion_id ||
-    "";
+    "");
 
   useEffect(() => {
     if (!estacionId && estacionActiva) {
@@ -122,14 +129,16 @@ export function CalorExtremoCard({
     }
   }, [temporadas, temporada, temporadaEnCurso]);
 
+  const temporadaActiva = temporadaSeleccionada ?? temporada;
+
   const ficha = useMemo(
     () =>
       fichasTemporada.find(
         (f) =>
           (f.estacionId ?? f.estacion_id) === estacionActiva &&
-          f.temporada === temporada
+          f.temporada === temporadaActiva
       ) ?? null,
-    [fichasTemporada, estacionActiva, temporada]
+    [fichasTemporada, estacionActiva, temporadaActiva]
   );
 
   const calor = ficha?.calor ?? null;
@@ -145,8 +154,8 @@ export function CalorExtremoCard({
             <h4>Calor Extremo y Días Críticos</h4>
           </div>
 
-          <div className="huglin-selectores">
-            <select
+          {!ocultarSelectores && <div className="huglin-selectores">
+            <SelectorVigno
               className="huglin-select"
               value={estacionActiva}
               onChange={(e) => setEstacionId(e.target.value)}
@@ -156,11 +165,11 @@ export function CalorExtremoCard({
                   {est.nombre ?? est.huerto ?? est.id}
                 </option>
               ))}
-            </select>
+            </SelectorVigno>
 
-            <select
+            <SelectorVigno
               className="huglin-select"
-              value={temporada}
+              value={temporadaActiva}
               onChange={(e) => setTemporada(e.target.value)}
             >
               {temporadas.map((t) => (
@@ -168,8 +177,8 @@ export function CalorExtremoCard({
                   Temporada {t}
                 </option>
               ))}
-            </select>
-          </div>
+            </SelectorVigno>
+          </div>}
         </div>
 
         {estacionObjeto?.calidad_dato && (
@@ -200,6 +209,7 @@ export function CalorExtremoCard({
         </div>
       </div>
 
+      <div className="calor-detalle-horizontal">
       {/* 2. Días Críticos (Top 10 T. Máx) */}
       <div className="calor-bloque-seccion">
         <span className="calor-subtitulo">Días Críticos (Top 10 T. Máx)</span>
@@ -249,6 +259,7 @@ export function CalorExtremoCard({
             No se registraron rachas de calor con incidencia en el periodo.
           </div>
         )}
+      </div>
       </div>
     </article>
   );

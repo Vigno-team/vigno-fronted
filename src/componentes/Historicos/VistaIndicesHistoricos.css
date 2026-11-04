@@ -66,8 +66,8 @@
 }
 .vih-select:hover{background:var(--vih-control-hover);border-color:rgba(200,109,59,.28)}
 .vih-select svg{width:calc(14px * var(--factor-texto));height:calc(14px * var(--factor-texto));flex-shrink:0}
-.vih-select select{width:100%;min-width:0;color:var(--vih-texto);background:transparent;border:0;outline:0;font-family:inherit;font-size:calc(9px * var(--factor-texto));font-weight:650;cursor:pointer}
-.vih-oscuro select{color-scheme:dark}
+.vih-select :is(select,.vigno-select){width:100%;min-width:0;color:var(--vih-texto);background:transparent;border:0;outline:0;font-family:inherit;font-size:calc(9px * var(--factor-texto));font-weight:650;cursor:pointer}
+.vih-oscuro :is(select,.vigno-select){color-scheme:dark}
 .vih-oscuro option{color:#fff;background:#181C24}
 .vih-boton-comparar{
   min-height:calc(40px * var(--factor-texto));display:flex;align-items:center;justify-content:center;

@@ -1,3 +1,4 @@
+import SelectorVigno from "../SelectorVigno/SelectorVigno";
 import React, { useState, useEffect, useMemo } from "react";
 import "./PrediccionCosechaCard.css";
 import HarvestProgressBar from "../HarvestProgressBar/HarvestProgressBar";
@@ -194,7 +195,7 @@ export default function PrediccionCosechaCard({
 
           {/* Filtros  */}
           <div className="winkler-selectores">
-            <select
+            <SelectorVigno
               className="winkler-select"
               value={filtroRegion}
               onChange={(e) => setFiltroRegion(e.target.value)}
@@ -206,9 +207,9 @@ export default function PrediccionCosechaCard({
                   Región Winkler {reg}
                 </option>
               ))}
-            </select>
+            </SelectorVigno>
 
-            <select
+            <SelectorVigno
               className="winkler-select"
               value={filtroColor}
               onChange={(e) => setFiltroColor(e.target.value)}
@@ -220,9 +221,9 @@ export default function PrediccionCosechaCard({
                   {col === "Red" ? "Uva Tinta (Red)" : "Uva Blanca (White)"}
                 </option>
               ))}
-            </select>
+            </SelectorVigno>
 
-            <select
+            <SelectorVigno
               className="winkler-select"
               value={filtroCultivar}
               onChange={(e) => setFiltroCultivar(e.target.value)}
@@ -236,7 +237,7 @@ export default function PrediccionCosechaCard({
                   {formatearNombreCultivar(cult)}
                 </option>
               ))}
-            </select>
+            </SelectorVigno>
           </div>
         </div>
       </div>
@@ -324,7 +325,7 @@ export default function PrediccionCosechaCard({
                     Selecciona un punto para ver su detalle ({prediccionesFiltradas.length} muestras visibles).
                   </p>
                 </div>
-                <select
+                <SelectorVigno
                   className="winkler-select prediccion-select-compacto"
                   value={algoritmoActivo}
                   onChange={(e) => setAlgoritmoActivo(e.target.value)}
@@ -333,7 +334,7 @@ export default function PrediccionCosechaCard({
                   <option value="random_forest">Modelo: Random Forest</option>
                   <option value="regresion_lineal">Modelo: Regresión Lineal</option>
                   <option value="promedio_regional">Modelo: Promedio Regional</option>
-                </select>
+                </SelectorVigno>
               </div>
 
               <div className="prediccion-scatter-layout">

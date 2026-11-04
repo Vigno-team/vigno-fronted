@@ -129,16 +129,16 @@
 .rm-select:hover{background:var(--rm-control-hover)}
 .rm-control-temporada .rm-select{width:108px}
 
-.rm-select select{
+.rm-select :is(select,.vigno-select){
   width:100%;min-width:0;color:var(--rm-texto);background:transparent;
   border:0;outline:0;font-family:inherit;font-size:9px;
   font-weight:650;cursor:pointer;
 }
 
-.tema-oscuro .rm-select select{color-scheme:dark}
+.tema-oscuro .rm-select :is(select,.vigno-select){color-scheme:dark}
 .tema-oscuro .rm-select option{color:#FFF;background:var(--vigno-bg-dark)}
 
-.tema-claro .rm-select select{color-scheme:light}
+.tema-claro .rm-select :is(select,.vigno-select){color-scheme:light}
 .tema-claro .rm-select option{color:#171717;background:#FFF}
 
 /* Período */
@@ -194,16 +194,16 @@
 
 .rm-mes-select svg{flex-shrink:0}
 
-.rm-mes-select select{
+.rm-mes-select :is(select,.vigno-select){
   width:100%;min-width:0;color:var(--rm-texto);background:transparent;
   border:0;outline:0;font-family:inherit;font-size:9px;
   font-weight:650;cursor:pointer;
 }
 
-.tema-oscuro .rm-mes-select select{color-scheme:dark}
+.tema-oscuro .rm-mes-select :is(select,.vigno-select){color-scheme:dark}
 .tema-oscuro .rm-mes-select option{color:#FFF;background:var(--vigno-bg-dark)}
 
-.tema-claro .rm-mes-select select{color-scheme:light}
+.tema-claro .rm-mes-select :is(select,.vigno-select){color-scheme:light}
 .tema-claro .rm-mes-select option{color:#171717;background:#FFF}
 
 @keyframes rmMesEntrada{
@@ -566,7 +566,7 @@
     width:100%;height:36px;
   }
 
-  .rm-select select{width:100%}
+  .rm-select :is(select,.vigno-select){width:100%}
 
   .rm-periodo-fila{
     width:100%;flex-direction:column;align-items:stretch;gap:6px;
@@ -659,7 +659,7 @@
   padding:calc(8px * var(--factor-texto,1)) calc(10px * var(--factor-texto,1));
 }
 .rm-control-temporada .rm-select{width:calc(105px * var(--factor-texto,1))}
-.rm-select select{font-size:calc(9px * var(--factor-texto,1))}
+.rm-select :is(select,.vigno-select){font-size:calc(9px * var(--factor-texto,1))}
 .rm-periodo-fila{gap:calc(6px * var(--factor-texto,1));flex-wrap:nowrap}
 .rm-periodos{
   min-height:calc(38px * var(--factor-texto,1));height:auto;
@@ -678,7 +678,7 @@
   gap:calc(7px * var(--factor-texto,1));
   padding:calc(8px * var(--factor-texto,1)) calc(10px * var(--factor-texto,1));
 }
-.rm-mes-select select{font-size:calc(9px * var(--factor-texto,1))}
+.rm-mes-select :is(select,.vigno-select){font-size:calc(9px * var(--factor-texto,1))}
 .rm-mes-select svg,.rm-select svg{
   width:calc(14px * var(--factor-texto,1));
   height:calc(14px * var(--factor-texto,1));flex-shrink:0;
@@ -706,4 +706,57 @@
   .rm-periodos{width:100%;height:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
   .rm-periodos button{min-height:calc(32px * var(--factor-texto,1));height:auto;font-size:calc(8px * var(--factor-texto,1))}
   .rm-mes-select{width:100%;min-width:0}
+}
+
+/* =====================================================
+   ALERTAS CRÍTICAS: contraste alto, no solo color.
+   Se activa únicamente con observaciones reales del período.
+===================================================== */
+.rm-card.rm-card-critica,
+.rm-card-riesgo.rm-riesgo-critico{
+  border-color:rgba(220,38,38,.8)!important;
+  background:linear-gradient(135deg,rgba(185,28,28,.13),var(--rm-card) 48%)!important;
+  box-shadow:inset 3px 0 0 #dc2626,0 4px 16px rgba(185,28,28,.12)!important;
+}
+.rm-card-critica .rm-card-titulo h2{color:var(--rm-texto)}
+.rm-card-critica .rm-icono{
+  background:rgba(220,38,38,.14)!important;color:#ef4444!important;
+}
+.rm-card-critica .rm-metricas strong{
+  color:#ef4444!important;
+}
+.rm-dashboard.tema-claro .rm-card-critica .rm-metricas strong{color:#b91c1c!important}
+.rm-card-top{flex-wrap:wrap}
+.rm-alerta-critica,
+.rm-card-critica .rm-badge-critico{
+  display:inline-flex;align-items:center;gap:5px;max-width:100%;
+  padding:4px 8px;border-radius:999px;
+  font-size:calc(8px * var(--factor-texto,1));font-weight:740;
+  line-height:1.3;color:#fecaca!important;background:rgba(185,28,28,.19);
+  border:1px solid rgba(220,38,38,.35);white-space:normal;
+}
+.rm-alerta-critica svg{flex-shrink:0}
+.rm-dashboard.tema-claro .rm-alerta-critica,
+.rm-dashboard.tema-claro .rm-card-critica .rm-badge-critico{
+  color:#991b1b!important;background:#fee2e2;
+}
+.rm-card-critica .rm-metrica-roja{
+  border-color:rgba(220,38,38,.5)!important;
+}
+/* El aumento de tamaño no debe recortar tarjetas ni gráficos. */
+html[data-texto-grande="si"] .rm-dashboard{
+  height:auto;min-height:calc(100dvh - 52px);overflow:visible;
+}
+html[data-texto-grande="si"] .rm-grid{
+  grid-template-rows:repeat(2,minmax(320px,auto));overflow:visible;
+}
+html[data-texto-grande="si"] .rm-card{
+  min-height:320px;overflow:visible;
+}
+html[data-texto-grande="si"] .rm-grafico{
+  min-height:calc(145px * var(--factor-texto,1));
+}
+@media(max-width:1180px){
+  html[data-texto-grande="si"] .rm-grid{grid-template-rows:none}
+  html[data-texto-grande="si"] .rm-card{min-height:320px}
 }

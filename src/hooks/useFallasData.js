@@ -1,54 +1,49 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { pedirApi } from "../services/api";
 
-export const useFallasData = (estacionId, temporada) => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+// Traduce el JSON de Django a las propiedades usadas por las tarjetas.
+export function useFallasData(estacionId, temporada) {
+  const [intento, setIntento] = useState(0);
+  const [estado, setEstado] = useState({ clave: "", data: null, error: null });
+  const clave = `${estacionId}-${temporada}-${intento}`;
 
   useEffect(() => {
     if (!estacionId || !temporada) return;
+    const control = new AbortController();
+    const filtro = `?estacion=${encodeURIComponent(estacionId)}&temporada=${encodeURIComponent(temporada)}`;
 
-    const fetchFallas = async () => {
-      setLoading(true);
-      setError(null);
+    pedirApi(`/v1/calidad/fallas${filtro}`, { signal: control.signal })
+      .then(json => {
+        if (control.signal.aborted) return;
+        setEstado({ clave, error: null, data: {
+          resumen: {
+            totalFallas: json.resumen?.total ?? 0,
+            porTipo: json.resumen?.por_tipo ?? {},
+            porVariable: json.resumen?.por_variable ?? {},
+          },
+          fallas: (json.fallas ?? []).map((f, i) => ({
+            id: String(f.medicion_id ?? `${f.fecha || "sin-fecha"}-${i}`),
+            fecha: f.fecha ?? "", timestamp: f.timestamp ?? null,
+            variable: f.variable ?? "", frecuencia: f.frecuencia ?? "D",
+            tipoFalla: f.tipo, valorOriginal: f.valor_original,
+            archivoOrigen: f.archivo ?? "", fila: f.fila ?? null,
+            cargaOrigen: f.carga ?? null, motivo: f.motivo ?? "",
+            estadoCorreccion: f.corregido ? "corregido" : "pendiente",
+          })),
+        } });
+      })
+      .catch(error => {
+        if (!control.signal.aborted) setEstado({ clave, data: null, error: error.message });
+      });
+    return () => control.abort();
+  }, [estacionId, temporada, clave]);
 
-      try {
-        // Intenta consultar el endpoint real de la API
-        const response = await fetch(
-          `/api/v1/calidad/fallas?estacion=${encodeURIComponent(estacionId)}&temporada=${encodeURIComponent(temporada)}`
-        );
-
-        if (response.ok) {
-          const result = await response.json();
-          setData(result);
-        } else {
-          // Fallback al JSON local de prueba mientras el backend no esté disponible
-          const fallbackRes = await fetch("/data/fallasData.json");
-          const fallbackData = await fallbackRes.json();
-          const mockEstacion = fallbackData[estacionId] || {};
-          const mockTemporada = mockEstacion[temporada] || null;
-
-          setData(mockTemporada);
-        }
-      } catch (err) {
-        // Fallback en caso de error de red
-        try {
-          const fallbackRes = await fetch("/data/fallasData.json");
-          const fallbackData = await fallbackRes.json();
-          const mockEstacion = fallbackData[estacionId] || {};
-          const mockTemporada = mockEstacion[temporada] || null;
-
-          setData(mockTemporada);
-        } catch (localErr) {
-          setError("Error al cargar los datos de auditoría de fallas.");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFallas();
-  }, [estacionId, temporada]);
-
-  return { data, loading, error };
-};
+  const disponible = Boolean(estacionId && temporada);
+  const actual = estado.clave === clave;
+  return {
+    data: disponible && actual ? estado.data : null,
+    error: disponible && actual ? estado.error : null,
+    loading: disponible && !actual,
+    recargar: () => setIntento(n => n + 1),
+  };
+}
