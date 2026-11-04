@@ -12,6 +12,7 @@ import HuglinCard from "./componentes/HuglinCard/HuglinCard";
 import LluviaInvernalCard from "./componentes/LluviaInvernalCard/LluviaInvernalCard";
 import LluviaFueraInvernalCard from "./componentes/LluviaFueraInvernalCard/LluviaFueraInvernalCard";
 import CalorExtremoCard from "./componentes/CalorExtremo/CalorExtremoCard";
+import PrediccionCosechaCard from "./componentes/PrediccionCosecha/PrediccionCosechaCard";
 import DatosConFallaCard from "./componentes/DatosConFallaCard/DatosConFallaCard";
 
 import MapaSatelital from "./componentes/MapaSatelital/MapaSatelital";
@@ -19,16 +20,36 @@ import Configuracion from "./componentes/Configuracion/Configuracion";
 
 import { useClimateData } from "./hooks/useClimateData";
 import { adaptarClimateData } from "./services/adaptarClimateData";
+import { adaptarPrediccionData } from "./services/adaptarPrediccionData";
 import { useConfiguracion } from "./contexto/ConfiguracionContext";
 
 function App() {
   /* ===================================================
-     DATOS
+     DATOS Parte 1
   =================================================== */
 
-  const { data, loading, error } = useClimateData();
+  const {
+    data,
+    loading,
+    error,
+  } = useClimateData("/data/climateData.json");
 
   const datos = useMemo(() => adaptarClimateData(data), [data]);
+
+  /* ===================================================
+     Datos Parte2
+  =================================================== */
+  const {
+    data: dataPrediccion,
+    loading: loadingPrediccion,
+    error: errorPrediccion,
+  } = useClimateData("/data/prediccion_ficticia.json");
+
+  const datosPrediccion = useMemo(
+    () => adaptarPrediccionData(dataPrediccion),
+    [dataPrediccion]
+  );
+
 
   /* ===================================================
      CONFIGURACIÓN GLOBAL
@@ -168,6 +189,11 @@ function App() {
               fichasTemporada={datos.fichasTemporada}
               temporadaEnCurso={datos.temporadaEnCurso}
             />
+            <PrediccionCosechaCard
+              datos={datosPrediccion}
+              cargando={loadingPrediccion}
+              error={errorPrediccion}
+            />
 
             <DatosConFallaCard
               estaciones={datos.estaciones}
@@ -203,6 +229,7 @@ function App() {
           <MapaSatelital
             estaciones={datos.estaciones}
             mapaCalor={datos.mapaCalor}
+            seriesTemperaturas={datos.seriesTemperaturas}
             temaOscuro={temaOscuro}
           />
         );

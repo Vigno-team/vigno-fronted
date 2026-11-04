@@ -1,4 +1,5 @@
-import{Activity,Clock3,Home,Menu,Settings,TriangleAlert}from"lucide-react";
+import{Activity,Clock3,Home,Menu,Settings,TriangleAlert,Map,LogOut}from"lucide-react";
+import{useAuth}from"../../contexto/AuthContext";
 import"./BarraLateral.css";
 
 const opciones=[
@@ -6,10 +7,13 @@ const opciones=[
   {nombre:"Alertas y reportes",icono:TriangleAlert},
   {nombre:"Índices vitivinícolas",icono:Activity},
   {nombre:"Históricos",icono:Clock3},
+  {nombre:"Mapa Satelital",icono:Map},
   {nombre:"Configuración",icono:Settings},
 ];
 
 function BarraLateral({expandida,setExpandida,opcionActiva,setOpcionActiva}){
+  const {logout}=useAuth();
+
   return(
     <aside className={`barra-lateral ${expandida?"expandida":"contraida"}`}>
 
@@ -61,6 +65,18 @@ function BarraLateral({expandida,setExpandida,opcionActiva,setOpcionActiva}){
           );
         })}
       </nav>
+
+      <button
+        type="button"
+        className="barra-opcion"
+        style={{marginTop:"auto"}}
+        onClick={logout}
+        aria-label="Cerrar sesión"
+        title={!expandida?"Cerrar sesión":undefined}
+      >
+        <LogOut size={21} strokeWidth={1.8}/>
+        {expandida&&<span>Cerrar sesión</span>}
+      </button>
 
     </aside>
   );
