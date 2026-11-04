@@ -37,7 +37,7 @@ export function Login() {
     } catch (err) {
       setError(err.message);
     } finally {
-      submitting && setSubmitting(false);
+      setSubmitting(false);
     }
   };
 
