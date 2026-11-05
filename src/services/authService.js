@@ -1,6 +1,7 @@
+import { API_BASE } from "./api";
+
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
-const MODO_MOCK = false;
+let promesaRefresh = null;
 
 export async function loginRequest(email, password) {
   const emailLimpio = String(email || "").trim().toLowerCase();
@@ -13,23 +14,16 @@ export async function loginRequest(email, password) {
     throw new Error("La contraseña debe tener al menos 8 caracteres.");
   }
 
-  if (MODO_MOCK) {
-    await new Promise((resolve) => setTimeout(resolve, 350));
-    if (emailLimpio === "test@test.cl" && passLimpia === "12345678") {
-      return {
-        access: "mock-access-token-xyz",
-        refresh: "mock-refresh-token-xyz",
-        usuario: { id: 1, nombre: "Admin Prueba", email: "test@test.cl", rol: "administrador" },
-      };
-    }
-    throw new Error("Correo o contraseña incorrectos.");
+  let response;
+  try {
+    response = await fetch(`${API_BASE}/v1/auth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ email: emailLimpio, password: passLimpia }),
+    });
+  } catch {
+    throw new Error(`No se pudo conectar con Django (${API_BASE}). Verifica que el backend esté encendido.`);
   }
-
-  const response = await fetch(`${API_BASE}/v1/auth/token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify({ email: emailLimpio, password: passLimpia }),
-  });
 
   if (response.status === 429) {
     throw new Error("Demasiados intentos. Espera un minuto antes de volver a intentar.");
@@ -42,33 +36,41 @@ export async function loginRequest(email, password) {
 }
 
 export async function refreshAccessToken() {
-  const refresh = sessionStorage.getItem("refresh");
-  if (!refresh) throw new Error("Sin refresh token");
+  if (promesaRefresh) return promesaRefresh;
 
-  const response = await fetch(`${API_BASE}/v1/auth/refresh`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify({ refresh }),
+  promesaRefresh = (async () => {
+    const refresh = sessionStorage.getItem("refresh");
+    if (!refresh) throw new Error("Sin refresh token");
+
+    const response = await fetch(`${API_BASE}/v1/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ refresh }),
+    });
+
+    if (!response.ok) {
+      sessionStorage.removeItem("access");
+      sessionStorage.removeItem("refresh");
+      sessionStorage.removeItem("usuario");
+      throw new Error("Sesión expirada");
+    }
+
+    const data = await response.json();
+    if (data.access) sessionStorage.setItem("access", data.access);
+    if (data.refresh) sessionStorage.setItem("refresh", data.refresh);
+    return data.access;
+  })().finally(() => {
+    promesaRefresh = null;
   });
 
-  if (!response.ok) {
-    sessionStorage.removeItem("access");
-    sessionStorage.removeItem("refresh");
-    sessionStorage.removeItem("usuario");
-    throw new Error("Sesión expirada");
-  }
-
-  const data = await response.json();
-  if (data.access) sessionStorage.setItem("access", data.access);
-  if (data.refresh) sessionStorage.setItem("refresh", data.refresh);
-  return data.access;
+  return promesaRefresh;
 }
 
 export async function logoutRequest() {
   const access = sessionStorage.getItem("access");
   const refresh = sessionStorage.getItem("refresh");
 
-  if (!MODO_MOCK && access && refresh) {
+  if (access && refresh) {
     try {
       await fetch(`${API_BASE}/v1/auth/logout`, {
         method: "POST",

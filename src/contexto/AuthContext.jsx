@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { loginRequest, logoutRequest } from "../services/authService";
+import { borrarClaveSesion } from "../services/cargasApi";
 
 const AuthContext = createContext(null);
 
@@ -12,7 +13,7 @@ export function AuthProvider({ children }) {
     try {
       const savedAccess = sessionStorage.getItem("access");
       const savedUser = sessionStorage.getItem("usuario");
-      if (savedAccess && savedUser) {
+      if (savedAccess && savedUser && savedUser !== "undefined") {
         setAccess(savedAccess);
         setUsuario(JSON.parse(savedUser));
       }
@@ -27,20 +28,25 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const data = await loginRequest(email, password);
+    const userObj = data.usuario || data.user || { email };
     sessionStorage.setItem("access", data.access);
-    sessionStorage.setItem("refresh", data.refresh);
-    sessionStorage.setItem("usuario", JSON.stringify(data.usuario));
+    sessionStorage.setItem("refresh", data.refresh || "");
+    sessionStorage.setItem("usuario", JSON.stringify(userObj));
     setAccess(data.access);
-    setUsuario(data.usuario);
+    setUsuario(userObj);
   };
 
   const logout = async () => {
-    await logoutRequest();
-    sessionStorage.removeItem("access");
-    sessionStorage.removeItem("refresh");
-    sessionStorage.removeItem("usuario");
-    setAccess(null);
-    setUsuario(null);
+    try {
+      await logoutRequest();
+    } finally {
+      sessionStorage.removeItem("access");
+      sessionStorage.removeItem("refresh");
+      sessionStorage.removeItem("usuario");
+      borrarClaveSesion();
+      setAccess(null);
+      setUsuario(null);
+    }
   };
 
   return (

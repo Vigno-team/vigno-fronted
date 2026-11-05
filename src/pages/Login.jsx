@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { MODO_DEMO } from '../services/authService';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexto/AuthContext';
 import './Login.css';
 
 export function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -24,6 +22,7 @@ export function Login() {
   }, [error]);
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
     setError(null);
 
@@ -33,9 +32,10 @@ export function Login() {
     }
 
     setSubmitting(true);
+
     try {
       await login(email, password);
-      navigate(location.state?.from?.pathname || '/dashboard', { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -45,33 +45,33 @@ export function Login() {
 
   return (
     <div className="login-container">
+
       <form onSubmit={handleSubmit} className="login-form">
-        <h1>Iniciar sesión</h1>
-        
-
+        <h1>Iniciar Sesión</h1>
         <div className="input-group">
-          <input 
-            type="text" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            placeholder="Correo electrónico" 
+          <input
+            type="text"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Correo electrónico"
           />
         </div>
 
         <div className="input-group">
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            placeholder="Contraseña" 
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Contraseña"
           />
         </div>
+
+        {/* El aviso de error queda ubicado entre la contraseña y el botón */}
         {error && (
           <div className="auth-error-alert animate-fade">
             <p>{error}</p>
           </div>
         )}
-        
         <button type="submit" disabled={submitting} className="login-btn">
           {submitting ? 'Ingresando...' : 'ENTRAR'}
         </button>

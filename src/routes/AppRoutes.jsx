@@ -6,7 +6,7 @@ import App from '../App';
 function ProtectedRoute() {
   const { isAuthenticated, loadingAuth } = useAuth();
   if (loadingAuth) return null;
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" state={{ from: location }} replace />;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
 function PublicRoute() {
