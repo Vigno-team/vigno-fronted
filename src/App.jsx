@@ -8,13 +8,21 @@ import IndicesVitivinicolasPanel from "./componentes/IndicesVitivinicolas/Indice
 import DatosConFallaCard from "./componentes/DatosConFallaCard/DatosConFallaCard";
 import MapaSatelital from "./componentes/MapaSatelital/MapaSatelital";
 import Configuracion from "./componentes/Configuracion/Configuracion";
+import PrediccionCosechaCard from "./componentes/PrediccionCosecha/PrediccionCosechaCard";
+import { adaptarPrediccionData } from "./services/adaptarPrediccionData";
 import { useClimateData } from "./hooks/useClimateData";
 import { adaptarClimateData } from "./services/adaptarClimateData";
 import { useConfiguracion } from "./contexto/ConfiguracionContext";
 
+
+
 export default function App() {
   const { data, loading, error, recargar } = useClimateData("/v1/datos");
   const datos = useMemo(() => adaptarClimateData(data), [data]);
+
+  const { data: rawPrediccion, loading: loadingPrediccion, error: errorPrediccion } = useClimateData("/v1/prediccion-ficticia");
+  const datosPrediccion = useMemo(() => adaptarPrediccionData(rawPrediccion), [rawPrediccion]);
+
   const { temaOscuro } = useConfiguracion();
   const [opcionActiva, setOpcionActiva] = useState("Resumen");
   const [barraExpandida, setBarraExpandida] = useState(() =>
@@ -42,10 +50,11 @@ export default function App() {
         <IndicesVitivinicolasPanel {...comunes} />
         <div className="indices-grid">
           <DatosConFallaCard {...comunes} onDatosActualizados={recargar} />
-          <section className="winkler-card" style={{ padding: 20 }}>
-            <h4>Predicción de cosecha</h4>
-            <p>No disponible: Django aún no entrega una predicción local validada.</p>
-          </section>
+          <PrediccionCosechaCard
+            datos={datosPrediccion}
+            cargando={loadingPrediccion}
+            error={errorPrediccion}
+          />
         </div>
       </>
     ),

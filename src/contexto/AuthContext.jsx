@@ -1,42 +1,56 @@
-/* eslint-disable react-refresh/only-export-components -- Provider y hook juntos para facilitar el estudio. */
-import { createContext, useContext, useState } from "react";
-import { loginRequest, logoutRequest, MODO_DEMO } from "../services/authService";
+import { createContext, useContext, useState, useEffect } from "react";
+import { loginRequest, logoutRequest } from "../services/authService";
+import { borrarClaveSesion } from "../services/cargasApi";
 
 const AuthContext = createContext(null);
-const limpiar = () => ["access", "refresh", "usuario"].forEach(k => sessionStorage.removeItem(k));
 
 export function AuthProvider({ children }) {
-  const [sesion, setSesion] = useState(() => {
-    try {
-      const access = sessionStorage.getItem("access");
-      const usuario = JSON.parse(sessionStorage.getItem("usuario") || "null");
-      // No reutilizar credenciales demo fuera del modo demo ni al revés.
-      if (access && usuario && access.startsWith("demo-") === MODO_DEMO) return { access, usuario };
-    } catch { /* Sesión incompleta */ }
-    limpiar();
-    return null;
-  });
+  const [usuario, setUsuario] = useState(null);
+  const [access, setAccess] = useState(null);
+  const [loadingAuth, setLoadingAuth] = useState(true);
 
-  async function login(email, password) {
+  useEffect(() => {
+    try {
+      const savedAccess = sessionStorage.getItem("access");
+      const savedUser = sessionStorage.getItem("usuario");
+      if (savedAccess && savedUser && savedUser !== "undefined") {
+        setAccess(savedAccess);
+        setUsuario(JSON.parse(savedUser));
+      }
+    } catch {
+      sessionStorage.removeItem("access");
+      sessionStorage.removeItem("refresh");
+      sessionStorage.removeItem("usuario");
+    } finally {
+      setLoadingAuth(false);
+    }
+  }, []);
+
+  const login = async (email, password) => {
     const data = await loginRequest(email, password);
+    const userObj = data.usuario || data.user || { email };
     sessionStorage.setItem("access", data.access);
     sessionStorage.setItem("refresh", data.refresh || "");
-    sessionStorage.setItem("usuario", JSON.stringify(data.usuario));
-    setSesion({ access: data.access, usuario: data.usuario });
-  }
+    sessionStorage.setItem("usuario", JSON.stringify(userObj));
+    setAccess(data.access);
+    setUsuario(userObj);
+  };
 
-  async function logout() {
-    try { await logoutRequest(); } finally { limpiar(); setSesion(null); }
-  }
+  const logout = async () => {
+    try {
+      await logoutRequest();
+    } finally {
+      sessionStorage.removeItem("access");
+      sessionStorage.removeItem("refresh");
+      sessionStorage.removeItem("usuario");
+      borrarClaveSesion();
+      setAccess(null);
+      setUsuario(null);
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{
-      usuario: sesion?.usuario || null,
-      access: sesion?.access || null,
-      isAuthenticated: Boolean(sesion?.access),
-      loadingAuth: false,
-      login, logout,
-    }}>
+    <AuthContext.Provider value={{ usuario, access, isAuthenticated: !!access, loadingAuth, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

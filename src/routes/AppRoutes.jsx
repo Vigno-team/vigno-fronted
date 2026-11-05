@@ -1,29 +1,33 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "../contexto/AuthContext";
-import { Login } from "../pages/Login";
-import App from "../App";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '../contexto/AuthContext';
+import { Login } from '../pages/Login';
+import App from '../App';
 
-function Protegida() {
-  const { isAuthenticated } = useAuth();
-  const location = useLocation();
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" state={{ from: location }} replace />;
+function ProtectedRoute() {
+  const { isAuthenticated, loadingAuth } = useAuth();
+  if (loadingAuth) return null;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
-function Publica() {
-  return useAuth().isAuthenticated ? <Navigate to="/dashboard" replace /> : <Outlet />;
+function PublicRoute() {
+  const { isAuthenticated, loadingAuth } = useAuth();
+  if (loadingAuth) return null;
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <Outlet />;
 }
 
 export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<Publica />}>
+        <Route element={<PublicRoute />}>
           <Route path="/login" element={<Login />} />
         </Route>
-        <Route element={<Protegida />}>
-          <Route path="/dashboard/*" element={<App />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<App />} />
         </Route>
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
