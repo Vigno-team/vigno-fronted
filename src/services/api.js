@@ -61,7 +61,10 @@ export async function pedirApi(ruta, opciones = {}) {
     if (respuesta.status === 503 && ruta.startsWith("/v1/correcciones")) {
       throw new Error("Django guardó la corrección, pero el recálculo quedó pendiente. No repitas el envío; consulta el historial.");
     }
-    if (respuesta.status === 401 || respuesta.status === 403) {
+    if (respuesta.status === 403) {
+      throw new Error("No tienes permisos para esta acción");
+    }
+    if (respuesta.status === 401) {
       limpiarSesion();
       window.location.href = "/login";
       throw new Error("Acceso denegado por Django. Revisa tus permisos.");
