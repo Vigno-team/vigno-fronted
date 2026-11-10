@@ -1,6 +1,5 @@
 // Todas las peticiones al backend pasan por este archivo.
 import { refreshAccessToken } from "./authService";
-import { borrarClaveSesion } from "./cargasApi";
 
 export const API_BASE = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api").replace(/\/+$/, "");
 export const apiUrl = (ruta) => {
@@ -13,7 +12,6 @@ const limpiarSesion = () => {
   sessionStorage.removeItem("access");
   sessionStorage.removeItem("refresh");
   sessionStorage.removeItem("usuario");
-  borrarClaveSesion();
 };
 
 export async function pedirApi(ruta, opciones = {}) {

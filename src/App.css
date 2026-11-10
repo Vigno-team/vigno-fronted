@@ -207,3 +207,6 @@
   .contenido-vista{padding:8px}
   .footer-vigno{font-size:8px;text-align:center}
 }
+/* Vista independiente de carga Excel */
+.cargar-datos-vista{max-width:1100px;margin:0 auto;color:var(--app-texto);--cfg-texto:var(--app-texto);--cfg-secundario:var(--app-secundario);--cfg-borde:var(--app-borde);--cfg-superficie:var(--app-superficie);--cfg-control:var(--app-fondo)}
+.cargar-datos-vista>h1{font-size:1.5em;margin:.6em 1em 1em}

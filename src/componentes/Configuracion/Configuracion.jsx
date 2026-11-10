@@ -2,10 +2,9 @@ import SelectorVigno from "../SelectorVigno/SelectorVigno";
 import { useState } from "react";
 import {
   Accessibility, ChartLine, Contrast, Moon, RotateCcw,
-  Settings2, Sun, FileSpreadsheet, AlertTriangle, ShieldCheck,
+  Settings2, Sun, AlertTriangle,
 } from "lucide-react";
 import { useConfiguracion, DEFINICIONES_UMBRALES } from "../../contexto/ConfiguracionContext";
-import CargaExcel from "../CargaExcel/CargaExcel";
 import "./Configuracion.css";
 
 const OPCIONES = {
@@ -84,7 +83,7 @@ function Seccion({ id, Icono, titulo, descripcion, abierta, onToggle, children }
   );
 }
 
-function Configuracion({ estaciones = [], onCargaConfirmada }) {
+function Configuracion({ estaciones = [] }) {
   const {
     tamanoTexto, tema, densidad, tamanoGrafico, contraste, tipoGrafico,
     umbrales, umbralesPorEstacion, actualizarUmbral, restablecerUmbralesEstacion,
@@ -194,16 +193,7 @@ function Configuracion({ estaciones = [], onCargaConfirmada }) {
           )}
         </Seccion>
 
-        <Seccion id="cargas" Icono={FileSpreadsheet}
-          titulo="Gestión de datos meteorológicos"
-          descripcion="Cargar planillas Excel, validar datos y consultar el historial"
-          abierta={Boolean(abiertas.cargas)} onToggle={() => alternar("cargas")}
-        >
-          <div className="cfg-nota cfg-nota-segura"><ShieldCheck size={17} aria-hidden="true" />
-            La clave administrador solo se conserva en esta sesión del navegador.
-          </div>
-          <CargaExcel estaciones={estaciones} onCargaConfirmada={onCargaConfirmada} />
-        </Seccion>
+
 
         
       </div>
