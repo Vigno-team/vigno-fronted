@@ -1,56 +1,160 @@
-.ce-panel{display:grid;gap:1em;padding:0 1.3em 1.3em;font-size:inherit;color:var(--cfg-texto);min-width:0}
-.ce-bloque{min-width:0;border:1px solid var(--cfg-borde);border-radius:.8em;padding:1.2em;background:var(--cfg-superficie)}
-.ce-titulo{display:flex;align-items:center;gap:.6em;margin-bottom:1.1em;color:var(--vigno-accent)}
-.ce-titulo h3{font-size:1em;line-height:1.35;margin:0;color:var(--cfg-texto)}
-.ce-acceso{display:flex;align-items:flex-end;gap:.8em;flex-wrap:wrap}
-.ce-campo{min-width:0;display:grid;gap:.5em;font-size:.9em;color:var(--cfg-texto)}
-.ce-clave{flex:1 1 270px}
-.ce-campo>span{font-size:.92em;font-weight:650}
-.ce-campo input,.ce-campo :is(select,.vigno-select){
-  width:100%;min-height:2.9em;padding:.65em .85em;font:inherit;font-size:1em!important;
-  border:1px solid var(--cfg-borde);border-radius:.6em;
-  background:var(--cfg-control);color:var(--cfg-texto);
+/* ===== Variables fáciles (apuntan a las variables globales del proyecto) ===== */
+.ce-panel {
+  --texto: var(--cfg-texto);
+  --texto-suave: var(--cfg-secundario);
+  --borde: var(--cfg-borde);
+  --fondo: var(--cfg-superficie);
+  --fondo-input: var(--cfg-control);
+  --color: var(--vigno-accent);
+  --color-hover: var(--vigno-accent-hover);
+  --color-suave: var(--vigno-terracota-suave);
+  --color-borde: var(--vigno-terracota-borde);
+  --verde: var(--vigno-status-confiable);
+  --resaltado: rgba(200, 109, 59, .055); /* fila al pasar el mouse */
+
+  display: grid;
+  gap: 1em;
+  padding: 0 1.3em 1.3em;
+  font-size: inherit;
+  color: var(--texto);
+  min-width: 0;
 }
-.ce-campo input:focus-visible,.ce-campo :is(select,.vigno-select):focus-visible,.ce-dropzone:focus-visible{
-  outline:2px solid var(--vigno-accent);outline-offset:2px;
+
+/* ===== Bloques y títulos ===== */
+.ce-bloque { min-width: 0; border: 1px solid var(--borde); border-radius: .8em; padding: 1.2em; background: var(--fondo); }
+.ce-titulo { display: flex; align-items: center; gap: .6em; margin-bottom: 1.1em; color: var(--color); }
+.ce-titulo h3 { font-size: 1em; line-height: 1.35; margin: 0; color: var(--texto); }
+.ce-acceso { display: flex; align-items: flex-end; gap: .8em; flex-wrap: wrap; }
+.ce-ayuda, .ce-mensaje { color: var(--texto-suave); font-size: .84em; line-height: 1.5; }
+
+/* ===== Campos ===== */
+.ce-campo { min-width: 0; display: grid; gap: .5em; font-size: .9em; color: var(--texto); }
+.ce-campo > span { font-size: .92em; font-weight: 650; }
+.ce-clave { flex: 1 1 270px; }
+.ce-campo input,
+.ce-campo :is(select, .vigno-select) {
+  width: 100%; min-height: 2.9em; padding: .65em .85em;
+  font: inherit; font-size: 1em !important;
+  border: 1px solid var(--borde); border-radius: .6em;
+  background: var(--fondo-input); color: var(--texto);
 }
-.ce-boton{display:inline-flex;align-items:center;justify-content:center;gap:.5em;min-height:2.9em;
-  padding:.7em 1em;border-radius:.6em;font:inherit;font-size:.85em!important;
-  font-weight:680;cursor:pointer;border:1px solid transparent;white-space:normal;text-align:center}
-.ce-primario{background:var(--vigno-accent);color:#fff;border-color:var(--vigno-accent)}
-.ce-primario:hover{background:var(--vigno-accent-hover)}
-.ce-secundario{background:var(--cfg-control);color:var(--cfg-texto);border-color:var(--cfg-borde)}
-.ce-secundario:hover{border-color:var(--vigno-accent)}
-.ce-boton:disabled{opacity:.48;cursor:not-allowed}
-.ce-ayuda,.ce-mensaje{color:var(--cfg-secundario);font-size:.84em;line-height:1.5}
-.ce-formulario{margin:1em 0;padding:1em;border:1px dashed var(--vigno-terracota-borde);border-radius:.7em}
-.ce-formulario h4{display:flex;align-items:center;gap:.5em;font-size:.95em;margin:0 0 .85em}
-.ce-campos-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1em;margin-bottom:1em}
-.ce-dropzone{margin:1.1em 0;padding:2em 1.2em;border:2px dashed var(--vigno-terracota-borde);
-  background:var(--vigno-terracota-suave);border-radius:.9em;text-align:center;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5em;min-height:9em}
-.ce-dropzone svg{color:var(--vigno-accent)}
-.ce-dropzone strong{font-size:.94em;max-width:100%;overflow-wrap:anywhere}
-.ce-dropzone span{font-size:.8em;color:var(--cfg-secundario);line-height:1.5}
-.ce-arrastrando{border-color:var(--vigno-accent);background:rgba(200,109,59,.23)}
-.ce-archivo-oculto{display:none}
-.ce-error,.ce-validacion,.ce-exito{margin-top:1em;padding:1em;border-radius:.7em;line-height:1.5;overflow-wrap:anywhere;font-size:.9em}
-.ce-error{color:#fecaca;border:1px solid rgba(220,38,38,.65);background:rgba(185,28,28,.15)}
-.tema-pagina-claro .ce-error{color:#991b1b;background:#fef2f2}
-.ce-error strong,.ce-validacion strong{display:flex;align-items:center;gap:.5em}
-.ce-error ul,.ce-validacion ul{padding-left:1.5em;max-height:260px;overflow:auto}
-.ce-validacion{border:1px solid rgba(62,142,88,.45);background:rgba(62,142,88,.08)}
-.ce-validacion strong,.ce-exito{color:var(--vigno-status-confiable)}
-.ce-validacion table{width:100%;border-collapse:collapse;margin:.8em 0;table-layout:fixed}
-.ce-validacion th,.ce-validacion td{padding:.65em;text-align:left;border-bottom:1px solid var(--cfg-borde);overflow-wrap:anywhere}
-.ce-validacion th{font-size:.85em;color:var(--cfg-secundario)}
-.ce-validacion details{margin:.8em 0}
-.ce-validacion summary{cursor:pointer}
-.ce-exito{display:flex;align-items:center;gap:.5em;flex-wrap:wrap;border:1px solid rgba(62,142,88,.45)}
-.ce-historial-titulo{flex-wrap:wrap}
-.ce-historial-titulo h3{flex:1}
-.ce-tabla-contenedor{width:100%;overflow-x:auto}
-.ce-historial{width:100%;border-collapse:collapse;font-size:.85em;min-width:630px}
-.ce-historial th,.ce-historial td{padding:.8em;text-align:left;border-bottom:1px solid var(--cfg-borde);overflow-wrap:anywhere}
-.ce-historial th{color:var(--cfg-secundario);font-weight:660}
-@media(max-width:700px){.ce-panel{padding:0 .9em .9em}.ce-bloque{padding:.9em}.ce-campos-grid{grid-template-columns:1fr}.ce-acceso .ce-boton{width:100%}}
+.ce-campo input:focus-visible,
+.ce-campo :is(select, .vigno-select):focus-visible,
+.ce-dropzone:focus-visible,
+.ce-historial-scroll:focus-visible { outline: 2px solid var(--color); outline-offset: 2px; }
+
+/* ===== Botones ===== */
+.ce-boton {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5em;
+  min-height: 2.9em; padding: .7em 1em; border-radius: .6em;
+  font: inherit; font-size: .85em !important; font-weight: 680;
+  cursor: pointer; border: 1px solid transparent; white-space: normal; text-align: center;
+}
+.ce-boton:disabled { opacity: .48; cursor: not-allowed; }
+.ce-primario { background: var(--color); color: #fff; border-color: var(--color); }
+.ce-primario:hover { background: var(--color-hover); }
+.ce-secundario { background: var(--fondo-input); color: var(--texto); border-color: var(--borde); }
+.ce-secundario:hover { border-color: var(--color); }
+.ce-boton-peligro { background: #b91c1c; color: #fff; border-color: #b91c1c; }
+.ce-boton-peligro:hover:not(:disabled) { background: #991b1b; border-color: #991b1b; }
+
+/* ===== Formulario de localidad nueva ===== */
+.ce-formulario { margin: 1em 0; padding: 1em; border: 1px dashed var(--color-borde); border-radius: .7em; }
+.ce-formulario h4 { display: flex; align-items: center; gap: .5em; font-size: .95em; margin: 0 0 .85em; }
+.ce-campos-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1em; margin-bottom: 1em; }
+
+/* ===== Zona para arrastrar el Excel ===== */
+.ce-dropzone {
+  margin: 1.1em 0; padding: 2em 1.2em; min-height: 9em;
+  border: 2px dashed var(--color-borde); background: var(--color-suave); border-radius: .9em;
+  text-align: center; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: .5em;
+}
+.ce-dropzone svg { color: var(--color); }
+.ce-dropzone strong { font-size: .94em; max-width: 100%; overflow-wrap: anywhere; }
+.ce-dropzone span { font-size: .8em; color: var(--texto-suave); line-height: 1.5; }
+.ce-arrastrando { border-color: var(--color); background: rgba(200, 109, 59, .23); }
+.ce-archivo-oculto { display: none; }
+
+/* ===== Mensajes: error, validación y éxito ===== */
+.ce-error, .ce-validacion, .ce-exito {
+  margin-top: 1em; padding: 1em; border-radius: .7em;
+  line-height: 1.5; overflow-wrap: anywhere; font-size: .9em;
+}
+.ce-error { color: #fecaca; border: 1px solid rgba(220, 38, 38, .65); background: rgba(185, 28, 28, .15); }
+.tema-pagina-claro .ce-error { color: #991b1b; background: #fef2f2; }
+.ce-error strong, .ce-validacion strong { display: flex; align-items: center; gap: .5em; }
+.ce-error ul, .ce-validacion ul { padding-left: 1.5em; max-height: 260px; overflow: auto; }
+
+.ce-validacion { border: 1px solid rgba(62, 142, 88, .45); background: rgba(62, 142, 88, .08); }
+.ce-validacion strong, .ce-exito { color: var(--verde); }
+.ce-validacion table { width: 100%; border-collapse: collapse; margin: .8em 0; table-layout: fixed; }
+.ce-validacion th, .ce-validacion td { padding: .65em; text-align: left; border-bottom: 1px solid var(--borde); overflow-wrap: anywhere; }
+.ce-validacion th { font-size: .85em; color: var(--texto-suave); }
+.ce-validacion details { margin: .8em 0; }
+.ce-validacion summary { cursor: pointer; }
+.ce-exito { display: flex; align-items: center; gap: .5em; flex-wrap: wrap; border: 1px solid rgba(62, 142, 88, .45); }
+
+/* ===== Rechazos del Excel (fila, valor y motivo) ===== */
+.ce-observaciones { margin: 1em 0; border: 1px solid var(--borde); border-radius: .8em; background: var(--fondo-input); overflow: hidden; color: var(--texto); }
+.ce-observaciones summary {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .7em;
+  padding: .9em 1em; cursor: pointer; font-weight: 650; list-style-position: inside;
+}
+.ce-observaciones summary:hover { background: rgba(200, 109, 59, .07); }
+.ce-observaciones-total { font-size: .85em; font-weight: 600; padding: .25em .7em; border-radius: 99px; background: var(--color-suave); color: var(--color); }
+.ce-observaciones-scroll { max-height: 340px; overflow: auto; overscroll-behavior: contain; border-top: 1px solid var(--borde); }
+.ce-observaciones-tabla { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: .93em; }
+.ce-observaciones-tabla th { position: sticky; top: 0; z-index: 1; background: var(--fondo); color: var(--texto-suave); font-size: .86em; font-weight: 700; }
+.ce-observaciones-tabla th, .ce-observaciones-tabla td { padding: .8em 1em; vertical-align: middle; border-bottom: 1px solid var(--borde); overflow-wrap: anywhere; }
+.ce-observaciones-tabla tr:last-child td { border-bottom: 0; }
+.ce-observaciones-tabla tbody tr:hover { background: var(--resaltado); }
+.ce-observaciones-fila { display: inline-block; font-weight: 700; border-radius: .5em; background: var(--color-suave); color: var(--color); padding: .25em .65em; white-space: nowrap; }
+.ce-observaciones-valor { font-variant-numeric: tabular-nums; color: var(--texto-suave); }
+.ce-observaciones-avisos { margin: 0; padding: 1em 1.5em 1em 2.4em; border-top: 1px solid var(--borde); max-height: 180px; overflow: auto; line-height: 1.55; }
+.ce-observaciones-avisos li + li { margin-top: .4em; }
+.ce-error .ce-observaciones { background: var(--fondo); }
+.ce-validacion .ce-observaciones-tabla { margin: 0; table-layout: auto; border-collapse: separate; }
+
+/* ===== Administrar estaciones ===== */
+.ce-eliminar-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1em; margin: 1em 0; }
+.ce-eliminar-error { margin-top: .8em; color: #fca5a5; overflow-wrap: anywhere; }
+.tema-pagina-claro .ce-eliminar-error { color: #991b1b; }
+
+/* ===== Historial de cargas ===== */
+.ce-historial-titulo { flex-wrap: wrap; }
+.ce-historial-titulo h3 { flex: 1; }
+.ce-historial-filtros { display: flex; align-items: flex-end; gap: .8em; flex-wrap: wrap; margin: .6em 0 1em; }
+.ce-historial-filtros .ce-campo { flex: 1 1 240px; max-width: 430px; }
+.ce-historial-filtros .ce-boton { flex: 0 0 auto; }
+.ce-tabla-contenedor { width: 100%; overflow-x: auto; }
+.ce-historial { width: 100%; border-collapse: collapse; font-size: .85em; min-width: 740px; }
+.ce-historial th, .ce-historial td { padding: .8em; text-align: left; border-bottom: 1px solid var(--borde); overflow-wrap: anywhere; }
+.ce-historial th { color: var(--texto-suave); font-weight: 660; }
+.ce-historial tbody tr:hover { background: var(--resaltado); }
+.ce-historial-scroll {
+  max-height: 360px; overflow: auto; overscroll-behavior: contain;
+  border: 1px solid var(--borde); border-radius: .7em;
+  scrollbar-width: thin; scrollbar-color: var(--color) transparent;
+}
+.ce-historial-scroll .ce-historial th { position: sticky; top: 0; z-index: 1; background: var(--fondo); white-space: nowrap; }
+.ce-fecha-chile { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* ===== Celular ===== */
+@media (max-width: 700px) {
+  .ce-panel { padding: 0 .9em .9em; }
+  .ce-bloque { padding: .9em; }
+  .ce-campos-grid, .ce-eliminar-grid { grid-template-columns: 1fr; }
+  .ce-acceso .ce-boton, .ce-boton-peligro { width: 100%; }
+}
+@media (max-width: 650px) {
+  .ce-historial-filtros .ce-campo { max-width: none; flex-basis: 100%; }
+  .ce-historial-filtros .ce-boton { width: 100%; }
+  /* La tabla de rechazos se muestra como tarjetas */
+  .ce-observaciones-tabla thead { display: none; }
+  .ce-observaciones-tabla, .ce-observaciones-tabla tbody, .ce-observaciones-tabla tr, .ce-observaciones-tabla td { display: block; width: 100%; }
+  .ce-observaciones-tabla tr { padding: .7em 1em; border-bottom: 1px solid var(--borde); }
+  .ce-observaciones-tabla tr:last-child { border-bottom: 0; }
+  .ce-observaciones-tabla td { padding: .2em 0; border: 0; }
+  .ce-observaciones-tabla td:not(:first-child)::before { content: attr(data-label) ": "; font-weight: 650; color: var(--texto-suave); }
+}

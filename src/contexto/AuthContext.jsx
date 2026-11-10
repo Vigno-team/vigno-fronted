@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { loginRequest, logoutRequest } from "../services/authService";
-import { borrarClaveSesion } from "../services/cargasApi";
 
 const AuthContext = createContext(null);
 
