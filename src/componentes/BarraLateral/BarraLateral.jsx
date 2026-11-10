@@ -1,4 +1,4 @@
-import{Activity,Clock3,Home,Menu,Settings,TriangleAlert,Map,LogOut}from"lucide-react";
+import{Activity,Clock3,Home,Menu,Settings,TriangleAlert,FileUp,LogOut}from"lucide-react";
 import{useAuth}from"../../contexto/AuthContext";
 import"./BarraLateral.css";
 
@@ -7,7 +7,7 @@ const opciones=[
   {nombre:"Alertas y reportes",icono:TriangleAlert},
   {nombre:"Índices vitivinícolas",icono:Activity},
   {nombre:"Históricos",icono:Clock3},
-  {nombre:"Mapa Satelital",icono:Map},
+  {nombre:"Gestion de datos y Estaciones",icono:FileUp},
   {nombre:"Configuración",icono:Settings},
 ];
 

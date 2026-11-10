@@ -1,92 +1,70 @@
-/**
- * Operaciones administrativas de Vigno.
- * No se guarda el valor de la clave en el código ni en ningún archivo .env.
- * Nombre del header (público) definido por el contrato: X-Api-Key.
- * NOTA: confirmar con Swagger que los campos multipart son "archivo" y "estacion".
- */
+// Excel y estaciones: endpoints existentes de Django, con la sesión JWT de Vigno.
 import { apiUrl } from "./api";
-const CLAVE_SESION = "vigno-clave-administracion";
-
-export const leerClaveSesion = () => sessionStorage.getItem(CLAVE_SESION) || "";
-export const guardarClaveSesion = (valor) => {
-  if (valor.trim()) sessionStorage.setItem(CLAVE_SESION, valor);
-  else sessionStorage.removeItem(CLAVE_SESION);
-};
-export const borrarClaveSesion = () => sessionStorage.removeItem(CLAVE_SESION);
+import { refreshAccessToken } from "./authService";
 
 export class ErrorCarga extends Error {
-  constructor(status, detalle, respuesta) {
-    super(detalle);
+  constructor(status, mensaje, datos) {
+    super(mensaje);
     this.name = "ErrorCarga";
     this.status = status;
-    this.respuesta = respuesta;
+    this.respuesta = datos;
   }
 }
 
-async function pedir(ruta, { metodo = "GET", clave, cuerpo, signal } = {}) {
-  if (!clave?.trim()) throw new ErrorCarga(401, "Ingresa la clave de administración para continuar.");
-  const url = apiUrl(`/v1${ruta}`);
+async function pedir(ruta, { method = "GET", body, signal } = {}) {
+  const token = sessionStorage.getItem("access");
+  if (!token) throw new ErrorCarga(401, "Inicia sesión para administrar datos.");
+
+  const enviar = (access) => fetch(apiUrl(`/v1${ruta}`), {
+    method, signal, body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
+    headers: {
+      Authorization: `Bearer ${access}`,
+      Accept: "application/json",
+      ...(body && !(body instanceof FormData) ? { "Content-Type": "application/json" } : {}),
+    },
+  });
+
   let respuesta;
   try {
-    respuesta = await fetch(url, {
-      method: metodo,
-      headers: { "X-Api-Key": clave.trim(), Accept: "application/json" },
-      body: cuerpo,
-      signal,
-    });
+    respuesta = await enviar(token);
+    if (respuesta.status === 401 && sessionStorage.getItem("refresh")) {
+      const nuevo = await refreshAccessToken();
+      respuesta = await enviar(nuevo);
+    }
   } catch (error) {
-    if (error?.name === "AbortError") throw error;
-    throw new ErrorCarga(0, `No se pudo conectar con el backend: ${error.message}`);
+    if (error.name === "AbortError" || error instanceof ErrorCarga) throw error;
+    throw new ErrorCarga(0, "No se pudo conectar con Django. Revisa que Docker esté encendido y la URL del backend.");
   }
-  const texto = await respuesta.text();
-  let datos;
-  try { datos = texto ? JSON.parse(texto) : null; }
-  catch { datos = texto; }
+
+  const datos = await respuesta.json().catch(() => null);
   if (!respuesta.ok) {
-    const detalle = typeof datos?.detail === "string" ? datos.detail
-      : typeof datos?.detalle === "string" ? datos.detalle
-      : typeof datos?.mensaje === "string" ? datos.mensaje
-      : `HTTP ${respuesta.status}: la operación no pudo completarse.`;
-    throw new ErrorCarga(respuesta.status, detalle, datos);
+    const mensaje = respuesta.status === 401 ? "Sesión vencida. Vuelve a iniciar sesión."
+      : respuesta.status === 403 ? (method === "DELETE" ? "Solo un administrador puede desactivar estaciones." : "Tu cuenta no tiene permiso para esta operación.")
+      : respuesta.status === 422 ? "El archivo contiene errores. Revisa los motivos."
+      : respuesta.status === 404 ? "La ruta no existe en el backend."
+      : datos?.detail || `Django respondió HTTP ${respuesta.status}.`;
+    throw new ErrorCarga(respuesta.status, mensaje, datos);
   }
   return datos;
 }
 
-function formularioExcel(archivo, codigo) {
-  const cuerpo = new FormData();
-  cuerpo.append("archivo", archivo);
-  cuerpo.append("estacion", codigo);
-  return cuerpo;
-}
-
-export const prevalidarExcel = (archivo, codigo, clave, signal) =>
-  pedir("/cargas?solo_validar=1", {
-    metodo: "POST", clave, cuerpo: formularioExcel(archivo, codigo), signal,
-  });
-
-export const confirmarExcel = (archivo, codigo, clave) =>
-  pedir("/cargas", {
-    metodo: "POST", clave, cuerpo: formularioExcel(archivo, codigo),
-  });
-
-export const obtenerHistorialCargas = (clave, signal) =>
-  pedir("/cargas", { clave, signal });
-
-// JSON de estaciones: requiere Content-Type, a diferencia del multipart.
-export async function registrarEstacion(localidad, clave) {
-  if (!clave?.trim()) throw new ErrorCarga(401, "Ingresa la clave de administración.");
-  const url = apiUrl("/v1/estaciones");
-  const respuesta = await fetch(url, {
-    method: "POST",
-    headers: { "X-Api-Key": clave.trim(), "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify(localidad),
-  });
-  const texto = await respuesta.text();
-  let datos;
-  try { datos = texto ? JSON.parse(texto) : null; } catch { datos = texto; }
-  if (!respuesta.ok) {
-    const detalle = typeof datos?.detail === "string" ? datos.detail : `HTTP ${respuesta.status} al crear estación.`;
-    throw new ErrorCarga(respuesta.status, detalle, datos);
-  }
+function formulario(archivo, estacion) {
+  const datos = new FormData();
+  datos.append("archivo", archivo);
+  datos.append("estacion", estacion);
   return datos;
 }
+
+export const prevalidarExcel = (archivo, estacion, signal) =>
+  pedir("/cargas?solo_validar=1", { method: "POST", body: formulario(archivo, estacion), signal });
+
+export const confirmarExcel = (archivo, estacion) =>
+  pedir("/cargas", { method: "POST", body: formulario(archivo, estacion) });
+
+// Django devuelve hasta las 20 cargas más recientes (de todas las estaciones).
+export const obtenerHistorialCargas = (signal) => pedir("/cargas", { signal });
+export const registrarEstacion = (estacion) => pedir("/estaciones", { method: "POST", body: estacion });
+
+// Django desactiva (activa=false), sin borrar mediciones.
+export const eliminarEstacion = (codigo) =>
+  pedir(`/estaciones/${encodeURIComponent(codigo)}`, { method: "DELETE" });
