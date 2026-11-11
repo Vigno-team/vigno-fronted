@@ -7,9 +7,7 @@ import ResumenMeteorologico from "./componentes/ResumenMeteorologico/ResumenMete
 import AlertasReportes from "./componentes/AlertasReportes/AlertasReportes";
 import Historicos from "./componentes/Historicos/Historicos";
 import IndicesVitivinicolasPanel from "./componentes/IndicesVitivinicolas/IndicesVitivinicolasPanel";
-import DatosConFallaCard from "./componentes/DatosConFallaCard/DatosConFallaCard";
 import Configuracion from "./componentes/Configuracion/Configuracion";
-import PrediccionCosechaCard from "./componentes/PrediccionCosecha/PrediccionCosechaCard";
 import CargaExcel from "./componentes/CargaExcel/CargaExcel";
 
 import { adaptarPrediccionData } from "./services/adaptarPrediccionData";
@@ -84,22 +82,13 @@ export default function App() {
     ),
 
     "Índices vitivinícolas": () => (
-      <>
-        <IndicesVitivinicolasPanel {...comunes} />
-
-        <div className="indices-grid">
-          <DatosConFallaCard
-            {...comunes}
-            onDatosActualizados={recargar}
-          />
-
-          <PrediccionCosechaCard
-            datos={datosPrediccion}
-            cargando={loadingPrediccion}
-            error={errorPrediccion}
-          />
-        </div>
-      </>
+      <IndicesVitivinicolasPanel
+        {...comunes}
+        onDatosActualizados={recargar}
+        datosPrediccion={datosPrediccion}
+        loadingPrediccion={loadingPrediccion}
+        errorPrediccion={errorPrediccion}
+      />
     ),
 
     "Gestion de datos y Estaciones": () => (
