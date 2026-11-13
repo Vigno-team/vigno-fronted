@@ -50,7 +50,11 @@ export function adaptarClimateData(data) {
       estacionId: idDe(registro), fecha: dia.fecha,
       maxima: numero(dia.tmax), minima: numero(dia.tmin),
       mediaDiaria: numero(dia.tmedia), amplitudTermica: numero(dia.amplitud),
-      precipitacionMm: numero(dia.precipitacion), motivoNulo: dia.motivo_nulo ?? null,
+      precipitacionMm: numero(dia.precipitacion),
+      humedadMedia: numero(dia.humedad_media),
+      radiacionMaxima: numero(dia.radiacion_maxima),
+      vientoMaximo: numero(dia.viento_maximo),
+      motivoNulo: dia.motivo_nulo ?? null,
     }))
   );
 

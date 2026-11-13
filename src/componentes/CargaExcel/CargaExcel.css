@@ -158,3 +158,20 @@
   .ce-observaciones-tabla td { padding: .2em 0; border: 0; }
   .ce-observaciones-tabla td:not(:first-child)::before { content: attr(data-label) ": "; font-weight: 650; color: var(--texto-suave); }
 }
+/* ===== Columnas del Excel y selección reversible ===== */
+.ce-columnas { margin: 1em 0; min-width: 0; }
+.ce-columnas-scroll { max-height: 310px; overflow: auto; border: 1px solid var(--borde); border-radius: .7em; }
+.ce-columnas-scroll .ce-historial { min-width: 660px; }
+.ce-columnas-scroll th { position: sticky; top: 0; z-index: 1; background: var(--fondo); }
+.ce-columnas input[type="checkbox"] { width: 1.2em; height: 1.2em; accent-color: var(--color); cursor: pointer; }
+.ce-columnas input:disabled { cursor: not-allowed; }
+.ce-subtexto { display: block; color: var(--texto-suave); margin-top: .15em; }
+.ce-aviso-dependencias { margin: .7em 0; padding: .8em; border-left: 3px solid var(--color); background: var(--color-suave); border-radius: .35em; font-size: .86em; line-height: 1.6; }
+.ce-detalle-carga, .ce-editar-estaciones { margin-top: 1.1em; padding: 1em; border: 1px solid var(--borde); border-radius: .75em; }
+.ce-detalle-carga h4, .ce-editar-estaciones h4 { margin: 0 0 .5em; font-size: .97em; }
+.ce-detalle-carga .ce-columnas { margin-bottom: .5em; }
+.ce-editar-estaciones > .ce-campo { max-width: 430px; margin: .7em 0 1em; }
+.ce-acciones-detalle { display: flex; flex-wrap: wrap; gap: .7em; margin-top: .8em; }
+@media (max-width: 700px) {
+  .ce-acciones-detalle .ce-boton { flex: 1 1 150px; }
+}

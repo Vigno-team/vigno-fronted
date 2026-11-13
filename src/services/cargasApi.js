@@ -1,4 +1,4 @@
-// Excel y estaciones: endpoints existentes de Django, con la sesión JWT de Vigno.
+// Peticiones de Gestión de datos: el backend aplica los permisos del token JWT.
 import { apiUrl } from "./api";
 import { refreshAccessToken } from "./authService";
 
@@ -28,43 +28,53 @@ async function pedir(ruta, { method = "GET", body, signal } = {}) {
   try {
     respuesta = await enviar(token);
     if (respuesta.status === 401 && sessionStorage.getItem("refresh")) {
-      const nuevo = await refreshAccessToken();
-      respuesta = await enviar(nuevo);
+      respuesta = await enviar(await refreshAccessToken());
     }
   } catch (error) {
     if (error.name === "AbortError" || error instanceof ErrorCarga) throw error;
-    throw new ErrorCarga(0, "No se pudo conectar con Django. Revisa que Docker esté encendido y la URL del backend.");
+    throw new ErrorCarga(0, "No se pudo conectar con Django. Revisa Docker y la URL del backend.");
   }
 
   const datos = await respuesta.json().catch(() => null);
   if (!respuesta.ok) {
-    const mensaje = respuesta.status === 401 ? "Sesión vencida. Vuelve a iniciar sesión."
-      : respuesta.status === 403 ? (method === "DELETE" ? "Solo un administrador puede desactivar estaciones." : "Tu cuenta no tiene permiso para esta operación.")
-      : respuesta.status === 422 ? "El archivo contiene errores. Revisa los motivos."
-      : respuesta.status === 404 ? "La ruta no existe en el backend."
-      : datos?.detail || `Django respondió HTTP ${respuesta.status}.`;
+    const motivo = datos?.detail || (Array.isArray(datos?.errores) ? datos.errores.join(". ") : null);
+    const mensaje = respuesta.status === 401 ? "Sesión vencida. Inicia sesión nuevamente."
+      : respuesta.status === 403 ? "Tu cuenta no tiene permiso para esta operación."
+      : motivo || `Django respondió HTTP ${respuesta.status}.`;
     throw new ErrorCarga(respuesta.status, mensaje, datos);
   }
   return datos;
 }
 
-function formulario(archivo, estacion) {
+function formulario(archivo, estacion, variables) {
   const datos = new FormData();
   datos.append("archivo", archivo);
   datos.append("estacion", estacion);
+  if (variables !== undefined) datos.append("variables", JSON.stringify(variables));
   return datos;
 }
 
-export const prevalidarExcel = (archivo, estacion, signal) =>
-  pedir("/cargas?solo_validar=1", { method: "POST", body: formulario(archivo, estacion), signal });
+// La prevalidación no guarda nada. Si el administrador selecciona columnas,
+// confirmar debe enviar exactamente esa misma selección.
+export const prevalidarExcel = (archivo, estacion, signal, variables) =>
+  pedir("/cargas?solo_validar=1", { method: "POST", body: formulario(archivo, estacion, variables), signal });
+export const confirmarExcel = (archivo, estacion, variables) =>
+  pedir("/cargas", { method: "POST", body: formulario(archivo, estacion, variables) });
 
-export const confirmarExcel = (archivo, estacion) =>
-  pedir("/cargas", { method: "POST", body: formulario(archivo, estacion) });
-
-// Django devuelve hasta las 20 cargas más recientes (de todas las estaciones).
 export const obtenerHistorialCargas = (signal) => pedir("/cargas", { signal });
-export const registrarEstacion = (estacion) => pedir("/estaciones", { method: "POST", body: estacion });
+export const obtenerDetalleCarga = (id) => pedir(`/cargas/${encodeURIComponent(id)}`);
+export const cambiarColumnasCarga = (id, variablesExcluidas) =>
+  pedir(`/cargas/${encodeURIComponent(id)}`, {
+    method: "PATCH", body: { variables_excluidas: variablesExcluidas },
+  });
+export const obtenerVariables = () => pedir("/variables");
 
-// Django desactiva (activa=false), sin borrar mediciones.
+export const obtenerEstaciones = (incluirInactivas = false) =>
+  pedir(`/estaciones${incluirInactivas ? "?incluir_inactivas=1" : ""}`);
+export const registrarEstacion = (datos) => pedir("/estaciones", { method: "POST", body: datos });
+export const editarEstacion = (codigo, datos) =>
+  pedir(`/estaciones/${encodeURIComponent(codigo)}`, { method: "PATCH", body: datos });
 export const eliminarEstacion = (codigo) =>
   pedir(`/estaciones/${encodeURIComponent(codigo)}`, { method: "DELETE" });
+export const reactivarEstacion = (codigo) =>
+  pedir(`/estaciones/${encodeURIComponent(codigo)}/reactivar`, { method: "POST" });
