@@ -1,0 +1,194 @@
+import SelectorVigno from "../SelectorVigno/SelectorVigno";
+import{useEffect,useMemo,useState}from"react";
+import"./WinklerCard.css";
+
+interface Estacion{
+  id:string;
+  nombre?:string;
+  huerto?:string;
+}
+
+interface WinklerJSON{
+  valor:number|null;
+  region:string|null;
+  motivo_nulo?:string|null;
+}
+
+interface FichaTemporada{
+  temporada:string;
+  estacion_id?:string;
+  estacionId?:string;
+  periodo?:{inicio?:string|null;fin?:string|null};
+  indices?:{winkler?:WinklerJSON|null};
+  winkler?:WinklerJSON|null;
+  clasificacion?:{termica?:string|null;en_curso?:boolean|null};
+}
+
+interface Props{
+  estaciones?:Estacion[];
+  fichasTemporada?:FichaTemporada[];
+  temporadaEnCurso?:string|null;
+  estacionSeleccionada?: string;
+  temporadaSeleccionada?: string;
+  ocultarSelectores?: boolean;
+}
+
+const idEstacion=(f?:FichaTemporada)=>f?.estacionId??f?.estacion_id??"";
+
+const numero=(v?:number|null)=>
+  v===null||v===undefined?"Sin dato":Number(v).toFixed(1).replace(".",",");
+
+const fecha=(v?:string|null)=>v
+  ?new Intl.DateTimeFormat("es-CL",{day:"2-digit",month:"short",year:"numeric"})
+    .format(new Date(`${v}T12:00:00`)).replace(".","")
+  :"Sin dato";
+
+function WinklerCard({
+  estaciones=[],
+  fichasTemporada=[],
+  temporadaEnCurso=null,
+  estacionSeleccionada,
+  temporadaSeleccionada,
+  ocultarSelectores=false,
+}:Props){
+  const[estacionId,setEstacionId]=useState("");
+  const[temporada,setTemporada]=useState("");
+
+  const estacionActiva=
+    estacionSeleccionada??(estacionId||
+    estaciones[0]?.id||
+    idEstacion(fichasTemporada[0]));
+
+  useEffect(()=>{
+    if(!estacionId&&estacionActiva)setEstacionId(estacionActiva);
+  },[estacionId,estacionActiva]);
+
+  const temporadas=useMemo(
+    ()=>[
+      ...new Set(
+        fichasTemporada
+          .filter(f=>idEstacion(f)===estacionActiva)
+          .map(f=>f.temporada)
+      ),
+    ].sort(),
+    [fichasTemporada,estacionActiva]
+  );
+
+  useEffect(()=>{
+    if(!temporadas.length)return setTemporada("");
+
+    if(!temporadas.includes(temporada)){
+      setTemporada(
+        temporadas.includes(temporadaEnCurso??"")
+          ?temporadaEnCurso!
+          :temporadas.at(-1)!
+      );
+    }
+  },[temporadas,temporada,temporadaEnCurso]);
+
+  const temporadaActiva=temporadaSeleccionada??temporada;
+
+  const ficha=useMemo(
+    ()=>fichasTemporada.find(f=>
+      idEstacion(f)===estacionActiva&&f.temporada===temporadaActiva
+    )??null,
+    [fichasTemporada,estacionActiva,temporadaActiva]
+  );
+
+  const winkler=ficha?.indices?.winkler??ficha?.winkler??null;
+  const sinDato=winkler?.valor===null||winkler?.valor===undefined;
+
+  const enCurso=
+    ficha?.clasificacion?.en_curso===true||
+    ficha?.temporada===temporadaEnCurso;
+
+  const estadoTemporada=!ficha
+    ?"Sin dato"
+    :enCurso
+      ?"En curso"
+      :"Finalizada";
+
+  return(
+    <article className="winkler-card">
+      <header className="winkler-card-header">
+        <div className="winkler-header-top">
+          <div>
+            <span className="winkler-badge">Índice bioclimático</span>
+            <h4>Índice de Winkler</h4>
+          </div>
+
+          {!ocultarSelectores&&<div className="winkler-selectores">
+            <SelectorVigno
+              className="winkler-select"
+              value={estacionActiva}
+              onChange={e=>setEstacionId(e.target.value)}
+            >
+              {estaciones.map(est=>(
+                <option key={est.id} value={est.id}>
+                  {est.nombre??est.huerto??est.id}
+                </option>
+              ))}
+            </SelectorVigno>
+
+            <SelectorVigno
+              className="winkler-select"
+              value={temporadaActiva}
+              onChange={e=>setTemporada(e.target.value)}
+            >
+              {temporadas.map(t=>(
+                <option key={t} value={t}>Temporada {t}</option>
+              ))}
+            </SelectorVigno>
+          </div>}
+        </div>
+      </header>
+
+      <div className="winkler-card-body">
+        <div className="winkler-metric">
+          <span className="winkler-value">{numero(winkler?.valor)}</span>
+          {!sinDato&&<span className="winkler-unit">GDD</span>}
+        </div>
+
+        <div className="winkler-classification">
+          <span className="winkler-region">
+            {winkler?.region?`Región ${winkler.region}`:"Región sin dato"}
+          </span>
+
+          <span className="winkler-desc">
+            Clasificación térmica · {ficha?.clasificacion?.termica??"Sin dato"}
+          </span>
+        </div>
+      </div>
+
+      {winkler?.motivo_nulo&&(
+        <div className="winkler-aviso">{winkler.motivo_nulo}</div>
+      )}
+
+      <div className="winkler-temporada-info">
+        <div>
+          <span>Temporada</span>
+          <strong>{ficha?.temporada??"Sin dato"}</strong>
+        </div>
+
+        <div>
+          <span>Estado</span>
+          <strong className={enCurso?"estado-curso":""}>
+            {estadoTemporada}
+          </strong>
+        </div>
+
+        <div>
+          <span>Inicio</span>
+          <strong>{fecha(ficha?.periodo?.inicio)}</strong>
+        </div>
+
+        <div>
+          <span>Fin</span>
+          <strong>{fecha(ficha?.periodo?.fin)}</strong>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+export default WinklerCard;

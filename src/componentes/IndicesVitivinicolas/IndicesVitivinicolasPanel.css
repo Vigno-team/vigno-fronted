@@ -1,0 +1,740 @@
+.iv-panel {
+  /* Escala de texto definida en Configuración */
+  --iv-escala: var(--factor-texto, 1);
+
+  /* Separación general entre componentes */
+  --iv-gap: calc(14px * var(--iv-escala));
+
+  /* Fondo de elementos secundarios */
+  --iv-panel-secundario: rgba(255, 255, 255, .035);
+
+  /* Color de bordes según el tema */
+  --iv-borde: var(--app-borde);
+
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: calc(20px * var(--iv-escala));
+  padding-bottom: var(--iv-gap);
+
+  box-sizing: border-box;
+
+  /* Permite adaptar el diseño al ancho del componente */
+  container-type: inline-size;
+}
+
+/* Evita que padding y bordes aumenten el tamaño total */
+.iv-panel *,
+.iv-panel *::before,
+.iv-panel *::after {
+  box-sizing: border-box;
+}
+
+
+.iv-cabecera {
+  min-width: 0;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: var(--iv-gap);
+  flex-wrap: wrap;
+}
+
+/* Contenedor del título principal */
+.iv-hero {
+  min-width: 0;
+  flex: 1 1 310px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: calc(4px * var(--iv-escala));
+}
+
+/* Texto pequeño superior */
+.iv-kicker {
+  color: var(--vigno-accent);
+
+  font-size: calc(8px * var(--iv-escala));
+  font-weight: 800;
+
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+/* Título principal */
+.iv-hero h1 {
+  margin: 0;
+
+  color: var(--app-texto);
+
+  font-size: calc(24px * var(--iv-escala));
+  line-height: 1.2;
+}
+
+/* Descripción principal */
+.iv-hero p {
+  margin: 0;
+
+  color: var(--app-secundario);
+
+  font-size: calc(10px * var(--iv-escala));
+  line-height: 1.4;
+}
+
+
+/* Contenedor de ambos selectores */
+.iv-filtros-globales {
+  min-width: 0;
+
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+
+  gap: calc(8px * var(--iv-escala));
+}
+
+/* Contenedor individual de cada filtro */
+.iv-control {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: calc(5px * var(--iv-escala));
+
+  color: var(--app-secundario);
+}
+
+/* Etiquetas: ESTACIÓN y TEMPORADA */
+.iv-control > span {
+  font-size: calc(9px * var(--iv-escala));
+  font-weight: 750;
+
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* Caja visual del selector */
+.iv-caja-select {
+  min-height: calc(40px * var(--iv-escala));
+
+  display: flex;
+  align-items: center;
+
+  gap: calc(8px * var(--iv-escala));
+
+  padding: 0 calc(10px * var(--iv-escala));
+
+  color: var(--vigno-accent);
+  background: var(--app-superficie);
+
+  border: 1px solid var(--iv-borde);
+  border-radius: calc(9px * var(--iv-escala));
+}
+
+/* Iconos de ubicación y calendario */
+.iv-caja-select svg {
+  width: calc(16px * var(--iv-escala));
+  height: calc(16px * var(--iv-escala));
+
+  flex-shrink: 0;
+}
+
+/* Selector desplegable */
+.iv-caja-select :is(select,.vigno-select) {
+  width: 100%;
+  min-width: 0;
+
+  height: calc(38px * var(--iv-escala));
+
+  padding-right: calc(4px * var(--iv-escala));
+
+  color: var(--app-texto);
+  background: transparent;
+
+  border: 0;
+  outline: 0;
+
+  font: inherit;
+  font-size: calc(11px * var(--iv-escala));
+  font-weight: 650;
+
+  cursor: pointer;
+}
+
+/* Ancho del selector de estación */
+.iv-control:first-child .iv-caja-select {
+  width: clamp(
+    calc(165px * var(--iv-escala)),
+    17vw,
+    calc(235px * var(--iv-escala))
+  );
+}
+
+/* Ancho del selector de temporada */
+.iv-control:last-child .iv-caja-select {
+  width: clamp(
+    calc(150px * var(--iv-escala)),
+    14vw,
+    calc(205px * var(--iv-escala))
+  );
+}
+
+/* Destaca el selector mientras está enfocado */
+.iv-caja-select:focus-within {
+  border-color: var(--vigno-accent);
+
+  box-shadow: 0 0 0 2px rgba(200, 109, 59, .12);
+}
+
+/* Contenedor de una sección */
+.iv-seccion {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: calc(9px * var(--iv-escala));
+}
+
+/* Encabezado con icono y título */
+.iv-seccion-head {
+  display: flex;
+  align-items: center;
+
+  gap: calc(9px * var(--iv-escala));
+}
+
+/* Título de sección */
+.iv-seccion-head h2 {
+  margin: 0;
+
+  color: var(--app-texto);
+
+  font-size: calc(15px * var(--iv-escala));
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+/* Fondo del icono de sección */
+.iv-seccion-icono {
+  width: calc(30px * var(--iv-escala));
+  height: calc(30px * var(--iv-escala));
+
+  display: grid;
+  place-items: center;
+
+  flex-shrink: 0;
+
+  color: var(--vigno-accent);
+  background: rgba(200, 109, 59, .1);
+
+  border: 1px solid rgba(200, 109, 59, .2);
+  border-radius: calc(9px * var(--iv-escala));
+}
+
+/* Tamaño del icono */
+.iv-seccion-icono svg {
+  width: calc(17px * var(--iv-escala));
+  height: calc(17px * var(--iv-escala));
+}
+
+
+/* Diseño básico de tarjetas */
+.iv-panel :is(
+  .winkler-card,
+  .huglin-card
+) {
+  min-width: 0;
+  max-width: none;
+
+  margin: 0;
+
+  padding: calc(14px * var(--iv-escala));
+  gap: calc(10px * var(--iv-escala));
+
+  border-radius: calc(12px * var(--iv-escala));
+}
+
+/* Alineación de los encabezados */
+.iv-panel :is(
+  .winkler-header-top,
+  .huglin-header-top
+) {
+  align-items: flex-start;
+}
+
+/* Separación entre los datos de temporada */
+.iv-panel :is(
+  .winkler-temporada-info,
+  .huglin-temporada-info
+) {
+  gap: calc(7px * var(--iv-escala));
+}
+
+/* Recuadros individuales de información */
+.iv-panel :is(
+  .winkler-temporada-info > div,
+  .huglin-temporada-info > div
+) {
+  min-width: 0;
+
+  padding: calc(8px * var(--iv-escala));
+
+  overflow-wrap: anywhere;
+}
+
+/* Cuerpo de las tarjetas */
+.iv-panel :is(
+  .winkler-card-body,
+  .huglin-card-body
+) {
+  gap: calc(14px * var(--iv-escala));
+
+  flex-wrap: wrap;
+}
+
+/* Cuadrícula de dos columnas */
+.iv-grid-bioclimatico {
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  align-items: stretch;
+
+  gap: var(--iv-gap);
+}
+
+/* Sincronización de tamaño */
+.iv-grid-bioclimatico > .winkler-card,
+.iv-grid-bioclimatico > .huglin-card {
+  width: 100%;
+  height: 100%;
+
+  align-self: stretch;
+}
+
+/* Mantiene la información inferior alineada */
+.iv-grid-bioclimatico :is(
+  .winkler-temporada-info,
+  .huglin-temporada-info
+) {
+  margin-top: auto;
+}
+
+
+/* Contenedor principal */
+.iv-calor-completo {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Tarjeta de calor extremo */
+.iv-calor-completo > .calor-card {
+  width: 100%;
+  max-width: none;
+
+  height: auto;
+}
+
+/* Tres indicadores superiores */
+.iv-calor-completo .calor-metricas-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+/* Distribución horizontal del contenido */
+.iv-calor-completo .calor-detalle-horizontal {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  align-items: start;
+
+  gap: calc(16px * var(--iv-escala));
+}
+
+/* Columnas interiores */
+.iv-calor-completo
+.calor-detalle-horizontal > .calor-bloque-seccion {
+  min-width: 0;
+}
+
+/* Cuadrícula de días críticos */
+.iv-calor-completo .dias-criticos-chips {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+
+  gap: calc(6px * var(--iv-escala));
+}
+
+/* Tarjeta individual de un día */
+.iv-calor-completo .chip-dia {
+  min-width: 0;
+
+  padding:
+    calc(7px * var(--iv-escala))
+    calc(4px * var(--iv-escala));
+}
+
+/* Subtítulos y fechas */
+.iv-calor-completo :is(
+  .calor-subtitulo,
+  .chip-fecha
+) {
+  font-size: calc(10px * var(--iv-escala));
+  line-height: 1.35;
+}
+
+/* Valor de temperatura */
+.iv-calor-completo .chip-temp {
+  font-size: calc(12px * var(--iv-escala));
+}
+
+/* Detalles de cada racha térmica */
+.iv-calor-completo .racha-detalles {
+  flex-wrap: wrap;
+
+  gap:
+    calc(4px * var(--iv-escala))
+    calc(10px * var(--iv-escala));
+
+  font-size: calc(10px * var(--iv-escala));
+}
+
+/* Fila individual de una racha */
+.iv-calor-completo .item-racha {
+  padding:
+    calc(7px * var(--iv-escala))
+    calc(9px * var(--iv-escala));
+}
+
+
+/* Tarjeta principal unificada */
+.iv-hidrico-unificado {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background: var(--app-superficie);
+
+  border: 1px solid var(--iv-borde);
+  border-radius: calc(12px * var(--iv-escala));
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+}
+
+/* Elimina los bordes propios de las tarjetas interiores */
+.iv-hidrico-unificado > .winkler-card,
+.iv-hidrico-unificado > .huglin-card {
+  width: 100%;
+  height: auto;
+
+  background: transparent;
+
+  border: 0;
+  border-radius: 0;
+
+  box-shadow: none;
+}
+
+/* Franja inferior de lluvia fuera de invierno */
+.iv-hidrico-unificado > .huglin-card {
+  display: flex;
+  flex-direction: row;
+
+  align-items: center;
+  justify-content: space-between;
+
+  flex-wrap: wrap;
+
+  gap: calc(12px * var(--iv-escala));
+
+  border-top: 1px solid var(--iv-borde);
+
+  background: var(--iv-panel-secundario);
+}
+
+/* Encabezado de la franja inferior */
+.iv-hidrico-unificado
+> .huglin-card .huglin-card-header {
+  min-width: 0;
+  flex: 1 1 210px;
+}
+
+/* Contenedor de los valores de precipitación */
+.iv-hidrico-unificado .lluvia-bloque-seccion {
+  margin: 0;
+
+  flex: 0 1 auto;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: calc(12px * var(--iv-escala));
+}
+
+/* Etiqueta de precipitación */
+.iv-hidrico-unificado .lluvia-subtitulo {
+  max-width: 190px;
+
+  font-size: calc(10px * var(--iv-escala));
+  line-height: 1.35;
+}
+
+/* Recuadro con el total de lluvia */
+.iv-hidrico-unificado .item-lluvia {
+  min-width: 0;
+
+  padding:
+    calc(10px * var(--iv-escala))
+    calc(12px * var(--iv-escala));
+}
+
+/* Distribución del texto y valor */
+.iv-hidrico-unificado .lluvia-detalles {
+  display: flex;
+  align-items: baseline;
+
+  flex-wrap: wrap;
+
+  gap: calc(8px * var(--iv-escala));
+}
+
+/* Texto descriptivo */
+.iv-hidrico-unificado .lluvia-detalles > span {
+  font-size: calc(10px * var(--iv-escala));
+}
+
+/* Valor total en milímetros */
+.iv-hidrico-unificado .chip-mm {
+  font-size: calc(19px * var(--iv-escala));
+  line-height: 1.1;
+}
+
+/* Contenedores del criterio agronómico */
+.iv-hidrico-unificado :is(
+  .lluvia-criterio-box,
+  .lluvia-criterio-lista
+) {
+  min-width: 0;
+}
+
+/* Textos explicativos del criterio */
+.iv-hidrico-unificado
+.lluvia-criterio-lista .winkler-desc {
+  line-height: 1.5;
+}
+
+/* Indicador de confiabilidad */
+.iv-panel .badge-completitud {
+  gap: calc(6px * var(--iv-escala));
+
+  padding:
+    calc(4px * var(--iv-escala))
+    calc(10px * var(--iv-escala));
+
+  font-size: calc(11px * var(--iv-escala));
+}
+
+/* Etiquetas de incidencia y advertencia */
+.iv-panel :is(
+  .tag-incidencia,
+  .tag-advertencia
+) {
+  font-size: calc(10px * var(--iv-escala));
+}
+
+
+/* Pantallas medianas */
+@container (max-width: 970px) {
+
+  /* Días críticos y rachas pasan a una columna */
+  .iv-calor-completo .calor-detalle-horizontal {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* Tablets y ventanas estrechas */
+@container (max-width: 730px) {
+
+  /* Winkler y Huglin se muestran uno debajo del otro */
+  .iv-grid-bioclimatico {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* Teléfonos */
+@container (max-width: 540px) {
+
+  /* Los selectores globales ocupan el ancho disponible */
+  .iv-filtros-globales {
+    width: 100%;
+  }
+
+  .iv-control {
+    flex: 1 1 160px;
+  }
+
+  .iv-control .iv-caja-select {
+    width: 100% !important;
+  }
+
+  /* Indicadores de calor en una columna */
+  .iv-calor-completo .calor-metricas-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Días críticos en dos columnas */
+  .iv-calor-completo .dias-criticos-chips {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Información de temporada en dos columnas */
+  .iv-panel :is(
+    .winkler-temporada-info,
+    .huglin-temporada-info
+  ) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+/*Respeta la preferencia de separación seleccionada */
+/* Menor separación */
+html[data-densidad="compacta"] .iv-panel {
+  --iv-gap: calc(9px * var(--iv-escala));
+}
+
+/* Mayor separación */
+html[data-densidad="amplia"] .iv-panel {
+  --iv-gap: calc(22px * var(--iv-escala));
+}
+/* Selector cerrado */
+.tema-pagina-oscuro .iv-caja-select :is(select,.vigno-select) {
+  color-scheme: dark;
+  color: #F8FAFC;
+}
+
+/* Opciones del desplegable */
+.tema-pagina-oscuro .iv-caja-select :is(select,.vigno-select) option {
+  color: #F8FAFC;
+  background-color: #181C24;
+}
+
+/* Opción seleccionada */
+.tema-pagina-oscuro .iv-caja-select :is(select,.vigno-select) option:checked {
+  color: #FFFFFF;
+  background-color: #C86D3B;
+}
+/* Fondo de las secciones secundarias */
+.tema-pagina-claro .iv-panel {
+  --iv-panel-secundario: #f6f7f9;
+}
+
+/* Selector cerrado */
+.tema-pagina-claro .iv-caja-select :is(select,.vigno-select) {
+  color-scheme: light;
+  color: #171717;
+}
+
+/* Opciones del desplegable */
+.tema-pagina-claro .iv-caja-select :is(select,.vigno-select) option {
+  color: #171717;
+  background-color: #FFFFFF;
+}
+
+/* Opción seleccionada */
+.tema-pagina-claro .iv-caja-select :is(select,.vigno-select) option:checked {
+  color: #FFFFFF;
+  background-color: #C86D3B;
+}
+
+/* Bordes del apartado hídrico */
+.tema-pagina-claro .iv-hidrico-unificado :is(
+  .item-lluvia,
+  .lluvia-criterio-box
+) {
+  border-color: var(--iv-borde);
+}
+.iv-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: calc(16px * var(--iv-escala));
+  min-height: 0;
+}
+
+/* Selectores alineados a la derecha */
+.iv-filtros-globales {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: calc(12px * var(--iv-escala));
+  margin-left: auto;
+}
+
+/* Tamaño uniforme de los controles */
+.iv-control {
+  min-width: 0;
+  gap: calc(6px * var(--iv-escala));
+}
+
+/* Estación */
+.iv-control:first-child .iv-caja-select {
+  width: calc(220px * var(--iv-escala));
+}
+
+/* Temporada */
+.iv-control:last-child .iv-caja-select {
+  width: calc(190px * var(--iv-escala));
+}
+
+/* Apariencia de los desplegables */
+.iv-caja-select {
+  min-height: calc(44px * var(--iv-escala));
+  border-radius: calc(11px * var(--iv-escala));
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.iv-caja-select:hover {
+  border-color: var(--vigno-accent);
+}
+
+/* Adaptación a pantallas pequeñas */
+@container (max-width: 700px) {
+  .iv-cabecera {
+    align-items: flex-start;
+  }
+
+  .iv-filtros-globales {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+
+  .iv-control {
+    flex: 1 1 170px;
+  }
+
+  .iv-control .iv-caja-select {
+    width: 100% !important;
+  }
+}

@@ -1,0 +1,59 @@
+/* Contenedor para posicionar el tooltip flotante */
+.rm-grafico-contenedor {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Coherencia al modo oscuro */
+.rm-tooltip-oscuro {
+  background-color: rgba(17, 24, 39, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3) !important;
+  color: #f3f4f6 !important;
+  padding: 8px 12px !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  pointer-events: none !important;
+  z-index: 100 !important;
+  min-width: 150px;
+}
+
+.rm-tooltip-fecha {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #f9fafb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 4px;
+}
+
+.rm-tooltip-filas {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.rm-tooltip-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.rm-tooltip-item strong {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Colores metricas tooltip */
+.rm-tooltip-color-max { color: #c86d3b; }
+.rm-tooltip-color-med { color: #9ca3af; }
+.rm-tooltip-color-min { color: #38bdf8; }
+
+/* Línea vertical guía (crosshair) */
+.rm-crosshair-line {
+  stroke: rgba(255, 255, 255, 0.45);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+  pointer-events: none;
+}

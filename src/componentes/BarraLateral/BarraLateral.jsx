@@ -1,0 +1,85 @@
+import{Activity,Clock3,Home,Menu,Settings,TriangleAlert,FileUp,LogOut}from"lucide-react";
+import{useAuth}from"../../contexto/AuthContext";
+import"./BarraLateral.css";
+
+const opciones=[
+  {nombre:"Resumen",icono:Home},
+  {nombre:"Alertas y reportes",icono:TriangleAlert},
+  {nombre:"Índices vitivinícolas",icono:Activity},
+  {nombre:"Históricos",icono:Clock3},
+  {nombre:"Gestion de datos y Estaciones",icono:FileUp},
+  {nombre:"Configuración",icono:Settings},
+];
+
+function BarraLateral({expandida,setExpandida,opcionActiva,setOpcionActiva}){
+  const {logout}=useAuth();
+
+  return(
+    <aside className={`barra-lateral ${expandida?"expandida":"contraida"}`}>
+
+      <div className="barra-superior">
+        <button
+          type="button"
+          className="barra-menu"
+          onClick={()=>setExpandida(actual=>!actual)}
+          aria-label={expandida?"Contraer menú":"Expandir menú"}
+          title={expandida?"Contraer menú":"Expandir menú"}
+        >
+          <Menu size={21} strokeWidth={1.8}/>
+          {expandida&&<span>Menú</span>}
+        </button>
+
+        {expandida&&(
+          <div className="barra-brand">
+            <div className="barra-brand-superior">
+              <span className="barra-brand-linea"/>
+              <span className="barra-brand-origen">MAULE · CHILE</span>
+            </div>
+
+            <strong className="barra-logo">VIGNO</strong>
+            <span className="barra-submarca">Vignadores de Carignan</span>
+            <div className="barra-brand-divisor"/>
+            <span className="barra-eslogan">Old Vines Dry-Farmed</span>
+            <span className="barra-eslogan">Maule Valley</span>
+          </div>
+        )}
+      </div>
+
+      <nav className="barra-opciones">
+        {opciones.map(({nombre,icono:Icono})=>{
+          const activa=opcionActiva===nombre;
+
+          return(
+            <button
+              key={nombre}
+              type="button"
+              className={`barra-opcion ${activa?"activa":""}`}
+              onClick={()=>setOpcionActiva(nombre)}
+              aria-current={activa?"page":undefined}
+              aria-label={nombre}
+              title={!expandida?nombre:undefined}
+            >
+              <Icono size={21} strokeWidth={1.8}/>
+              {expandida&&<span>{nombre}</span>}
+            </button>
+          );
+        })}
+      </nav>
+
+      <button
+        type="button"
+        className="barra-opcion"
+        style={{marginTop:"auto"}}
+        onClick={logout}
+        aria-label="Cerrar sesión"
+        title={!expandida?"Cerrar sesión":undefined}
+      >
+        <LogOut size={21} strokeWidth={1.8}/>
+        {expandida&&<span>Cerrar sesión</span>}
+      </button>
+
+    </aside>
+  );
+}
+
+export default BarraLateral;
