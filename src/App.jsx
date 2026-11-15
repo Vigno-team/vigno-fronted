@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 
@@ -14,8 +13,14 @@ import { adaptarPrediccionData } from "./services/adaptarPrediccionData";
 import { useClimateData } from "./hooks/useClimateData";
 import { adaptarClimateData } from "./services/adaptarClimateData";
 import { useConfiguracion } from "./contexto/ConfiguracionContext";
+import { useAuth } from "./contexto/AuthContext";
+import { tienePermiso } from "./services/permisos";
+import Usuarios from "./componentes/Usuarios/Usuarios";
 
 export default function App() {
+  const { user } = useAuth();
+  const rol = user?.rol;
+
   const { data, loading, error, recargar } = useClimateData("/v1/datos");
 
   const datos = useMemo(() => adaptarClimateData(data), [data]);
@@ -48,6 +53,12 @@ export default function App() {
     fichasTemporada: datos?.fichasTemporada ?? [],
     temporadaEnCurso: datos?.temporadaEnCurso ?? null,
   };
+
+  const sinPermisoVista = (
+    <div className="app-cargando" role="status">
+      <strong>No tienes permisos</strong>
+    </div>
+  );
 
   const pantallas = {
     "Resumen": () => (
@@ -91,15 +102,24 @@ export default function App() {
       />
     ),
 
-    "Gestion de datos y Estaciones": () => (
-      <div className="cargar-datos-vista">
+    "Gestion de datos y Estaciones": () =>
+      tienePermiso(rol, "cargar_datos") ? (
+        <div className="cargar-datos-vista">
+          <CargaExcel
+            estaciones={comunes.estaciones}
+            onCargaConfirmada={recargar}
+          />
+        </div>
+      ) : (
+        sinPermisoVista
+      ),
 
-        <CargaExcel
-          estaciones={comunes.estaciones}
-          onCargaConfirmada={recargar}
-        />
-      </div>
-    ),
+    "Usuarios": () =>
+      tienePermiso(rol, "usuarios") ? (
+        <Usuarios />
+      ) : (
+        sinPermisoVista
+      ),
   };
 
   const sinDatos = loading || error || !comunes.estaciones.length;
@@ -122,7 +142,7 @@ export default function App() {
         </button>
       )}
 
-      {!loading && (
+      {!loading && tienePermiso(rol, "cargar_datos") && (
         <p>Puedes ir a Cargar datos para importar archivos Excel.</p>
       )}
     </div>
@@ -145,7 +165,7 @@ export default function App() {
         }`}
       >
         <div className="contenido-vista">
-          {["Configuración", "Cargar datos"].includes(opcionActiva)
+          {["Configuración", "Gestion de datos y Estaciones", "Usuarios"].includes(opcionActiva)
             ? vistaActual()
             : sinDatos
             ? vistaError
