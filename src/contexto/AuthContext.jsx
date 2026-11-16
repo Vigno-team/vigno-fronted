@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { loginRequest, logoutRequest } from "../services/authService";
+import { pedirApi } from "../services/api";
 
 const AuthContext = createContext(null);
 
@@ -9,20 +10,38 @@ export function AuthProvider({ children }) {
   const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
-    try {
-      const savedAccess = sessionStorage.getItem("access");
-      const savedUser = sessionStorage.getItem("usuario");
-      if (savedAccess && savedUser && savedUser !== "undefined") {
-        setAccess(savedAccess);
-        setUsuario(JSON.parse(savedUser));
+    async function verificarSesion() {
+      try {
+        const savedAccess = sessionStorage.getItem("access");
+        const savedUser = sessionStorage.getItem("usuario");
+        if (savedAccess && savedUser && savedUser !== "undefined") {
+          setAccess(savedAccess);
+          setUsuario(JSON.parse(savedUser));
+          try {
+            const datos = await pedirApi("/v1/auth/yo");
+            const userObj = datos?.usuario || datos?.user || datos;
+            if (userObj && typeof userObj === "object") {
+              sessionStorage.setItem("usuario", JSON.stringify(userObj));
+              setUsuario(userObj);
+              setAccess(sessionStorage.getItem("access"));
+            }
+          } catch {
+            if (!sessionStorage.getItem("access")) {
+              setAccess(null);
+              setUsuario(null);
+            }
+          }
+        }
+      } catch {
+        sessionStorage.removeItem("access");
+        sessionStorage.removeItem("refresh");
+        sessionStorage.removeItem("usuario");
+      } finally {
+        setLoadingAuth(false);
       }
-    } catch {
-      sessionStorage.removeItem("access");
-      sessionStorage.removeItem("refresh");
-      sessionStorage.removeItem("usuario");
-    } finally {
-      setLoadingAuth(false);
     }
+
+    verificarSesion();
   }, []);
 
   const login = async (email, password) => {
@@ -42,14 +61,13 @@ export function AuthProvider({ children }) {
       sessionStorage.removeItem("access");
       sessionStorage.removeItem("refresh");
       sessionStorage.removeItem("usuario");
-      borrarClaveSesion();
       setAccess(null);
       setUsuario(null);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ usuario, access, isAuthenticated: !!access, loadingAuth, login, logout }}>
+    <AuthContext.Provider value={{ usuario, user: usuario, access, isAuthenticated: !!access, loadingAuth, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

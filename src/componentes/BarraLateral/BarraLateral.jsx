@@ -1,18 +1,20 @@
-import{Activity,Clock3,Home,Menu,Settings,TriangleAlert,FileUp,LogOut}from"lucide-react";
+import{Activity,Clock3,Home,Menu,Settings,TriangleAlert,FileUp,LogOut,Users}from"lucide-react";
 import{useAuth}from"../../contexto/AuthContext";
+import{tienePermiso}from"../../services/permisos";
 import"./BarraLateral.css";
 
 const opciones=[
-  {nombre:"Resumen",icono:Home},
-  {nombre:"Alertas y reportes",icono:TriangleAlert},
-  {nombre:"Índices vitivinícolas",icono:Activity},
-  {nombre:"Históricos",icono:Clock3},
-  {nombre:"Gestion de datos y Estaciones",icono:FileUp},
-  {nombre:"Configuración",icono:Settings},
+  {nombre:"Resumen",icono:Home,permiso:"ver_dashboard"},
+  {nombre:"Alertas y reportes",icono:TriangleAlert,permiso:"ver_dashboard"},
+  {nombre:"Índices vitivinícolas",icono:Activity,permiso:"ver_dashboard"},
+  {nombre:"Históricos",icono:Clock3,permiso:"ver_dashboard"},
+  {nombre:"Gestion de datos y Estaciones",icono:FileUp,permiso:"cargar_datos"},
+  {nombre:"Usuarios",icono:Users,permiso:"usuarios"},
+  {nombre:"Configuración",icono:Settings,permiso:"ver_dashboard"},
 ];
 
 function BarraLateral({expandida,setExpandida,opcionActiva,setOpcionActiva}){
-  const {logout}=useAuth();
+  const {user,logout}=useAuth();
 
   return(
     <aside className={`barra-lateral ${expandida?"expandida":"contraida"}`}>
@@ -46,7 +48,7 @@ function BarraLateral({expandida,setExpandida,opcionActiva,setOpcionActiva}){
       </div>
 
       <nav className="barra-opciones">
-        {opciones.map(({nombre,icono:Icono})=>{
+        {opciones.filter((opcion)=>tienePermiso(user?.rol,opcion.permiso)).map(({nombre,icono:Icono})=>{
           const activa=opcionActiva===nombre;
 
           return(
