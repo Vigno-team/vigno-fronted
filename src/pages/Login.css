@@ -293,3 +293,32 @@
   letter-spacing: 3px;
   text-align: center;
 }
+
+.login-marca-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.login-marca-logo {
+  max-width: 52px;
+  max-height: 44px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.login-marca-sistema {
+  display: block;
+  color: var(--vigno-accent, #d6981d);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.login-marca-org {
+  display: block;
+  color: rgba(248, 250, 252, 0.65);
+  font-size: 0.78rem;
+}

@@ -1,0 +1,223 @@
+.marca-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.marca-preview {
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 2px solid var(--vigno-accent, #c86d3b);
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.marca-preview-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.marca-preview-logo {
+  max-width: 56px;
+  max-height: 44px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.marca-preview-top strong {
+  display: block;
+  font-size: 1.1rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.marca-preview-top span {
+  display: block;
+  font-size: 0.82rem;
+  opacity: 0.8;
+}
+
+.marca-preview-chip {
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.marca-preview-pie {
+  font-size: 0.78rem;
+  opacity: 0.75;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 8px;
+}
+
+.marca-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.marca-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.marca-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.marca-campo,
+.marca-color-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.marca-campo span,
+.marca-color-campo span {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.marca-campo input,
+.marca-campo select {
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--vigno-border-light, #d1d5db);
+  background: transparent;
+  color: inherit;
+}
+
+html[data-tema="oscuro"] .marca-campo input,
+html[data-tema="oscuro"] .marca-campo select {
+  border-color: var(--vigno-surface-border, #262c38);
+  background: var(--vigno-surface-dark-2, #20252d);
+}
+
+.marca-color-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--vigno-border-light, #d1d5db);
+}
+
+html[data-tema="oscuro"] .marca-color-control {
+  border-color: var(--vigno-surface-border, #262c38);
+}
+
+.marca-color-control input[type="color"] {
+  width: 34px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.marca-logo-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px dashed var(--vigno-terracota-borde, rgba(200, 109, 59, 0.4));
+}
+
+.marca-logo-fila strong {
+  display: block;
+  font-size: 0.92rem;
+}
+
+.marca-logo-fila small {
+  display: block;
+  opacity: 0.75;
+  font-size: 0.8rem;
+}
+
+.marca-btn-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  background: var(--vigno-terracota-suave, rgba(200, 109, 59, 0.14));
+  color: var(--vigno-accent, #c86d3b);
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.marca-btn-logo.deshabilitado {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.marca-alerta {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.marca-alerta.error {
+  background: rgba(185, 28, 28, 0.14);
+  color: #ef4444;
+}
+
+.marca-alerta.exito {
+  background: rgba(62, 142, 88, 0.16);
+  color: #22c55e;
+}
+
+.marca-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.marca-btn-secundario,
+.marca-btn-primario {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.marca-btn-secundario {
+  background: transparent;
+  border-color: var(--vigno-border-light, #d1d5db);
+  color: inherit;
+}
+
+html[data-tema="oscuro"] .marca-btn-secundario {
+  border-color: var(--vigno-surface-border, #262c38);
+}
+
+.marca-btn-primario {
+  background: var(--vigno-accent, #c86d3b);
+  color: #ffffff;
+}
+
+.marca-btn-primario:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

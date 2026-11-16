@@ -1,10 +1,13 @@
 import SelectorVigno from "../SelectorVigno/SelectorVigno";
 import { useState } from "react";
 import {
-  Accessibility, ChartLine, Contrast, Moon, RotateCcw,
+  Accessibility, ChartLine, Contrast, Moon, Palette, RotateCcw,
   Settings2, Sun, AlertTriangle,
 } from "lucide-react";
 import { useConfiguracion, DEFINICIONES_UMBRALES } from "../../contexto/ConfiguracionContext";
+import { useAuth } from "../../contexto/AuthContext";
+import { tienePermiso } from "../../services/permisos";
+import ConfiguracionMarca from "./ConfiguracionMarca";
 import "./Configuracion.css";
 
 const OPCIONES = {
@@ -89,6 +92,9 @@ function Configuracion({ estaciones = [] }) {
     umbrales, umbralesPorEstacion, actualizarUmbral, restablecerUmbralesEstacion,
     actualizar, restablecer,
   } = useConfiguracion();
+  const { user } = useAuth();
+  const puedeEditarMarca = tienePermiso(user?.rol, "editar_marca");
+
   const [abiertas, setAbiertas] = useState({ accesibilidad: true });
   const [estacionUmbrales, setEstacionUmbrales] = useState("");
   const alternar = (clave) => setAbiertas((actual) => ({ ...actual, [clave]: !actual[clave] }));
@@ -193,9 +199,18 @@ function Configuracion({ estaciones = [] }) {
           )}
         </Seccion>
 
-
-
-        
+        {puedeEditarMarca && (
+          <Seccion
+            id="marca"
+            Icono={Palette}
+            titulo="Marca e identidad visual"
+            descripcion="Nombre, logo, colores y pie de página de la plataforma"
+            abierta={Boolean(abiertas.marca)}
+            onToggle={() => alternar("marca")}
+          >
+            <ConfiguracionMarca />
+          </Seccion>
+        )}
       </div>
     </section>
   );

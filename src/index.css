@@ -19,7 +19,7 @@ html{
 body{
   min-height:100dvh;
   margin:0;
-  font-family:Arial,sans-serif;
+  font-family:var(--vigno-tipografia,Arial,sans-serif);
   background:var(--vigno-bg-dark);
   transition:background-color .3s ease;
 }

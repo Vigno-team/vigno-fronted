@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexto/AuthContext';
+import { useMarca } from '../contexto/MarcaContext';
 import { cambiarClaveRequest, limpiarSesionTemporal } from '../services/authService';
 import './Login.css';
 
@@ -12,6 +13,7 @@ const rutaImagenVinedo = Object.values(imagenesDisponibles)[0] || null;
 
 export function Login() {
   const { login } = useAuth();
+  const { marca } = useMarca();
   const navigate = useNavigate();
 
   const [modoCambioClave, setModoCambioClave] = useState(false);
@@ -23,6 +25,11 @@ export function Login() {
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [logoError, setLogoError] = useState(false);
+
+  useEffect(() => {
+    setLogoError(false);
+  }, [marca.logo]);
 
   useEffect(() => {
     if (error) {
@@ -104,14 +111,14 @@ export function Login() {
           {mostrarImagen ? (
             <img
               src={rutaImagenVinedo}
-              alt="Casas Patronales"
+              alt={marca.nombre_sistema}
               className="login-brand-image"
               onError={() => setImgError(true)}
             />
           ) : (
-            <div className="login-brand-fallback" aria-label="Casas Patronales">
-              <div className="fallback-monogram">Vigno</div>
-              <span className="fallback-title">Casas Patronales</span>
+            <div className="login-brand-fallback" aria-label={marca.nombre_sistema}>
+              <div className="fallback-monogram">{marca.nombre_sistema}</div>
+              <span className="fallback-title">{marca.nombre_organizacion}</span>
             </div>
           )}
         </div>
@@ -119,6 +126,21 @@ export function Login() {
         <div className="login-form-side">
           <form onSubmit={handleSubmit} className="login-form animate-fade" noValidate>
             <div className="login-header">
+              <div className="login-marca-badge">
+                {marca.logo && !logoError && (
+                  <img
+                    src={marca.logo}
+                    alt={`Logo ${marca.nombre_sistema}`}
+                    className="login-marca-logo"
+                    onError={() => setLogoError(true)}
+                  />
+                )}
+                <div>
+                  <strong className="login-marca-sistema">{marca.nombre_sistema}</strong>
+                  <span className="login-marca-org">{marca.nombre_organizacion}</span>
+                </div>
+              </div>
+
               <h1>{modoCambioClave ? 'Actualizar Contraseña' : 'Iniciar Sesión'}</h1>
               <p className="login-subtitle">
                 {modoCambioClave
