@@ -177,7 +177,7 @@
 /* Claro */
 .tema-pagina-claro .winkler-card{
   color:var(--vigno-text-dark);
-  background:transparent;
+  background:var(--vigno-surface-light, #FFFFFF);
   border-color:var(--vigno-border-light);
   box-shadow:0 4px 12px rgba(0,0,0,.035);
 }

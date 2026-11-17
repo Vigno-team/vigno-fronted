@@ -1,8 +1,8 @@
 /* Vigno | Resumen meteorológico | CSS unificado */
 /* Temas */
 .rm-dashboard.tema-oscuro{
-  --rm-card:var(--vigno-bg-dark);
-  --rm-control:var(--vigno-surface-dark);
+  --rm-card:var(--vigno-surface-dark);
+  --rm-control:var(--vigno-surface-dark-2);
   --rm-control-hover:#202631;
   --rm-texto:var(--vigno-text-primary);
   --rm-texto-secundario:var(--vigno-text-secondary);
@@ -47,7 +47,7 @@
 .rm-resumen-barra{
   width:100%;min-height:34px;display:flex;align-items:center;gap:9px;padding:0 10px;
   box-sizing:border-box;color:var(--rm-texto-secundario);
-  background:rgba(255,255,255,.015);border:1px solid var(--rm-borde);
+  background:var(--rm-card);border:1px solid var(--rm-borde);
   border-radius:9px;font-size:8px;white-space:nowrap;
 }
 
@@ -136,7 +136,7 @@
 }
 
 .tema-oscuro .rm-select :is(select,.vigno-select){color-scheme:dark}
-.tema-oscuro .rm-select option{color:#FFF;background:var(--vigno-bg-dark)}
+.tema-oscuro .rm-select option{color:#FFF;background:var(--vigno-surface-dark)}
 
 .tema-claro .rm-select :is(select,.vigno-select){color-scheme:light}
 .tema-claro .rm-select option{color:#171717;background:#FFF}

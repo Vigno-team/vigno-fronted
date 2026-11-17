@@ -9,8 +9,8 @@
 
 /* Temas */
 .vih-oscuro{
-  --vih-card:var(--vigno-bg-dark);
-  --vih-control:var(--vigno-surface-dark);
+  --vih-card:var(--vigno-surface-dark);
+  --vih-control:var(--vigno-surface-dark-2);
   --vih-control-hover:#202631;
   --vih-tooltip:#131820;
   --vih-texto:#FFF;

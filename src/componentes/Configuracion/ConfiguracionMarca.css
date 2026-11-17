@@ -92,7 +92,7 @@
   padding: 9px 12px;
   border-radius: 8px;
   border: 1px solid var(--vigno-border-light, #d1d5db);
-  background: transparent;
+  background: #ffffff;
   color: inherit;
 }
 
@@ -109,10 +109,12 @@ html[data-tema="oscuro"] .marca-campo select {
   padding: 6px 10px;
   border-radius: 8px;
   border: 1px solid var(--vigno-border-light, #d1d5db);
+  background: #ffffff;
 }
 
 html[data-tema="oscuro"] .marca-color-control {
   border-color: var(--vigno-surface-border, #262c38);
+  background: var(--vigno-surface-dark-2, #20252d);
 }
 
 .marca-color-control input[type="color"] {
