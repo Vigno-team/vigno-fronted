@@ -13,9 +13,11 @@ import { adaptarPrediccionData } from "./services/adaptarPrediccionData";
 import { useClimateData } from "./hooks/useClimateData";
 import { adaptarClimateData } from "./services/adaptarClimateData";
 import { useConfiguracion } from "./contexto/ConfiguracionContext";
+import { useMarca } from "./contexto/MarcaContext";
 import { useAuth } from "./contexto/AuthContext";
 import { tienePermiso } from "./services/permisos";
 import Usuarios from "./componentes/Usuarios/Usuarios";
+
 
 export default function App() {
   const { user } = useAuth();
@@ -37,6 +39,8 @@ export default function App() {
   );
 
   const { temaOscuro } = useConfiguracion();
+
+  const { marca } = useMarca();
 
   const [opcionActiva, setOpcionActiva] = useState("Resumen");
 
@@ -173,8 +177,7 @@ export default function App() {
         </div>
 
         <footer className="footer-vigno">
-          Este proyecto fue potenciado por la{" "}
-          <strong>Universidad Autónoma de Chile</strong>
+          {marca.texto_pie}
         </footer>
       </main>
     </div>

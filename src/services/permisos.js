@@ -6,7 +6,7 @@ export function obtenerRolActual() {
   try {
     const usuario = JSON.parse(datos);
     return usuario.rol || "";
-  } catch (error) {
+  } catch {
     return "";
   }
 }
@@ -26,6 +26,7 @@ export function tienePermiso(rol, accion) {
         case "crear_estaciones":
         case "editar_estaciones":
           return true;
+        case "editar_marca":
         default:
           return false;
       }
@@ -34,6 +35,7 @@ export function tienePermiso(rol, accion) {
       switch (accion) {
         case "ver_dashboard":
           return true;
+        case "editar_marca":
         default:
           return false;
       }

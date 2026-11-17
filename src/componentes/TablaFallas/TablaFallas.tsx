@@ -1,5 +1,7 @@
 import React from "react";
 import { apiUrl } from "../../services/api";
+import { tienePermiso } from "../../services/permisos";
+import { useAuth } from "../../contexto/AuthContext";
 import { RegistroFalla, EstadoCorreccion, TipoFalla } from "../../types/fallas";
 import "./TablaFallas.css";
 
@@ -37,7 +39,9 @@ export const TablaFallas: React.FC<Props> = ({
   temporada,
   onAbrirModal,
 }) => {
-  // Invocación a la URL oficial según requerimiento de la API
+  const { usuario } = useAuth();
+  const puedeCorregir = tienePermiso(usuario?.rol, "corregir_fallas");
+
   const handleDescargarCSV = () => {
     const url = apiUrl(`/v1/calidad/fallas?estacion=${encodeURIComponent(
       estacionId
@@ -70,7 +74,7 @@ export const TablaFallas: React.FC<Props> = ({
                 <th>Fila</th>
                 <th>Motivo</th>
                 <th>Estado</th>
-                <th>Acción</th>
+                {puedeCorregir && <th>Acción</th>}
               </tr>
             </thead>
             <tbody>
@@ -84,15 +88,17 @@ export const TablaFallas: React.FC<Props> = ({
                   <td>{falla.fila}</td>
                   <td className="col-motivo">{falla.motivo}</td>
                   <td>{formatBadgeEstado(falla.estadoCorreccion)}</td>
-                  <td>
-                    <button
-                      className="btn-accion-corregir"
-                      disabled={falla.estadoCorreccion === "corregido"}
-                      onClick={() => onAbrirModal(falla)}
-                    >
-                      {falla.estadoCorreccion === "corregido" ? "Corregido" : "Corregir"}
-                    </button>
-                  </td>
+                  {puedeCorregir && (
+                    <td>
+                      <button
+                        className="btn-accion-corregir"
+                        disabled={falla.estadoCorreccion === "corregido"}
+                        onClick={() => onAbrirModal(falla)}
+                      >
+                        {falla.estadoCorreccion === "corregido" ? "Corregido" : "Corregir"}
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

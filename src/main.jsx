@@ -7,13 +7,16 @@ import "./configuracionGlobal.css";
 
 import { AuthProvider } from "./contexto/AuthContext.jsx";
 import { ConfiguracionProvider } from "./contexto/ConfiguracionContext.jsx";
+import { MarcaProvider } from "./contexto/MarcaContext.jsx";
 import { AppRouter } from "./routes/AppRoutes.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
       <ConfiguracionProvider>
-        <AppRouter />
+        <MarcaProvider>
+          <AppRouter />
+        </MarcaProvider>
       </ConfiguracionProvider>
     </AuthProvider>
   </StrictMode>

@@ -37,4 +37,10 @@
   --estado-azul:var(--vigno-status-helada);
   --estado-rojo:var(--vigno-status-critico);
   --estado-gris:var(--vigno-text-muted);
+
+  --marca-primario:#C86D3B;
+  --marca-secundario:#2A2421;
+  --marca-acento:#D99B26;
+  --marca-fondo:#0F1115;
+  --vigno-tipografia:Arial,sans-serif;
 }

@@ -124,3 +124,13 @@
   .barra-submarca{font-size:8px}
   .barra-eslogan{font-size:11px}
 }
+.barra-logo-img{
+  display:block;
+  max-width:140px;
+  max-height:48px;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  margin-bottom:8px;
+  border-radius:6px;
+}
