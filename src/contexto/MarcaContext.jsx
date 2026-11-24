@@ -132,10 +132,18 @@ export function MarcaProvider({ children }) {
     root.style.setProperty("--marca-fondo", marca.color_fondo);
     root.style.setProperty("--vigno-tierra", marca.color_secundario);
     root.style.setProperty("--vigno-tipografia", marca.tipografia);
+    root.style.setProperty("--fuente-interfaz", marca.tipografia);
 
-    if (esColorOscuro(marca.color_fondo)) {
-      root.style.setProperty("--vigno-bg-dark", marca.color_fondo);
+    const esFondoPorDefecto =
+      !marca.color_fondo ||
+      marca.color_fondo.toLowerCase() ===
+        MARCA_DEFECTO.color_fondo.toLowerCase();
+
+    if (esFondoPorDefecto) {
+      root.style.setProperty("--vigno-bg-dark", MARCA_DEFECTO.color_fondo);
+      root.style.setProperty("--vigno-bg-light", "#F8F9FA");
     } else {
+      root.style.setProperty("--vigno-bg-dark", marca.color_fondo);
       root.style.setProperty("--vigno-bg-light", marca.color_fondo);
     }
 
