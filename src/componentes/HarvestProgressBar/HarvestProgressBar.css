@@ -1,0 +1,151 @@
+.vigno-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.vigno-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vigno-tiempo-estimado {
+  margin: 0;
+  padding: 4px 10px;
+  border-radius: 7px;
+  background: rgba(214, 152, 29, 0.12);
+  border: 1px solid rgba(214, 152, 29, 0.35);
+  white-space: nowrap;
+}
+
+.vigno-tiempo-estimado strong {
+  color: #d6981d;
+}
+
+.vigno-barra-contenedor {
+  padding: 8px 0;
+  width: 100%;
+}
+
+.vigno-barra {
+  position: relative;
+  width: 100%;
+  height: 12px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(214, 152, 29, 0.35);
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+}
+
+.tema-pagina-claro .vigno-barra {
+  background-color: rgba(0, 0, 0, 0.08);
+  border-color: rgba(180, 118, 14, 0.4);
+}
+
+.vigno-barra-avance {
+  height: 100%;
+  background: linear-gradient(90deg, #b45309 0%, #d6981d 100%);
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+
+.vigno-circulo {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: #1c1613;
+  border: 2px solid #d6981d;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  transition: left 0.35s ease;
+}
+
+.tema-pagina-claro .vigno-circulo {
+  background-color: #ffffff;
+  color: #1e293b;
+  border-color: #b45309;
+}
+
+.vigno-panel-estado {
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.vigno-panel-estado.normal {
+  background-color: rgba(20, 83, 45, 0.22);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.tema-pagina-claro .vigno-panel-estado.normal {
+  background-color: rgba(20, 83, 45, 0.1);
+  border-color: rgba(21, 128, 61, 0.35);
+}
+
+.vigno-panel-estado.alerta {
+  background-color: rgba(140, 29, 24, 0.28);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+}
+
+.tema-pagina-claro .vigno-panel-estado.alerta {
+  background-color: rgba(140, 29, 24, 0.12);
+  border-color: rgba(185, 28, 28, 0.4);
+}
+
+.vigno-texto-estado {
+  margin: 0;
+  font-weight: 600;
+  color: inherit;
+}
+
+.vigno-lista-temperaturas {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.vigno-temp {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background-color: rgba(214, 152, 29, 0.16);
+  border: 1px solid rgba(214, 152, 29, 0.45);
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .vigno-panel-estado {
+    flex-direction: column;
+    align-items: center; 
+  }
+
+  .vigno-lista-temperaturas {
+    width: 100%;
+    justify-content: center; 
+  }
+}

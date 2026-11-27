@@ -1,0 +1,399 @@
+.panel-temperatura.tema-oscuro{
+  --fondo:#0F1115;--superficie:#181C24;--superficie-hover:#20252D;
+  --borde:#262C38;--borde-control:#323946;--texto:#F8FAFC;
+  --texto-secundario:#9CA3AF;--sombra:rgba(0,0,0,.2);
+}
+.panel-temperatura.tema-claro{
+  --fondo:#FFF;--superficie:#F8F9FA;--superficie-hover:#F3F0EC;
+  --borde:#E5E2DE;--borde-control:#DDD9D4;--texto:#171717;
+  --texto-secundario:#6B7280;--sombra:rgba(15,23,42,.06);
+}
+
+.panel-temperatura.tema-oscuro :is(select,.vigno-select){color-scheme:dark}
+.panel-temperatura.tema-oscuro :is(select,.vigno-select) option{color:#F8FAFC;background:#181C24}
+.panel-temperatura.tema-oscuro :is(select,.vigno-select) option:disabled{color:#59616E;background:#14171D}
+
+/* Panel */
+.panel-temperatura{
+  width:100%;min-width:0;box-sizing:border-box;padding:18px;color:var(--texto);
+  background:var(--fondo);border:1px solid var(--borde);border-radius:15px;overflow:hidden;
+}
+
+/* Cabecera */
+.cabecera-temperatura{
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+}
+.titulo-temperatura{min-width:0;display:flex;align-items:center;gap:10px}
+.icono-principal{
+  width:38px;height:38px;display:grid;place-items:center;flex-shrink:0;
+  color:var(--vigno-accent);background:var(--vigno-terracota-suave);border-radius:10px;
+}
+.titulo-temperatura h2{
+  margin:0;color:var(--texto);font-size:20px;font-weight:720;letter-spacing:-.3px;
+}
+.acciones-temperatura{display:flex;align-items:center}
+
+/* Estación */
+.selector-estacion{
+  height:40px;display:flex;align-items:center;gap:7px;padding:0 10px;
+  color:var(--vigno-accent);background:var(--superficie);
+  border:1px solid var(--borde-control);border-radius:8px;
+}
+.selector-estacion :is(select,.vigno-select){
+  min-width:155px;color:var(--texto);background:transparent;border:0;outline:0;
+  font-family:inherit;font-size:10px;font-weight:650;cursor:pointer;
+}
+
+/* Barra */
+.barra-grafico{
+  width:100%;display:flex;align-items:flex-end;justify-content:space-between;gap:calc(12px * var(--factor-texto));
+  margin-top:calc(14px * var(--factor-texto));
+  padding:calc(10px * var(--factor-texto))calc(12px * var(--factor-texto));
+  box-sizing:border-box; 
+  background:var(--superficie); 
+  border:1px solid var(--borde);border-radius:calc(11px * var(--factor-texto));
+}
+.controles-historicos{
+  min-width:0;flex:1;display:flex;align-items:flex-end;flex-wrap:wrap;gap:calc(8px * var(--factor-texto));
+}
+
+/* Mes / Año */
+.selector-vista{
+  min-height:calc(40px * var(--factor-texto));
+  display:flex;
+  align-items:center;
+  flex-shrink:0;
+  gap:calc(3px * var(--factor-texto));
+  padding:calc(3px * var(--factor-texto));
+  box-sizing:border-box;
+  background:var(--fondo);
+  border:1px solid var(--borde-control);
+  border-radius:calc(8px * var(--factor-texto));
+}
+.boton-vista{
+  min-height:calc(32px * var(--factor-texto));
+  min-width:calc(76px * var(--factor-texto));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:calc(6px * var(--factor-texto));
+  padding:0 calc(12px * var(--factor-texto));
+  color:var(--texto-secundario);
+  background:transparent;
+  border:0;
+  border-radius:calc(6px * var(--factor-texto));
+  font-family:inherit;
+  font-size:calc(10px * var(--factor-texto));
+  font-weight:650;
+  cursor:pointer;
+  transition:color .18s ease,background .18s ease;
+}
+.boton-vista:hover{color:var(--texto);background:var(--superficie-hover)}
+.boton-vista.activo{color:#fff;background:var(--vigno-accent)}
+
+/* Comparación */
+.boton-comparar{
+  min-height:calc(40px * var(--factor-texto));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  gap:calc(6px * var(--factor-texto));
+  padding:0 calc(12px * var(--factor-texto));
+  color:var(--texto-secundario);
+  background:var(--fondo);
+  border:1px solid var(--borde-control);
+  border-radius:calc(8px * var(--factor-texto));
+  font-family:inherit;
+  font-size:calc(9px * var(--factor-texto));
+  font-weight:650;
+  cursor:pointer;
+  transition:color .18s ease,background .18s ease,border-color .18s ease;
+}
+.boton-comparar:hover:not(:disabled){color:var(--texto);background:var(--superficie-hover)}
+.boton-comparar.activo{color:#fff;background:var(--vigno-accent);border-color:var(--vigno-accent)}
+.boton-estaciones.activo{background:#3E8E58;border-color:#3E8E58}
+.boton-comparar:disabled{opacity:.35;cursor:not-allowed}
+
+/* Filtros */
+.filtros-periodo,.comparadores-estacion{
+  min-width:0;
+  display:flex;
+  align-items:flex-end;
+  flex-wrap:wrap;
+  gap:calc(8px * var(--factor-texto));
+}
+
+.grupo-periodo{
+  min-width:calc(112px * var(--factor-texto));
+  display:flex;
+  flex-direction:column;
+  gap:calc(4px * var(--factor-texto));
+}
+
+.etiqueta-filtro{
+  min-height:calc(11px * var(--factor-texto));
+  display:flex;
+  align-items:center;
+  gap:calc(5px * var(--factor-texto));
+  padding-left:2px;
+  color:var(--texto-secundario);
+  font-size:calc(7px * var(--factor-texto));
+  font-weight:750;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+
+.grupo-periodo>:is(select,.vigno-select){
+  width:100%;
+  min-height:calc(40px * var(--factor-texto));
+  min-width:calc(112px * var(--factor-texto));
+  max-width:calc(165px * var(--factor-texto));
+  padding:0 calc(9px * var(--factor-texto));
+  box-sizing:border-box;
+  color:var(--texto);
+  background:var(--fondo);
+  border:1px solid var(--borde-control);
+  border-radius:calc(8px * var(--factor-texto));
+  outline:0;
+  font-family:inherit;
+  font-size:calc(9px * var(--factor-texto));
+  font-weight:650;
+  cursor:pointer;
+}
+.grupo-periodo>:is(select,.vigno-select):hover{background:var(--superficie-hover)}
+.grupo-periodo>:is(select,.vigno-select):focus{border-color:var(--vigno-accent)}
+
+/* Select eliminable */
+.selector-eliminable{
+  min-height:calc(40px * var(--factor-texto));
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  background:var(--fondo);
+  border:1px solid var(--borde-control);
+  border-radius:calc(8px * var(--factor-texto));
+  transition:border-color .18s ease;
+}
+
+.selector-eliminable:hover{border-color:rgba(200,109,59,.55)}
+.selector-eliminable:focus-within{border-color:var(--vigno-accent)}
+
+.selector-eliminable :is(select,.vigno-select){
+  width:calc(108px * var(--factor-texto));
+  min-height:calc(38px * var(--factor-texto));
+  min-width:0;
+  padding:0 calc(8px * var(--factor-texto));
+  color:var(--texto);
+  background:transparent;
+  border:0;
+  outline:0;
+  font-family:inherit;
+  font-size:calc(9px * var(--factor-texto));
+  font-weight:650;
+  cursor:pointer;
+}
+
+.grupo-periodo:not(.grupo-anio) .selector-eliminable :is(select,.vigno-select){
+  width:calc(130px * var(--factor-texto));
+}
+
+.grupo-estacion-comparada .selector-eliminable :is(select,.vigno-select){
+  width:calc(145px * var(--factor-texto));
+}
+.boton-quitar-comparacion{
+  width:calc(36px * var(--factor-texto));
+  min-height:calc(38px * var(--factor-texto));
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+  padding:0;
+  color:var(--texto-secundario);
+  background:transparent;
+  border:0;
+  border-left:1px solid var(--borde-control);
+  cursor:pointer;
+  transition:color .18s ease,background .18s ease;
+}
+.boton-quitar-comparacion:hover{color:#fff;background:var(--vigno-status-critico)}
+
+/* Añadir */
+.boton-agregar-comparacion{
+  min-height:calc(40px * var(--factor-texto));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  gap:calc(6px * var(--factor-texto));
+  padding:0 calc(11px * var(--factor-texto));
+  color:var(--vigno-accent);
+  background:var(--vigno-terracota-suave);
+  border:1px dashed var(--vigno-terracota-borde);
+  border-radius:calc(8px * var(--factor-texto));
+  font-family:inherit;
+  font-size:calc(8px * var(--factor-texto));
+  font-weight:700;
+  white-space:nowrap;
+  cursor:pointer;
+  transition:color .18s ease,background .18s ease,border-color .18s ease;
+}
+.boton-agregar-comparacion:hover:not(:disabled){
+  color:#fff;background:var(--vigno-accent);border-color:var(--vigno-accent);
+}
+.boton-agregar-comparacion:disabled{opacity:.35;cursor:not-allowed}
+
+/* Series */
+.punto-serie,.punto-tooltip{
+  width:7px;height:7px;display:inline-block;flex-shrink:0;border-radius:50%;
+}
+
+/* Resumen */
+.resumen-temperatura{
+  display:flex;
+  align-items:stretch;
+  gap:calc(7px * var(--factor-texto));
+  margin-left:auto;
+}
+
+.resumen-temperatura>div{
+  min-width:calc(94px * var(--factor-texto));
+  min-height:calc(48px * var(--factor-texto));
+  display:grid;
+  grid-template-columns:auto 1fr;
+  align-items:center;
+  gap:calc(1px * var(--factor-texto)) calc(5px * var(--factor-texto));
+  padding:
+    calc(6px * var(--factor-texto))
+    calc(9px * var(--factor-texto));
+  box-sizing:border-box;
+  background:var(--fondo);
+  border:1px solid var(--borde-control);
+  border-radius:calc(8px * var(--factor-texto));
+}
+
+.resumen-temperatura svg{
+  width:calc(13px * var(--factor-texto));
+  height:calc(13px * var(--factor-texto));
+  color:var(--vigno-accent);
+}
+
+.resumen-temperatura span{
+  color:var(--texto-secundario);
+  font-size:calc(7px * var(--factor-texto));
+}
+
+.resumen-temperatura strong{
+  grid-column:1/-1;
+  color:var(--texto);
+  font-size:calc(10px * var(--factor-texto));
+  font-weight:720;
+}
+
+/* Leyenda */
+.leyenda-comparacion{
+  width:100%;display:flex;align-items:center;flex-wrap:wrap;gap:7px 15px;
+  margin-top:9px;padding:0 4px;box-sizing:border-box;
+}
+.item-leyenda{
+  display:flex;align-items:center;gap:6px;color:var(--texto-secundario);
+  font-size:9px;font-weight:620;white-space:nowrap;
+}
+.linea-leyenda{
+  width:20px;height:3px;display:inline-block;flex-shrink:0;border-radius:999px;
+}
+
+/* Gráfico */
+.area-temperatura{
+  position:relative;width:100%;height:480px;min-width:0;margin-top:13px;
+}
+.grafico-visx{position:relative;width:100%;height:100%}
+
+/* Tooltip */
+.tooltip-temperatura{
+  position:absolute;min-width:190px;max-width:280px;padding:10px;box-sizing:border-box;
+  color:var(--texto);background:var(--fondo);border:1px solid var(--borde-control);
+  border-radius:9px;box-shadow:0 10px 28px var(--sombra);
+  transform:translate(-50%,calc(-100% - 12px));pointer-events:none;z-index:10;
+}
+.tooltip-titulo{
+  display:block;margin-bottom:7px;color:var(--texto);font-size:10px;font-weight:700;
+}
+.tooltip-serie{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;padding:4px 0;
+}
+.tooltip-serie>div{display:flex;align-items:center;gap:6px}
+.tooltip-serie span{color:var(--texto-secundario);font-size:8px}
+.tooltip-serie strong{color:var(--texto);font-size:9px;font-weight:700}
+
+.tooltip-diferencia{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-top:5px;padding-top:7px;border-top:1px solid var(--borde);
+}
+.tooltip-diferencia span{color:var(--texto-secundario);font-size:7px}
+.tooltip-diferencia strong{color:var(--texto);font-size:9px}
+
+/* Sin datos */
+.sin-datos{
+  width:100%;height:100%;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:5px;color:var(--texto-secundario);
+}
+.sin-datos strong{color:var(--texto);font-size:12px}
+.sin-datos span{font-size:9px}
+
+/* Laptop */
+@media(max-width:1280px){
+  .barra-grafico{flex-wrap:wrap}
+  .controles-historicos{width:100%}
+  .resumen-temperatura{width:100%;margin-left:0}
+  .resumen-temperatura>div{flex:1}
+}
+
+/* Tablet */
+@media(max-width:900px){
+  .controles-historicos{align-items:flex-end}
+  .filtros-periodo,.comparadores-estacion{flex:1}
+  .area-temperatura{height:430px}
+}
+
+/* Móvil */
+@media(max-width:650px){
+  .panel-temperatura{padding:13px 10px;border-radius:12px}
+  .cabecera-temperatura{flex-direction:column;align-items:stretch;gap:10px}
+  .titulo-temperatura,.acciones-temperatura,.selector-estacion,
+  .controles-historicos,.filtros-periodo,.comparadores-estacion,
+  .selector-eliminable,.resumen-temperatura{width:100%}
+
+  .titulo-temperatura h2{font-size:18px}
+  .selector-estacion{box-sizing:border-box}
+  .selector-estacion :is(select,.vigno-select){width:100%;min-width:0}
+
+  .barra-grafico{flex-direction:column;align-items:stretch;padding:8px}
+  .selector-vista,.boton-vista,.boton-comparar{flex:1}
+  .boton-vista{min-width:0}
+
+  .grupo-periodo{flex:1 1 130px}
+  .grupo-periodo>:is(select,.vigno-select){max-width:none}
+
+  .selector-eliminable :is(select,.vigno-select),
+  .grupo-periodo:not(.grupo-anio) .selector-eliminable :is(select,.vigno-select),
+  .grupo-estacion-comparada .selector-eliminable :is(select,.vigno-select){
+    flex:1;width:auto;
+  }
+
+  .boton-agregar-comparacion{flex:1 1 130px}
+  .resumen-temperatura>div{min-width:0;flex:1}
+  .area-temperatura{height:370px}
+}
+
+/* Teléfono pequeño */
+@media(max-width:430px){
+  .controles-historicos{flex-direction:column;align-items:stretch}
+
+  .selector-vista,.boton-comparar,.filtros-periodo,.comparadores-estacion,
+  .grupo-periodo,.grupo-periodo>:is(select,.vigno-select),.boton-agregar-comparacion{width:100%}
+
+  .filtros-periodo,.comparadores-estacion{flex-direction:column}
+  .grupo-periodo>:is(select,.vigno-select){max-width:none}
+  .resumen-temperatura span{display:none}
+  .area-temperatura{height:350px}
+}
