@@ -1,0 +1,72 @@
+.lluvia-invernal-card {
+  gap: 0.9rem;
+}
+
+.lluvia-bloque-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.lluvia-subtitulo {
+  color: var(--vigno-text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.item-lluvia {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid var(--vigno-surface-border);
+  border-radius: 7px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lluvia-detalles {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: var(--vigno-text-secondary);
+}
+
+.lluvia-detalles strong {
+  color: #fff;
+}
+
+.chip-mm {
+  color: var(--vigno-accent);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.lluvia-tags {
+  display: flex;
+  gap: 6px;
+}
+
+.tag-advertencia {
+  padding: 2px 6px;
+  background: rgba(217, 155, 38, 0.15);
+  border: 1px solid var(--vigno-status-alerta);
+  color: var(--vigno-status-alerta);
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.tema-pagina-claro .item-lluvia {
+  background: #fff;
+  border-color: var(--vigno-border-light);
+}
+
+.tema-pagina-claro .lluvia-detalles strong {
+  color: var(--vigno-text-dark);
+}

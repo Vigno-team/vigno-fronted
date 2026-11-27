@@ -1,0 +1,133 @@
+.calor-card {
+  gap: 0.9rem;
+}
+
+.calor-metricas-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.calor-bloque-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.calor-subtitulo {
+  color: var(--vigno-text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dias-criticos-chips {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.chip-dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 4px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid var(--vigno-surface-border);
+  border-radius: 7px;
+  text-align: center;
+}
+
+.chip-fecha {
+  color: var(--vigno-text-muted);
+  font-size: 0.6rem;
+}
+
+.chip-temp {
+  color: var(--vigno-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.lista-rachas {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.item-racha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid var(--vigno-surface-border);
+  border-radius: 7px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.racha-detalles {
+  display: flex;
+  gap: 12px;
+  font-size: 0.7rem;
+  color: var(--vigno-text-secondary);
+}
+
+.racha-detalles strong {
+  color: #fff;
+}
+
+.racha-tags {
+  display: flex;
+  gap: 6px;
+}
+
+.tag-incidencia {
+  padding: 2px 6px;
+  background: rgba(224, 122, 95, 0.2);
+  border: 1px solid var(--vigno-accent);
+  color: var(--vigno-accent);
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.tag-advertencia {
+  padding: 2px 6px;
+  background: rgba(217, 155, 38, 0.15);
+  border: 1px solid var(--vigno-status-alerta);
+  color: var(--vigno-status-alerta);
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.tema-pagina-claro .chip-dia,
+.tema-pagina-claro .item-racha {
+  background: #fff;
+  border-color: var(--vigno-border-light);
+}
+
+.tema-pagina-claro .chip-fecha {
+  color: var(--vigno-text-muted);
+}
+
+.tema-pagina-claro .racha-detalles strong {
+  color: var(--vigno-text-dark);
+}
+
+@media(max-width: 900px) {
+  .dias-criticos-chips {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media(max-width: 520px) {
+  .calor-metricas-3 {
+    grid-template-columns: 1fr !important;
+  }
+  .dias-criticos-chips {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

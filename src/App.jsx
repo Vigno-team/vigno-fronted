@@ -1,122 +1,178 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useEffect, useMemo, useState } from "react";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+import BarraLateral from "./componentes/BarraLateral/BarraLateral";
+import ResumenMeteorologico from "./componentes/ResumenMeteorologico/ResumenMeteorologico";
+import AlertasReportes from "./componentes/AlertasReportes/AlertasReportes";
+import Historicos from "./componentes/Historicos/Historicos";
+import IndicesVitivinicolasPanel from "./componentes/IndicesVitivinicolas/IndicesVitivinicolasPanel";
+import Configuracion from "./componentes/Configuracion/Configuracion";
+import CargaExcel from "./componentes/CargaExcel/CargaExcel";
+
+import { useClimateData } from "./hooks/useClimateData";
+import { adaptarClimateData } from "./services/adaptarClimateData";
+import { useConfiguracion } from "./contexto/ConfiguracionContext";
+import { useMarca } from "./contexto/MarcaContext";
+import { useAuth } from "./contexto/AuthContext";
+import { tienePermiso } from "./services/permisos";
+import Usuarios from "./componentes/Usuarios/Usuarios";
+
+
+export default function App() {
+  const { user } = useAuth();
+  const rol = user?.rol;
+
+  const { data, loading, error, recargar } = useClimateData("/v1/datos");
+
+  const datos = useMemo(() => adaptarClimateData(data), [data]);
+
+  // Django aún no ofrece esta ruta. Conservamos la tarjeta sin hacer una petición 404.
+  const datosPrediccion = null;
+  const loadingPrediccion = false;
+  const errorPrediccion = "La predicción de cosecha aún no está disponible.";
+
+  const { temaOscuro } = useConfiguracion();
+
+  const { marca } = useMarca();
+
+  const [opcionActiva, setOpcionActiva] = useState("Resumen");
+
+  const [barraExpandida, setBarraExpandida] = useState(
+    () => localStorage.getItem("barra-expandida") !== "false"
+  );
+
+  useEffect(() => {
+    localStorage.setItem("barra-expandida", String(barraExpandida));
+  }, [barraExpandida]);
+
+  const comunes = {
+    estaciones: datos?.estaciones ?? [],
+    fichasTemporada: datos?.fichasTemporada ?? [],
+    temporadaEnCurso: datos?.temporadaEnCurso ?? null,
+  };
+
+  const sinPermisoVista = (
+    <div className="app-cargando" role="status">
+      <strong>No tienes permisos</strong>
+    </div>
+  );
+
+  const pantallas = {
+    "Resumen": () => (
+      <ResumenMeteorologico
+        {...comunes}
+        datosTemperatura={datos?.seriesTemperaturas ?? []}
+        temaOscuro={temaOscuro}
+      />
+    ),
+
+    "Alertas y reportes": () => (
+      <AlertasReportes
+        estaciones={comunes.estaciones}
+        datosTemperatura={datos?.seriesTemperaturas ?? []}
+        temaOscuro={temaOscuro}
+      />
+    ),
+
+    "Históricos": () => (
+      <Historicos
+        {...comunes}
+        datosTemperatura={datos?.seriesTemperaturas ?? []}
+        temaOscuro={temaOscuro}
+      />
+    ),
+
+    "Configuración": () => (
+      <Configuracion
+        estaciones={comunes.estaciones}
+        onCargaConfirmada={recargar}
+      />
+    ),
+
+    "Índices vitivinícolas": () => (
+      <IndicesVitivinicolasPanel
+        {...comunes}
+        onDatosActualizados={recargar}
+        datosPrediccion={datosPrediccion}
+        loadingPrediccion={loadingPrediccion}
+        errorPrediccion={errorPrediccion}
+      />
+    ),
+
+    "Gestion de datos y Estaciones": () =>
+      tienePermiso(rol, "cargar_datos") ? (
+        <div className="cargar-datos-vista">
+          <CargaExcel
+            estaciones={comunes.estaciones}
+            onCargaConfirmada={recargar}
+          />
+        </div>
+      ) : (
+        sinPermisoVista
+      ),
+
+    "Usuarios": () =>
+      tienePermiso(rol, "usuarios") ? (
+        <Usuarios />
+      ) : (
+        sinPermisoVista
+      ),
+  };
+
+  const sinDatos = loading || error || !comunes.estaciones.length;
+
+  const vistaError = (
+    <div className="app-cargando" role="status">
+      <strong>
+        {loading
+          ? "Cargando datos desde Django..."
+          : error
+          ? "No se pudieron cargar los datos."
+          : "No hay estaciones con datos."}
+      </strong>
+
+      {error && <span>{error}</span>}
+
+      {!loading && (
+        <button type="button" onClick={recargar}>
+          Reintentar conexión
+        </button>
+      )}
+
+      {!loading && tienePermiso(rol, "cargar_datos") && (
+        <p>Puedes ir a Cargar datos para importar archivos Excel.</p>
+      )}
+    </div>
+  );
+
+  const vistaActual = pantallas[opcionActiva] || pantallas.Resumen;
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className={`app ${temaOscuro ? "tema-pagina-oscuro" : "tema-pagina-claro"}`}>
+      <BarraLateral
+        expandida={barraExpandida}
+        setExpandida={setBarraExpandida}
+        opcionActiva={opcionActiva}
+        setOpcionActiva={setOpcionActiva}
+      />
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      <main
+        className={`contenido ${
+          barraExpandida ? "contenido-expandido" : "contenido-contraido"
+        }`}
+      >
+        <div className="contenido-vista">
+          {["Configuración", "Gestion de datos y Estaciones", "Usuarios"].includes(opcionActiva)
+            ? vistaActual()
+            : sinDatos
+            ? vistaError
+            : vistaActual()}
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        <footer className="footer-vigno">
+          {marca.texto_pie}
+        </footer>
+      </main>
+    </div>
+  );
 }
-
-export default App

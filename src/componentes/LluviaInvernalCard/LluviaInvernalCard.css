@@ -1,0 +1,315 @@
+.winkler-card{
+  width:100%;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:.7rem;
+  padding:1rem;
+  color:#fff;
+  background:var(--vigno-surface-dark);
+  border:1px solid var(--vigno-surface-border);
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+}
+
+.winkler-card-header{
+  display:flex;
+  flex-direction:column;
+  gap:.4rem;
+}
+
+.winkler-header-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:.8rem;
+  flex-wrap:wrap;
+}
+
+.winkler-badge{
+  color:var(--vigno-accent);
+  font-size:.7rem;
+  font-weight:700;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+
+.winkler-card h4{
+  margin:.35rem 0 0;
+  color:#fff;
+  font-size:1rem;
+  font-weight:600;
+}
+
+.winkler-selectores{
+  display:flex;
+  gap:.4rem;
+  flex-wrap:wrap;
+}
+
+.winkler-select{
+  min-width:150px;
+  height:34px;
+  padding:0 10px;
+  color:#fff;
+  background:var(--vigno-surface-dark-2);
+  border:1px solid var(--vigno-surface-border);
+  border-radius:7px;
+  outline:0;
+  font-size:.7rem;
+  font-weight:600;
+  cursor:pointer;
+  color-scheme:dark;
+}
+
+.winkler-select:focus{
+  border-color:var(--vigno-accent);
+}
+
+.winkler-select option{
+  color:#fff;
+  background:var(--vigno-surface-dark);
+}
+
+.winkler-card-body{
+  min-height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+}
+
+.winkler-metric{
+  display:flex;
+  align-items:baseline;
+  gap:.35rem;
+}
+
+.winkler-value{
+  color:var(--vigno-accent);
+  font-size:2rem;
+  font-weight:750;
+  line-height:1;
+}
+
+.winkler-unit{
+  color:var(--vigno-text-secondary);
+  font-size:.8rem;
+  font-weight:600;
+}
+
+.winkler-classification{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  text-align:right;
+}
+
+.winkler-region{
+  color:var(--vigno-accent);
+  font-size:.9rem;
+  font-weight:700;
+}
+
+.winkler-desc{
+  margin-top:2px;
+  color:var(--vigno-text-secondary);
+  font-size:.7rem;
+}
+
+.lluvia-ejes{
+  margin-top:4px;
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.lluvia-ejes .winkler-desc{
+  margin-top:0;
+  padding:2px 8px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--vigno-surface-border);
+  border-radius:5px;
+}
+
+.lluvia-ejes .winkler-desc strong{
+  color:#fff;
+  font-weight:650;
+}
+
+
+.lluvia-criterio-box{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding:10px 12px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--vigno-surface-border);
+  border-radius:8px;
+}
+
+.lluvia-criterio-lista{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.lluvia-criterio-lista .winkler-desc{
+  margin:0;
+  padding:5px 8px;
+  line-height:1.4;
+  background:rgba(255,255,255,.02);
+  border-left:2px solid var(--vigno-accent);
+  border-radius:0 5px 5px 0;
+}
+
+.winkler-aviso{
+  padding:8px 10px;
+  color:var(--vigno-status-alerta);
+  background:rgba(217,155,38,.08);
+  border:1px solid rgba(217,155,38,.28);
+  border-radius:7px;
+  font-size:.68rem;
+}
+
+/* Claro */
+.tema-pagina-claro .winkler-card{
+  color:var(--vigno-text-dark);
+  background:transparent;
+  border-color:var(--vigno-border-light);
+  box-shadow:0 4px 12px rgba(0,0,0,.035);
+}
+
+.tema-pagina-claro .winkler-card h4{
+  color:var(--vigno-text-dark);
+}
+
+.tema-pagina-claro .winkler-select{
+  color:var(--vigno-text-dark);
+  background:#fff;
+  border-color:var(--vigno-border-light);
+  color-scheme:light;
+}
+
+.tema-pagina-claro .winkler-select option{
+  color:var(--vigno-text-dark);
+  background:#fff;
+}
+
+.tema-pagina-claro .winkler-desc,
+.tema-pagina-claro .winkler-unit{
+  color:var(--vigno-text-muted);
+}
+
+.tema-pagina-claro .lluvia-ejes .winkler-desc{
+  background:#f9fafb;
+  border-color:var(--vigno-border-light);
+}
+
+.tema-pagina-claro .lluvia-ejes .winkler-desc strong{
+  color:var(--vigno-text-dark);
+}
+
+.tema-pagina-claro .lluvia-criterio-box{
+  background:#f9fafb;
+  border-color:var(--vigno-border-light);
+}
+
+.tema-pagina-claro .lluvia-criterio-lista .winkler-desc{
+  color:var(--vigno-text-dark);
+  background:#fff;
+}
+
+.tema-pagina-claro .winkler-aviso{
+  color:#9a6700;
+  background:#fff8e6;
+  border-color:rgba(217,155,38,.35);
+}
+
+.winkler-temporada-info{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
+}
+
+.winkler-temporada-info>div{
+  min-width:0;
+  padding:8px 10px;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--vigno-surface-border);
+  border-radius:7px;
+}
+
+.winkler-temporada-info span{
+  color:var(--vigno-text-muted);
+  font-size:.6rem;
+}
+
+.winkler-temporada-info strong{
+  color:#fff;
+  font-size:.7rem;
+  font-weight:650;
+}
+
+.winkler-temporada-info .estado-curso{
+  color:var(--vigno-status-confiable);
+}
+
+.tema-pagina-claro .winkler-temporada-info>div{
+  background:#fff;
+  border-color:var(--vigno-border-light);
+}
+
+.tema-pagina-claro .winkler-temporada-info strong{
+  color:var(--vigno-text-dark);
+}
+
+.tema-pagina-claro .winkler-temporada-info .estado-curso{
+  color:var(--vigno-status-confiable);
+}
+
+@media(max-width:900px){
+  .winkler-temporada-info{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media(max-width:520px){
+  .winkler-temporada-info{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:700px){
+  .winkler-header-top{
+    flex-direction:column;
+  }
+
+  .winkler-selectores{
+    width:100%;
+  }
+
+  .winkler-select{
+    flex:1;
+    min-width:0;
+  }
+
+  .winkler-card-body{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .winkler-classification{
+    align-items:flex-start;
+    text-align:left;
+  }
+
+  .lluvia-ejes{
+    justify-content:flex-start;
+  }
+}
